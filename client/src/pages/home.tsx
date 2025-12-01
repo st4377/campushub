@@ -1,6 +1,6 @@
 import { Layout } from "@/components/layout";
 import { CommunityCard } from "@/components/community-card";
-import { Filters } from "@/components/filters";
+import { Filters, FilterState } from "@/components/filters";
 import { MOCK_COMMUNITIES, Community, getPlatformIcon } from "@/lib/mock-data";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
+const initialFilters: FilterState = {
+  visibility: [],
+  platforms: [],
+  categories: [],
+};
+
 export default function Home() {
   const popularTags = ["#entertainment", "#trading", "#dance", "#food", "#coding", "#memes", "#hostel", "#events"];
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSearch, setActiveSearch] = useState("");
   const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filters, setFilters] = useState<FilterState>(initialFilters);
   const communityGridRef = useRef<HTMLDivElement>(null);
 
   const handleTagClick = (tag: string) => {
@@ -49,25 +56,56 @@ export default function Home() {
     }
   }, [handleSearch]);
 
+  const handleFilterChange = useCallback((newFilters: FilterState) => {
+    setFilters(newFilters);
+  }, []);
+
+  const handleResetFilters = useCallback(() => {
+    setFilters(initialFilters);
+  }, []);
+
   const filteredCommunities = useMemo(() => {
-    if (!activeSearch.trim()) {
-      return MOCK_COMMUNITIES;
+    let result = MOCK_COMMUNITIES;
+
+    // Apply search filter
+    if (activeSearch.trim()) {
+      const query = activeSearch.toLowerCase().replace(/^#/, '');
+      result = result.filter((community) => {
+        const nameMatch = community.name.toLowerCase().includes(query);
+        const descriptionMatch = community.description.toLowerCase().includes(query);
+        const tagMatch = community.tags.some(tag => 
+          tag.toLowerCase().includes(query) || 
+          tag.toLowerCase().replace(/-/g, '').includes(query.replace(/-/g, ''))
+        );
+        const categoryMatch = community.category.toLowerCase().includes(query);
+        return nameMatch || descriptionMatch || tagMatch || categoryMatch;
+      });
     }
 
-    const query = activeSearch.toLowerCase().replace(/^#/, '');
-    
-    return MOCK_COMMUNITIES.filter((community) => {
-      const nameMatch = community.name.toLowerCase().includes(query);
-      const descriptionMatch = community.description.toLowerCase().includes(query);
-      const tagMatch = community.tags.some(tag => 
-        tag.toLowerCase().includes(query) || 
-        tag.toLowerCase().replace(/-/g, '').includes(query.replace(/-/g, ''))
+    // Apply visibility filter
+    if (filters.visibility.length > 0) {
+      result = result.filter((community) => {
+        const communityVisibility = community.visibility?.toLowerCase().replace(/\s+/g, '-') || 'public';
+        return filters.visibility.some(v => communityVisibility.includes(v));
+      });
+    }
+
+    // Apply platform filter
+    if (filters.platforms.length > 0) {
+      result = result.filter((community) => 
+        filters.platforms.includes(community.platform)
       );
-      const categoryMatch = community.category.toLowerCase().includes(query);
-      
-      return nameMatch || descriptionMatch || tagMatch || categoryMatch;
-    });
-  }, [activeSearch]);
+    }
+
+    // Apply category filter
+    if (filters.categories.length > 0) {
+      result = result.filter((community) => 
+        filters.categories.includes(community.category)
+      );
+    }
+
+    return result;
+  }, [activeSearch, filters]);
 
   const handleOpenModal = useCallback((community: Community) => {
     setSelectedCommunity(community);
@@ -174,14 +212,18 @@ export default function Home() {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  onClick={() => { setSearchQuery(""); setActiveSearch(""); }}
+                  onClick={() => { setSearchQuery(""); setActiveSearch(""); handleResetFilters(); }}
                   className="h-8 text-xs text-black/70 hover:text-black uppercase font-bold tracking-wider hover:bg-transparent"
                 >
-                  Reset
+                  Reset All
                 </Button>
               </div>
               <div className="p-6 rounded-3xl border border-[#333] bg-[#0A0A0A] shadow-lg">
-                <Filters />
+                <Filters 
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  onReset={handleResetFilters}
+                />
               </div>
             </div>
           </aside>
@@ -198,7 +240,11 @@ export default function Home() {
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] bg-yellow-50 border-r border-black/10 p-6 overflow-y-auto">
                 <h2 className="font-heading text-xl font-bold mb-8 uppercase text-black">Filters</h2>
-                <Filters />
+                <Filters 
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  onReset={handleResetFilters}
+                />
               </SheetContent>
             </Sheet>
           </div>
