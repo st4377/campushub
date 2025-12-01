@@ -37,10 +37,12 @@ const DialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg sm:rounded-lg",
-        "translate-x-[-50%] translate-y-[-50%]",
-        "data-[state=open]:animate-modal-pop-in data-[state=closed]:animate-modal-pop-out",
+        "animate-modal-pop-in data-[state=closed]:animate-modal-pop-out",
         className
       )}
+      style={{
+        transform: 'translate(-50%, -50%)',
+      }}
       {...props}
     >
       {children}
