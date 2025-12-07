@@ -317,17 +317,15 @@ export default function Login() {
           }}
           className="w-full max-w-md"
         >
-          <div className="flex items-center gap-2 mb-8">
-            <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-              <div className="relative flex h-10 w-10 items-center justify-center">
-                <Hexagon className="absolute h-10 w-10 text-[#FFC400] fill-[#FFC400]/10" strokeWidth={1.5} />
-                <span className="relative z-10 text-lg font-bold text-[#FFC400]">C</span>
-              </div>
-              <span className="font-heading text-xl font-bold tracking-tight uppercase text-white">
-                Campus<span className="text-white/70">Hub</span>
-              </span>
-            </Link>
-          </div>
+          <Link href="/" className="flex items-center gap-2 mb-8 transition-opacity hover:opacity-80 cursor-pointer">
+            <div className="relative flex h-10 w-10 items-center justify-center">
+              <Hexagon className="absolute h-10 w-10 text-[#FFC400] fill-[#FFC400]/10" strokeWidth={1.5} />
+              <span className="relative z-10 text-lg font-bold text-[#FFC400]">C</span>
+            </div>
+            <span className="font-heading text-xl font-bold tracking-tight uppercase text-white">
+              Campus<span className="text-white/70">Hub</span>
+            </span>
+          </Link>
 
           {/* White Card with dark text */}
           <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
