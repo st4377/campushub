@@ -281,13 +281,13 @@ export default function ListCommunity() {
                 Are you sure you want to submit this community? Your request will be sent for approval.
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter className="flex gap-3 justify-center w-full mt-8">
+            <div className="flex gap-3 justify-center items-center mx-auto w-full mt-8">
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleCloseDialog}
                 disabled={isSubmitting}
-                className="border-black/30 text-black hover:bg-gray-100 font-bold uppercase tracking-wider px-8 rounded-2xl"
+                className="border-black/30 text-black hover:bg-gray-100 font-bold uppercase tracking-wider px-8 rounded-2xl h-12"
               >
                 No, Cancel
               </Button>
@@ -295,11 +295,11 @@ export default function ListCommunity() {
                 type="button"
                 onClick={handleConfirmSubmit}
                 disabled={isSubmitting}
-                className="bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider px-8 rounded-2xl"
+                className="bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider px-8 rounded-2xl h-12"
               >
                 {isSubmitting ? "Submitting..." : "Yes, Submit"}
               </Button>
-            </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
 
@@ -316,15 +316,15 @@ export default function ListCommunity() {
                 <p>Your community is now pending review and will be listed shortly.</p>
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter className="flex gap-3 justify-center w-full mt-8">
+            <div className="flex gap-3 justify-center items-center mx-auto w-full mt-8">
               <Button
                 type="button"
                 onClick={() => window.location.href = "/"}
-                className="bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider px-8 rounded-2xl"
+                className="bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider px-8 rounded-2xl h-12"
               >
                 Back to Home
               </Button>
-            </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
