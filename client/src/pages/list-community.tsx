@@ -71,27 +71,9 @@ export default function ListCommunity() {
     }
   }
 
-  if (submitted) {
-    return (
-      <Layout>
-        <div className="container px-4 md:px-6 py-16 max-w-3xl mx-auto">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 mb-8 bg-green-100 rounded-full">
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-            <h1 className="text-4xl font-black font-heading mb-4 uppercase tracking-tight text-black">Community Submitted!</h1>
-            <p className="text-lg text-black/70 mb-2">Your request has been submitted for approval.</p>
-            <p className="text-lg text-black/70 mb-8">Your community is now pending review and will be listed shortly.</p>
-            <Button 
-              onClick={() => window.location.href = "/"}
-              className="bg-black hover:bg-gray-800 text-white font-black px-8 h-12 uppercase tracking-wider rounded-2xl"
-            >
-              Back to Home
-            </Button>
-          </div>
-        </div>
-      </Layout>
-    );
+  function handleCloseSuccessDialog() {
+    setSubmitted(false);
+    form.reset();
   }
 
   return (
@@ -316,6 +298,31 @@ export default function ListCommunity() {
                 className="bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider px-8 rounded-2xl"
               >
                 {isSubmitting ? "Submitting..." : "Yes, Submit"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Success Dialog */}
+        <Dialog open={submitted} onOpenChange={handleCloseSuccessDialog}>
+          <DialogContent className="bg-white rounded-3xl max-w-md shadow-2xl border-0">
+            <DialogHeader className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 mx-auto bg-green-100 rounded-full">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <DialogTitle className="text-2xl font-black uppercase tracking-tight text-black">Community Submitted!</DialogTitle>
+              <DialogDescription className="text-black/70 mt-4">
+                <p className="mb-2">Your request has been submitted for approval.</p>
+                <p>Your community is now pending review and will be listed shortly.</p>
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex gap-3 justify-center mt-8">
+              <Button
+                type="button"
+                onClick={() => window.location.href = "/"}
+                className="bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider px-8 rounded-2xl"
+              >
+                Back to Home
               </Button>
             </DialogFooter>
           </DialogContent>
