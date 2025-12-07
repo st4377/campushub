@@ -155,15 +155,27 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.4), 0 0 50px rgba(0, 0, 0, 0.2);
 }
 
-/* Community cards grid - maintains 3-column layout even with 1 card */
+/* Community cards grid - responsive based on item count */
 .community-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+}
+
+.community-grid.grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.community-grid.grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 @media (max-width: 768px) {
   .community-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .community-grid.grid-cols-2,
+  .community-grid.grid-cols-3 {
     grid-template-columns: 1fr;
   }
 }

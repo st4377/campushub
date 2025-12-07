@@ -279,7 +279,10 @@ export default function Home() {
             </div>
             
             {filteredCommunities.length > 0 ? (
-              <div className="community-grid">
+              <div className={cn("community-grid", {
+                "grid-cols-2": filteredCommunities.length <= 2,
+                "grid-cols-3": filteredCommunities.length >= 3,
+              })}>
                 {filteredCommunities.map((community) => (
                   <CommunityCard 
                     key={community.id}
