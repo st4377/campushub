@@ -38,6 +38,7 @@ export const pendingCommunities = pgTable("pending_communities", {
   visibility: text("visibility").notNull().default("public"),
   submittedBy: text("submitted_by"),
   userId: varchar("user_id"),
+  imageUrl: text("image_url"),
   submittedAt: timestamp("submitted_at").notNull().defaultNow(),
 });
 
@@ -55,6 +56,7 @@ export const approvedCommunities = pgTable("approved_communities", {
   inviteLink: text("invite_link").notNull(),
   visibility: text("visibility").notNull().default("public"),
   userId: varchar("user_id"),
+  imageUrl: text("image_url"),
   approvedAt: timestamp("approved_at").notNull().defaultNow(),
 });
 
@@ -69,6 +71,7 @@ export const rejectedCommunities = pgTable("rejected_communities", {
   inviteLink: text("invite_link").notNull(),
   visibility: text("visibility").notNull().default("public"),
   userId: varchar("user_id"),
+  imageUrl: text("image_url"),
   rejectionReason: text("rejection_reason"),
   rejectedAt: timestamp("rejected_at").notNull().defaultNow(),
 });

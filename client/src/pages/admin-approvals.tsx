@@ -20,6 +20,7 @@ interface PendingCommunity {
   category: string;
   inviteLink: string;
   visibility: string;
+  imageUrl: string | null;
   submittedBy: string | null;
   submittedAt: string;
 }
@@ -289,20 +290,31 @@ export default function AdminApprovals() {
               <Card key={community.id} className="bg-white border-black/10 rounded-3xl overflow-hidden shadow-lg">
                 <CardHeader className="bg-gradient-to-r from-[#0A0A0A] to-[#1A1A1A] text-white p-6">
                   <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-2xl font-bold uppercase tracking-wide flex items-center gap-3">
-                        {community.name}
-                        {getPlatformBadge(community.platform)}
-                      </CardTitle>
-                      <CardDescription className="text-gray-400 mt-2">
-                        Submitted on {new Date(community.submittedAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </CardDescription>
+                    <div className="flex items-start gap-4">
+                      {community.imageUrl && (
+                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 border-[#333]">
+                          <img 
+                            src={community.imageUrl} 
+                            alt={community.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div>
+                        <CardTitle className="text-2xl font-bold uppercase tracking-wide flex items-center gap-3">
+                          {community.name}
+                          {getPlatformBadge(community.platform)}
+                        </CardTitle>
+                        <CardDescription className="text-gray-400 mt-2">
+                          Submitted on {new Date(community.submittedAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </CardDescription>
+                      </div>
                     </div>
                     {getVisibilityBadge(community.visibility)}
                   </div>

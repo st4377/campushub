@@ -1,9 +1,43 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
+import express from "express";
 import { storage } from "./storage";
 import { insertPendingCommunitySchema, signupSchema } from "@shared/schema";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+const uploadDir = path.join(process.cwd(), "uploads", "communities");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const communityImageStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const uploadCommunityImage = multer({
+  storage: communityImageStorage,
+  limits: {
+    fileSize: 2 * 1024 * 1024, // 2MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed."));
+    }
+  },
+});
 
 const adminAuth = (req: Request, res: Response, next: NextFunction) => {
   const adminPassword = process.env.ADMIN_PASSWORD;
@@ -27,6 +61,32 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
+  app.use("/uploads", (req, res, next) => {
+    res.setHeader("Cache-Control", "public, max-age=31536000");
+    next();
+  }, express.static(path.join(process.cwd(), "uploads")));
+
+  app.post("/api/upload/community-image", (req, res) => {
+    uploadCommunityImage.single("image")(req, res, (err) => {
+      if (err) {
+        if (err instanceof multer.MulterError) {
+          if (err.code === "LIMIT_FILE_SIZE") {
+            return res.status(400).json({ success: false, error: "File too large. Maximum size is 2MB." });
+          }
+          return res.status(400).json({ success: false, error: "File upload error." });
+        }
+        return res.status(400).json({ success: false, error: err.message || "Invalid file type." });
+      }
+      
+      if (!req.file) {
+        return res.status(400).json({ success: false, error: "No image file provided" });
+      }
+      
+      const imageUrl = `/uploads/communities/${req.file.filename}`;
+      res.json({ success: true, imageUrl });
+    });
+  });
+
   app.post("/api/communities/submit", async (req, res) => {
     try {
       const validatedData = insertPendingCommunitySchema.parse(req.body);
@@ -81,6 +141,7 @@ export async function registerRoutes(
         inviteLink: pendingCommunity.inviteLink,
         visibility: pendingCommunity.visibility,
         userId: pendingCommunity.userId,
+        imageUrl: pendingCommunity.imageUrl,
         rating: 0,
         reviewCount: 0,
         isActive: true,
@@ -115,6 +176,7 @@ export async function registerRoutes(
         inviteLink: pendingCommunity.inviteLink,
         visibility: pendingCommunity.visibility,
         userId: pendingCommunity.userId,
+        imageUrl: pendingCommunity.imageUrl,
         rejectionReason: reason || "No reason provided",
       });
 

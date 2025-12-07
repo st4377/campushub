@@ -20,6 +20,7 @@ interface Submission {
   tags: string[];
   visibility: string;
   memberCount: number;
+  imageUrl?: string | null;
   status: "pending" | "approved" | "rejected";
   rejectionReason?: string;
   submittedAt?: string;
@@ -342,13 +343,21 @@ export default function Dashboard() {
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
-                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden ${
                               submission.platform === "WhatsApp" ? "bg-green-500/20" :
                               submission.platform === "Telegram" ? "bg-blue-500/20" :
                               submission.platform === "Discord" ? "bg-indigo-500/20" :
                               "bg-pink-500/20"
                             }`}>
-                              <MessageSquare className={`w-5 h-5 ${getPlatformColor(submission.platform)}`} />
+                              {submission.imageUrl ? (
+                                <img 
+                                  src={submission.imageUrl} 
+                                  alt={submission.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <MessageSquare className={`w-5 h-5 ${getPlatformColor(submission.platform)}`} />
+                              )}
                             </div>
                             <div className="flex-1 min-w-0">
                               <h3 className="font-bold text-white truncate">{submission.name}</h3>
@@ -392,13 +401,21 @@ export default function Dashboard() {
                         : "bg-gradient-to-r from-yellow-500/20 to-yellow-900/10"
                     }`}>
                       <div className="flex items-start gap-4">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden ${
                           selectedSubmission.platform === "WhatsApp" ? "bg-green-500/30" :
                           selectedSubmission.platform === "Telegram" ? "bg-blue-500/30" :
                           selectedSubmission.platform === "Discord" ? "bg-indigo-500/30" :
                           "bg-pink-500/30"
                         }`}>
-                          <MessageSquare className={`w-7 h-7 ${getPlatformColor(selectedSubmission.platform)}`} />
+                          {selectedSubmission.imageUrl ? (
+                            <img 
+                              src={selectedSubmission.imageUrl} 
+                              alt={selectedSubmission.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <MessageSquare className={`w-7 h-7 ${getPlatformColor(selectedSubmission.platform)}`} />
+                          )}
                         </div>
                         <div className="flex-1">
                           <DialogHeader>

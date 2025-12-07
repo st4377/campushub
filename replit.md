@@ -13,7 +13,16 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes (Latest Session)
 
 ### Completed Features
-1. **Login/Signup Flip Card Animation**
+
+1. **Community Photo Upload Feature**
+   - Users can upload photos when listing their community
+   - Drag-and-drop or click-to-upload interface with image preview
+   - File validation: JPEG, PNG, WebP, GIF formats, max 2MB size
+   - Photos stored in /uploads/communities/ directory
+   - Images displayed across all views: home page cards, dashboard, admin panel
+   - Fallback to platform icon/initials when no image uploaded
+
+2. **Login/Signup Flip Card Animation**
    - Implemented 3D flip card animation using CSS transforms and Framer Motion
    - Login form on front face, signup form on back face
    - Clicking "Sign up" flips the card to show registration form

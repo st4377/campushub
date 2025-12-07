@@ -53,10 +53,18 @@ export function CommunityCard({ community, onClick }: CommunityCardProps) {
       <CardHeader className="pb-3 pt-10 px-6 flex flex-row items-start justify-between gap-4 relative z-10">
         <div className="flex items-center gap-4">
           <div className="relative">
-            <div className="h-14 w-14 rounded-2xl bg-[#151515] border border-[#333] flex items-center justify-center shadow-lg group-hover:border-[#FFC400] group-hover:shadow-[0_0_15px_rgba(255,196,0,0.3)] transition-all">
-              <span className="text-xl font-bold text-white font-heading">{community.name.substring(0, 2).toUpperCase()}</span>
+            <div className="h-14 w-14 rounded-2xl bg-[#151515] border border-[#333] flex items-center justify-center shadow-lg group-hover:border-[#FFC400] group-hover:shadow-[0_0_15px_rgba(255,196,0,0.3)] transition-all overflow-hidden">
+              {community.imageUrl ? (
+                <img 
+                  src={community.imageUrl} 
+                  alt={community.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-xl font-bold text-white font-heading">{community.name.substring(0, 2).toUpperCase()}</span>
+              )}
             </div>
-            <div className={cn("absolute -bottom-2 -right-2 h-6 w-6 bg-[#0A0A0A] border border-[#333] flex items-center justify-center text-[10px]", 
+            <div className={cn("absolute -bottom-2 -right-2 h-6 w-6 rounded-full bg-[#0A0A0A] border border-[#333] flex items-center justify-center text-[10px]", 
               community.platform === 'WhatsApp' ? 'text-green-500' : 
               community.platform === 'Discord' ? 'text-indigo-400' : 
               community.platform === 'Telegram' ? 'text-blue-400' : 

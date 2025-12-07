@@ -13,9 +13,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Hexagon, Globe, User, CheckCircle, LogIn, Lock } from "lucide-react";
+import { Hexagon, Globe, User, CheckCircle, LogIn, Lock, Upload, X, ImageIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/auth";
 import { useLocation } from "wouter";
 
@@ -39,6 +39,80 @@ export default function ListCommunity() {
   const [submitted, setSubmitted] = useState(false);
   const [pendingValues, setPendingValues] = useState<z.infer<typeof formSchema> | null>(null);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Image must be less than 2MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) {
+        toast({
+          title: "Invalid file type",
+          description: "Only JPEG, PNG, WebP, and GIF are allowed",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const uploadImage = async (): Promise<string | null> => {
+    if (!imageFile) return null;
+    
+    setIsUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", imageFile);
+      
+      const response = await fetch("/api/upload/community-image", {
+        method: "POST",
+        body: formData,
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        return data.imageUrl;
+      } else {
+        throw new Error(data.error || "Upload failed");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
+      return null;
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -77,6 +151,11 @@ export default function ListCommunity() {
     
     setIsSubmitting(true);
     try {
+      let imageUrl = null;
+      if (imageFile) {
+        imageUrl = await uploadImage();
+      }
+
       const tagsArray = pendingValues.tags
         .split(",")
         .map(tag => tag.trim().toLowerCase())
@@ -97,6 +176,7 @@ export default function ListCommunity() {
           tags: tagsArray,
           memberCount: 0,
           userId: user?.id || null,
+          imageUrl: imageUrl,
         }),
       });
 
@@ -105,6 +185,8 @@ export default function ListCommunity() {
       if (data.success) {
         setSubmitted(true);
         setConfirmOpen(false);
+        removeImage();
+        form.reset();
       } else {
         toast({
           title: "Error",
@@ -300,6 +382,52 @@ export default function ListCommunity() {
                     </FormItem>
                   )}
                 />
+
+                <div className="space-y-3">
+                  <Label className="uppercase font-bold text-xs tracking-widest text-black/70">Community Photo (Optional)</Label>
+                  <div className="relative">
+                    {imagePreview ? (
+                      <div className="relative w-full h-48 rounded-2xl overflow-hidden border-2 border-[#FFC400]/30 bg-gray-50">
+                        <img 
+                          src={imagePreview} 
+                          alt="Preview" 
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-3 right-3 p-2 bg-black/70 hover:bg-black rounded-full transition-colors"
+                        >
+                          <X className="w-4 h-4 text-white" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label 
+                        htmlFor="community-image" 
+                        className="flex flex-col items-center justify-center w-full h-48 rounded-2xl border-2 border-dashed border-black/20 bg-gray-50 cursor-pointer hover:border-[#FFC400] hover:bg-[#FFC400]/5 transition-all"
+                      >
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <div className="w-14 h-14 mb-4 bg-[#FFC400]/10 rounded-full flex items-center justify-center">
+                            <ImageIcon className="w-7 h-7 text-[#FFC400]" />
+                          </div>
+                          <p className="mb-2 text-sm text-black/70">
+                            <span className="font-bold">Click to upload</span> or drag and drop
+                          </p>
+                          <p className="text-xs text-black/50">PNG, JPG, WebP or GIF (MAX. 2MB)</p>
+                        </div>
+                        <input 
+                          id="community-image" 
+                          type="file" 
+                          className="hidden" 
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          onChange={handleImageChange}
+                          ref={fileInputRef}
+                        />
+                      </label>
+                    )}
+                  </div>
+                  <p className="text-xs text-black/50">Add a photo to make your community stand out. This will be displayed on the community card.</p>
+                </div>
 
                 <FormField
                   control={form.control}

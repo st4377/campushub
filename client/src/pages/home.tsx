@@ -26,6 +26,7 @@ interface ApprovedCommunity {
   category: string;
   inviteLink: string;
   visibility: string;
+  imageUrl: string | null;
   approvedAt: string;
 }
 
@@ -69,6 +70,7 @@ export default function Home() {
         category: c.category,
         inviteLink: c.inviteLink,
         visibility: c.visibility as Community["visibility"],
+        imageUrl: c.imageUrl || undefined,
       }));
     }
     return MOCK_COMMUNITIES;
@@ -388,8 +390,16 @@ export default function Home() {
                   </Button>
                 </div>
                 <div className="absolute -bottom-10 left-6 flex items-end gap-4">
-                  <div className="h-24 w-24 rounded-2xl bg-[#151515] border-4 border-[#0A0A0A] flex items-center justify-center shadow-xl">
-                    <span className="text-3xl font-bold text-white font-heading">{selectedCommunity.name.substring(0, 2).toUpperCase()}</span>
+                  <div className="h-24 w-24 rounded-2xl bg-[#151515] border-4 border-[#0A0A0A] flex items-center justify-center shadow-xl overflow-hidden">
+                    {selectedCommunity.imageUrl ? (
+                      <img 
+                        src={selectedCommunity.imageUrl} 
+                        alt={selectedCommunity.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-3xl font-bold text-white font-heading">{selectedCommunity.name.substring(0, 2).toUpperCase()}</span>
+                    )}
                   </div>
                 </div>
               </div>
