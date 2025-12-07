@@ -17,17 +17,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {/* Desktop Layout: 3-column grid - only on large screens */}
         <div className="container hidden lg:grid lg:grid-cols-[1fr_auto_1fr] h-16 items-center px-4 lg:px-6">
           {/* Left: Logo */}
-          <div className="flex items-center gap-2 justify-self-start">
-            <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-90 group">
-              <div className="relative flex h-9 w-9 items-center justify-center">
-                <Hexagon className="absolute h-9 w-9 text-black fill-black/10 group-hover:fill-black/20 transition-colors" strokeWidth={1.5} />
-                <span className="relative z-10 text-lg font-bold text-black group-hover:text-gray-700 transition-colors">C</span>
-              </div>
-              <span className="font-heading text-xl font-bold tracking-tight uppercase text-black">
-                Campus<span className="text-black font-bold">Hub</span>
-              </span>
-            </Link>
-          </div>
+          <Link href="/" className="flex items-center gap-2 justify-self-start transition-opacity hover:opacity-90 group cursor-pointer">
+            <div className="relative flex h-9 w-9 items-center justify-center pointer-events-none">
+              <Hexagon className="absolute h-9 w-9 text-black fill-black/10 group-hover:fill-black/20 transition-colors" strokeWidth={1.5} />
+              <span className="relative z-10 text-lg font-bold text-black group-hover:text-gray-700 transition-colors">C</span>
+            </div>
+            <span className="font-heading text-xl font-bold tracking-tight uppercase text-black pointer-events-none">
+              CampusHub
+            </span>
+          </Link>
 
           {/* Center: Nav Links */}
           <nav className="flex items-center justify-center gap-6">
@@ -56,17 +54,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {/* Mobile/Tablet Layout - shows on small and medium screens */}
         <div className="container flex lg:hidden h-16 items-center justify-between px-4">
           {/* Mobile Logo */}
-          <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-90 group">
-              <div className="relative flex h-9 w-9 items-center justify-center">
-                <Hexagon className="absolute h-9 w-9 text-black fill-black/10 group-hover:fill-black/20 transition-colors" strokeWidth={1.5} />
-                <span className="relative z-10 text-lg font-bold text-black group-hover:text-gray-700 transition-colors">C</span>
-              </div>
-              <span className="font-heading text-xl font-bold tracking-tight uppercase text-black">
-                Campus<span className="text-black font-bold">Hub</span>
-              </span>
-            </Link>
-          </div>
+          <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-90 group cursor-pointer">
+            <div className="relative flex h-9 w-9 items-center justify-center pointer-events-none">
+              <Hexagon className="absolute h-9 w-9 text-black fill-black/10 group-hover:fill-black/20 transition-colors" strokeWidth={1.5} />
+              <span className="relative z-10 text-lg font-bold text-black group-hover:text-gray-700 transition-colors">C</span>
+            </div>
+            <span className="font-heading text-xl font-bold tracking-tight uppercase text-black pointer-events-none">
+              CampusHub
+            </span>
+          </Link>
 
           {/* Mobile Menu Toggle */}
           <Sheet>
