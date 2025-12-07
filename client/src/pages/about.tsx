@@ -2,6 +2,7 @@ import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, ShieldCheck, Users2, Zap, Hexagon } from "lucide-react";
+import { Link } from "wouter";
 import generatedHero from "@assets/generated_images/abstract_dark_neon_network_background.png";
 
 export default function About() {
@@ -99,9 +100,11 @@ export default function About() {
              <p className="text-black/60 mb-10 text-xl max-w-3xl mx-auto">
                List your WhatsApp group, Discord server, or Telegram channel today and reach thousands of students.
              </p>
-             <Button size="lg" className="bg-black hover:bg-gray-800 text-[#FFC400] font-black text-lg px-10 py-8 uppercase tracking-wider rounded-full shadow-[0_0_30px_rgba(0,0,0,0.3)] hover:shadow-[0_0_40px_rgba(0,0,0,0.5)] transition-all">
-               List Your Community
-             </Button>
+             <Link href="/list-community">
+               <Button size="lg" className="bg-black hover:bg-gray-800 text-[#FFC400] font-black text-lg px-10 py-8 uppercase tracking-wider rounded-full shadow-[0_0_30px_rgba(0,0,0,0.3)] hover:shadow-[0_0_40px_rgba(0,0,0,0.5)] transition-all cursor-pointer">
+                 List Your Community
+               </Button>
+             </Link>
            </div>
         </div>
       </div>
