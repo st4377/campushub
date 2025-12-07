@@ -112,7 +112,7 @@ export default function Dashboard() {
 
   return (
     <Layout hideFooter>
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-gradient-to-b from-[#FFB700] to-[#FF8C00]">
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
