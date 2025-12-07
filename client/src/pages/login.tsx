@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { Link } from "wouter";
+import { useState, useRef, useEffect } from "react";
+import { Link, useLocation } from "wouter";
 import { Eye, EyeOff, Mail, Lock, Hexagon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion, useSpring } from "framer-motion";
+import { toast } from "sonner";
 
 interface BlobCharacterProps {
   mousePosition: { x: number; y: number };
@@ -116,7 +117,48 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 200, y: 300 });
   const [containerSize, setContainerSize] = useState({ width: 400, height: 600 });
+  const [isLoading, setIsLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [, setLocation] = useLocation();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      toast.error("Please enter both email and password");
+      return;
+    }
+
+    setIsLoading(true);
+    
+    setTimeout(() => {
+      setIsLoading(false);
+      toast.success("Login feature coming soon!", {
+        description: "User authentication will be available shortly."
+      });
+    }, 1000);
+  };
+
+  const handleGoogleLogin = () => {
+    toast.info("Google Sign-in coming soon!", {
+      description: "We're working on adding Google authentication."
+    });
+  };
+
+  const handleForgotPassword = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toast.info("Password reset coming soon!", {
+      description: "This feature will be available shortly."
+    });
+  };
+
+  const handleSignUp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setLocation("/list-community");
+    toast.info("Create an account by listing your community!", {
+      description: "Sign up is part of the community listing process."
+    });
+  };
 
   // Global mouse move listener for entire page
   useEffect(() => {
@@ -296,7 +338,7 @@ export default function Login() {
               Please enter your details
             </p>
 
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={handleLogin}>
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-bold text-gray-700 uppercase tracking-wider">
                   Email
@@ -350,16 +392,17 @@ export default function Login() {
                     Remember me for 30 days
                   </label>
                 </div>
-                <a href="#" className="text-sm text-[#E6A800] hover:text-[#CC9600] transition-colors font-medium">
+                <a href="#" onClick={handleForgotPassword} className="text-sm text-[#E6A800] hover:text-[#CC9600] transition-colors font-medium">
                   Forgot password?
                 </a>
               </div>
 
               <Button 
                 type="submit"
-                className="w-full h-12 bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                disabled={isLoading}
+                className="w-full h-12 bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
               >
-                Log in
+                {isLoading ? "Logging in..." : "Log in"}
               </Button>
 
               <div className="relative">
@@ -374,6 +417,7 @@ export default function Login() {
               <Button 
                 type="button"
                 variant="outline"
+                onClick={handleGoogleLogin}
                 className="w-full h-12 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 rounded-xl font-medium transition-all"
               >
                 <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -388,7 +432,7 @@ export default function Login() {
 
             <p className="mt-8 text-center text-gray-500 text-sm">
               Don't have an account?{" "}
-              <a href="#" className="text-black hover:text-gray-700 font-bold transition-colors">
+              <a href="#" onClick={handleSignUp} className="text-black hover:text-gray-700 font-bold transition-colors cursor-pointer">
                 Sign up
               </a>
             </p>
