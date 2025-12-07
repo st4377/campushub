@@ -118,11 +118,35 @@ export function CommunityCard({ community, onClick }: CommunityCardProps) {
       </CardContent>
 
       <CardFooter className="px-6 py-5 bg-[#050505] border-t border-[#222] flex gap-3 relative z-10">
-        <Button className="flex-1 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl shadow-[0_0_20px_rgba(255,196,0,0.2)] hover:shadow-[0_0_30px_rgba(255,196,0,0.4)] transition-all duration-300 group/btn">
+        <Button 
+          className="flex-1 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl shadow-[0_0_20px_rgba(255,196,0,0.2)] hover:shadow-[0_0_30px_rgba(255,196,0,0.4)] transition-all duration-300 group/btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (community.inviteLink) {
+              window.open(community.inviteLink, '_blank', 'noopener,noreferrer');
+            }
+          }}
+        >
           Join Group
           <ExternalLink className="ml-2 h-3.5 w-3.5 opacity-70 group-hover/btn:opacity-100" />
         </Button>
-        <Button variant="ghost" size="icon" className="text-gray-500 hover:text-[#FFC400] hover:bg-[#1A1A1A] rounded-xl border border-transparent hover:border-[#FFC400]/20">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="text-gray-500 hover:text-[#FFC400] hover:bg-[#1A1A1A] rounded-xl border border-transparent hover:border-[#FFC400]/20"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (navigator.share) {
+              navigator.share({
+                title: community.name,
+                text: `Check out ${community.name} on Campus Communities Hub!`,
+                url: community.inviteLink || window.location.href,
+              });
+            } else {
+              navigator.clipboard.writeText(community.inviteLink || window.location.href);
+            }
+          }}
+        >
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </CardFooter>

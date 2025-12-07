@@ -438,11 +438,35 @@ export default function Home() {
                 </div>
 
                 <div className="flex gap-4">
-                  <Button className="flex-1 h-12 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl text-base shadow-lg hover:shadow-[#FFC400]/20 transition-all">
+                  <Button 
+                    className="flex-1 h-12 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl text-base shadow-lg hover:shadow-[#FFC400]/20 transition-all"
+                    onClick={() => {
+                      if (selectedCommunity?.inviteLink) {
+                        window.open(selectedCommunity.inviteLink, '_blank', 'noopener,noreferrer');
+                      }
+                    }}
+                  >
                     Join Group Now
                     <ExternalLink className="ml-2 h-4 w-4" />
                   </Button>
-                  <Button variant="outline" className="h-12 px-6 border-[#333] hover:bg-[#1A1A1A] hover:text-white hover:border-[#FFC400] rounded-xl">
+                  <Button 
+                    variant="outline" 
+                    className="h-12 px-6 border-[#333] hover:bg-[#1A1A1A] hover:text-white hover:border-[#FFC400] rounded-xl"
+                    onClick={() => {
+                      if (selectedCommunity) {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: selectedCommunity.name,
+                            text: `Check out ${selectedCommunity.name} on Campus Communities Hub!`,
+                            url: selectedCommunity.inviteLink || window.location.href,
+                          });
+                        } else {
+                          navigator.clipboard.writeText(selectedCommunity.inviteLink || window.location.href);
+                          alert('Link copied to clipboard!');
+                        }
+                      }
+                    }}
+                  >
                     Share
                   </Button>
                 </div>
