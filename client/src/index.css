@@ -248,3 +248,13 @@ h1, h2, h3, h4, h5, h6 {
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background-color: #FFC400;
 }
+
+.scrollbar-thin::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}
+
+.scrollbar-thin::-webkit-scrollbar-corner {
+  display: none;
+}
