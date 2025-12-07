@@ -118,14 +118,20 @@ export default function Login() {
   const [containerSize, setContainerSize] = useState({ width: 400, height: 600 });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      setMousePosition({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      });
-    }
+  // Global mouse move listener for entire page
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setMousePosition({
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        });
+      }
+    };
+
+    document.addEventListener('mousemove', handleGlobalMouseMove);
+    return () => document.removeEventListener('mousemove', handleGlobalMouseMove);
   }, []);
 
   useEffect(() => {
@@ -147,7 +153,6 @@ export default function Login() {
       {/* Left Panel - Yellow textured background with 2 characters */}
       <div 
         ref={containerRef}
-        onMouseMove={handleMouseMove}
         className="hidden lg:flex lg:w-1/2 relative items-center justify-center overflow-hidden"
         style={{
           background: `
