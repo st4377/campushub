@@ -10,6 +10,35 @@ The application features a modern, dark-themed interface with yellow/orange acce
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (Latest Session)
+
+### Completed Features
+1. **Login Page Updates**
+   - Removed "Join thousands of students..." text from left panel
+   - Repositioned purple rectangle character closer to orange blob for better overlap
+   - Added decorative grid lines and dots to right side (black background)
+   - Updated logo colors to yellow/gold and white for visibility on black background
+
+2. **Home Page - Filter Functionality**
+   - Implemented fully functional filter system with state management
+   - Filters for: Visibility (Public/Boys Only/Girls Only), Platform (WhatsApp/Telegram/Discord/Instagram), Categories
+   - Removed Campus section filters (SRM KTR, SRM RMP, SRM VDP)
+   - Reset Filters button appears when any filter is active
+   - Community grid updates instantly when filters are applied
+   - Multiple filters can be combined for refined results
+
+3. **List Community Page - Submission Flow**
+   - Added centered confirmation dialog before submission
+   - Dialog asks for yes/no confirmation
+   - After confirmation, shows success page with "Community Submitted!" message
+   - Success page displays "Your request has been submitted for approval" with "pending review" status
+   - Button to return to home after successful submission
+
+4. **Dialog/Modal Animations**
+   - Community detail cards pop from center (scale-based animation)
+   - No slide animations - pure center pop-in/pop-out effect
+   - Used for all modals and popups
+
 ## System Architecture
 
 ### Frontend Architecture

@@ -6,14 +6,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { CATEGORIES, PLATFORMS } from "@/lib/mock-data";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Hexagon, Globe, User } from "lucide-react";
+import { Hexagon, Globe, User, CheckCircle } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -28,6 +30,11 @@ const formSchema = z.object({
 
 export default function ListCommunity() {
   const { toast } = useToast();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [pendingValues, setPendingValues] = useState<z.infer<typeof formSchema> | null>(null);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,13 +47,51 @@ export default function ListCommunity() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    toast({
-      title: "Community Submitted!",
-      description: "Your community is now pending review and will be listed shortly.",
-      className: "bg-[#1A1A1A] border-[#FFC400] text-white",
-    });
-    console.log(values);
+  function handleSubmitClick(values: z.infer<typeof formSchema>) {
+    setPendingValues(values);
+    setConfirmOpen(true);
+  }
+
+  function handleConfirmSubmit() {
+    if (!pendingValues) return;
+    
+    setIsSubmitting(true);
+    setTimeout(() => {
+      console.log(pendingValues);
+      setIsSubmitting(false);
+      setSubmitted(true);
+      setConfirmOpen(false);
+    }, 500);
+  }
+
+  function handleCloseDialog() {
+    if (!isSubmitting) {
+      setConfirmOpen(false);
+      setPendingValues(null);
+    }
+  }
+
+  if (submitted) {
+    return (
+      <Layout>
+        <div className="container px-4 md:px-6 py-16 max-w-3xl mx-auto">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 mb-8 bg-green-100 rounded-full">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <h1 className="text-4xl font-black font-heading mb-4 uppercase tracking-tight text-black">Community Submitted!</h1>
+            <p className="text-lg text-black/70 mb-2">Your request has been submitted for approval.</p>
+            <p className="text-lg text-black/70 mb-8">Your community is now pending review and will be listed shortly.</p>
+            <Button 
+              onClick={() => window.location.href = "/"}
+              className="bg-black hover:bg-gray-800 text-white font-black px-8 h-12 uppercase tracking-wider rounded-2xl"
+            >
+              Back to Home
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
   }
 
   return (
@@ -68,7 +113,7 @@ export default function ListCommunity() {
           </CardHeader>
           <CardContent className="p-8">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <form onSubmit={form.handleSubmit(handleSubmitClick)} className="space-y-8">
                 <FormField
                   control={form.control}
                   name="visibility"
@@ -244,6 +289,37 @@ export default function ListCommunity() {
             </Form>
           </CardContent>
         </Card>
+
+        {/* Confirmation Dialog */}
+        <Dialog open={confirmOpen} onOpenChange={handleCloseDialog}>
+          <DialogContent className="bg-white rounded-3xl max-w-md shadow-2xl border-0">
+            <DialogHeader className="text-center">
+              <DialogTitle className="text-2xl font-black uppercase tracking-tight text-black">Confirm Submission</DialogTitle>
+              <DialogDescription className="text-black/70 mt-3">
+                Are you sure you want to submit this community? Your request will be sent for approval.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex gap-3 justify-center mt-8">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseDialog}
+                disabled={isSubmitting}
+                className="border-black/30 text-black hover:bg-gray-100 font-bold uppercase tracking-wider px-8 rounded-2xl"
+              >
+                No, Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleConfirmSubmit}
+                disabled={isSubmitting}
+                className="bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider px-8 rounded-2xl"
+              >
+                {isSubmitting ? "Submitting..." : "Yes, Submit"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
