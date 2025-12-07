@@ -274,14 +274,14 @@ export default function ListCommunity() {
 
         {/* Confirmation Dialog */}
         <Dialog open={confirmOpen} onOpenChange={handleCloseDialog}>
-          <DialogContent className="bg-white rounded-3xl max-w-md shadow-2xl border-0">
-            <DialogHeader className="text-center">
-              <DialogTitle className="text-2xl font-black uppercase tracking-tight text-black">Confirm Submission</DialogTitle>
-              <DialogDescription className="text-black/70 mt-3">
+          <DialogContent className="bg-white rounded-3xl max-w-md shadow-2xl border-0 flex flex-col items-center text-center p-8">
+            <DialogHeader className="w-full">
+              <DialogTitle className="text-2xl font-black uppercase tracking-tight text-black text-center">Confirm Submission</DialogTitle>
+              <DialogDescription className="text-black/70 mt-3 text-center">
                 Are you sure you want to submit this community? Your request will be sent for approval.
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter className="flex gap-3 justify-center mt-8">
+            <DialogFooter className="flex gap-3 justify-center w-full mt-8">
               <Button
                 type="button"
                 variant="outline"
@@ -305,18 +305,18 @@ export default function ListCommunity() {
 
         {/* Success Dialog */}
         <Dialog open={submitted} onOpenChange={handleCloseSuccessDialog}>
-          <DialogContent className="bg-white rounded-3xl max-w-md shadow-2xl border-0">
-            <DialogHeader className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 mx-auto bg-green-100 rounded-full">
-                <CheckCircle className="w-8 h-8 text-green-600" />
-              </div>
-              <DialogTitle className="text-2xl font-black uppercase tracking-tight text-black">Community Submitted!</DialogTitle>
-              <DialogDescription className="text-black/70 mt-4">
+          <DialogContent className="bg-white rounded-3xl max-w-md shadow-2xl border-0 flex flex-col items-center text-center p-8">
+            <div className="w-16 h-16 mb-6 bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <DialogHeader className="w-full">
+              <DialogTitle className="text-2xl font-black uppercase tracking-tight text-black text-center">Community Submitted!</DialogTitle>
+              <DialogDescription className="text-black/70 mt-4 text-center">
                 <p className="mb-2">Your request has been submitted for approval.</p>
                 <p>Your community is now pending review and will be listed shortly.</p>
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter className="flex gap-3 justify-center mt-8">
+            <DialogFooter className="flex gap-3 justify-center w-full mt-8">
               <Button
                 type="button"
                 onClick={() => window.location.href = "/"}
