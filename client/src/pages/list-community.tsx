@@ -52,16 +52,57 @@ export default function ListCommunity() {
     setConfirmOpen(true);
   }
 
-  function handleConfirmSubmit() {
+  async function handleConfirmSubmit() {
     if (!pendingValues) return;
     
     setIsSubmitting(true);
-    setTimeout(() => {
-      console.log(pendingValues);
-      setIsSubmitting(false);
-      setSubmitted(true);
+    try {
+      const tagsArray = pendingValues.tags
+        .split(",")
+        .map(tag => tag.trim().toLowerCase())
+        .filter(tag => tag.length > 0);
+
+      const response = await fetch("/api/communities/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: pendingValues.name,
+          platform: pendingValues.platform,
+          description: pendingValues.description,
+          category: pendingValues.category,
+          inviteLink: pendingValues.inviteLink,
+          visibility: pendingValues.visibility,
+          tags: tagsArray,
+          memberCount: 0,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSubmitted(true);
+        setConfirmOpen(false);
+      } else {
+        toast({
+          title: "Error",
+          description: data.error || "Failed to submit community",
+          variant: "destructive",
+        });
+        setConfirmOpen(false);
+      }
+    } catch (error) {
+      console.error("Error submitting community:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit community. Please try again.",
+        variant: "destructive",
+      });
       setConfirmOpen(false);
-    }, 500);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleCloseDialog() {

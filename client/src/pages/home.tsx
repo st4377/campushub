@@ -11,6 +11,23 @@ import { useState, useRef, useMemo, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+
+interface ApprovedCommunity {
+  id: string;
+  name: string;
+  platform: string;
+  memberCount: number;
+  description: string;
+  tags: string[];
+  rating: number;
+  reviewCount: number;
+  isActive: boolean;
+  category: string;
+  inviteLink: string;
+  visibility: string;
+  approvedAt: string;
+}
 
 const initialFilters: FilterState = {
   visibility: [],
@@ -26,6 +43,36 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const communityGridRef = useRef<HTMLDivElement>(null);
+
+  const { data: approvedCommunities, isLoading } = useQuery({
+    queryKey: ["approved-communities"],
+    queryFn: async () => {
+      const response = await fetch("/api/communities/approved");
+      if (!response.ok) throw new Error("Failed to fetch communities");
+      const data = await response.json();
+      return data.communities as ApprovedCommunity[];
+    },
+  });
+
+  const allCommunities: Community[] = useMemo(() => {
+    if (approvedCommunities && approvedCommunities.length > 0) {
+      return approvedCommunities.map((c) => ({
+        id: c.id,
+        name: c.name,
+        platform: c.platform as Community["platform"],
+        memberCount: c.memberCount,
+        description: c.description,
+        tags: c.tags,
+        rating: c.rating,
+        reviewCount: c.reviewCount,
+        isActive: c.isActive,
+        category: c.category,
+        inviteLink: c.inviteLink,
+        visibility: c.visibility as Community["visibility"],
+      }));
+    }
+    return MOCK_COMMUNITIES;
+  }, [approvedCommunities]);
 
   const handleTagClick = (tag: string) => {
     const tagWithoutHash = tag.replace("#", "");
@@ -65,7 +112,7 @@ export default function Home() {
   }, []);
 
   const filteredCommunities = useMemo(() => {
-    let result = MOCK_COMMUNITIES;
+    let result = allCommunities;
 
     // Apply search filter
     if (activeSearch.trim()) {
@@ -105,7 +152,7 @@ export default function Home() {
     }
 
     return result;
-  }, [activeSearch, filters]);
+  }, [activeSearch, filters, allCommunities]);
 
   const handleOpenModal = useCallback((community: Community) => {
     setSelectedCommunity(community);
