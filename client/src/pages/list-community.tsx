@@ -13,10 +13,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Hexagon, Globe, User, CheckCircle } from "lucide-react";
+import { Hexagon, Globe, User, CheckCircle, LogIn, Lock } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
+import { useLocation } from "wouter";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -31,11 +32,25 @@ const formSchema = z.object({
 
 export default function ListCommunity() {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+  const [, setLocation] = useLocation();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [pendingValues, setPendingValues] = useState<z.infer<typeof formSchema> | null>(null);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      setLoginModalOpen(true);
+    } else if (user) {
+      setLoginModalOpen(false);
+    }
+  }, [user, isLoading]);
+
+  const handleLoginRedirect = () => {
+    setLocation("/login");
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -365,6 +380,40 @@ export default function ListCommunity() {
                 type="button"
                 onClick={() => window.location.href = "/"}
                 className="bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider px-8 rounded-2xl h-12"
+              >
+                Back to Home
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Login Required Dialog */}
+        <Dialog open={loginModalOpen} onOpenChange={() => {}}>
+          <DialogContent className="bg-white rounded-3xl max-w-md shadow-2xl border-0 flex flex-col items-center text-center p-8 [&>button]:hidden">
+            <div className="w-20 h-20 mb-6 bg-gradient-to-br from-[#FFC400]/20 to-[#FF8C00]/20 rounded-full flex items-center justify-center">
+              <Lock className="w-10 h-10 text-[#FFC400]" />
+            </div>
+            <DialogHeader className="w-full">
+              <DialogTitle className="text-2xl font-black uppercase tracking-tight text-black text-center">Login Required</DialogTitle>
+              <DialogDescription className="text-black/70 mt-4 text-center text-base">
+                <span className="block">You need to be logged in to list your community.</span>
+                <span className="block mt-2 text-sm">This helps us track your submissions and keep you updated on their approval status.</span>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-3 w-full mt-8">
+              <Button
+                type="button"
+                onClick={handleLoginRedirect}
+                className="w-full bg-[#FFC400] hover:bg-[#FFB700] text-black font-bold uppercase tracking-wider px-8 rounded-2xl h-14 flex items-center justify-center gap-2 shadow-lg"
+              >
+                <LogIn className="w-5 h-5" />
+                Log In to Continue
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => window.location.href = "/"}
+                className="w-full border-black/20 text-black/70 hover:bg-gray-100 font-medium px-8 rounded-2xl h-12"
               >
                 Back to Home
               </Button>
