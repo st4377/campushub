@@ -283,6 +283,53 @@ export default function ListCommunity() {
                   )}
                 />
 
+                <div className="space-y-3">
+                  <Label className="uppercase font-bold text-xs tracking-widest text-black/70">Community Photo (Optional)</Label>
+                  <div className="flex justify-center">
+                    {imagePreview ? (
+                      <div className="relative w-48 h-48 rounded-2xl overflow-hidden border-2 border-[#FFC400]/30 bg-gray-50">
+                        <img 
+                          src={imagePreview} 
+                          alt="Preview" 
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-2 right-2 p-1.5 bg-black/70 hover:bg-black rounded-full transition-colors"
+                        >
+                          <X className="w-4 h-4 text-white" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label 
+                        htmlFor="community-image" 
+                        className="flex flex-col items-center justify-center w-48 h-48 rounded-2xl border-2 border-dashed border-black/20 bg-gray-50 cursor-pointer hover:border-[#FFC400] hover:bg-[#FFC400]/5 transition-all"
+                      >
+                        <div className="flex flex-col items-center justify-center p-4">
+                          <div className="w-12 h-12 mb-3 bg-[#FFC400]/10 rounded-full flex items-center justify-center">
+                            <ImageIcon className="w-6 h-6 text-[#FFC400]" />
+                          </div>
+                          <p className="mb-1 text-sm text-black/70 text-center">
+                            <span className="font-bold">Click to upload</span>
+                          </p>
+                          <p className="text-xs text-black/50 text-center">or drag and drop</p>
+                          <p className="text-xs text-black/40 mt-2 text-center">PNG, JPG, WebP, GIF<br/>(MAX. 2MB)</p>
+                        </div>
+                        <input 
+                          id="community-image" 
+                          type="file" 
+                          className="hidden" 
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          onChange={handleImageChange}
+                          ref={fileInputRef}
+                        />
+                      </label>
+                    )}
+                  </div>
+                  <p className="text-xs text-black/50 text-center">Add a photo to make your community stand out.</p>
+                </div>
+
                 <FormField
                   control={form.control}
                   name="name"
@@ -382,53 +429,6 @@ export default function ListCommunity() {
                     </FormItem>
                   )}
                 />
-
-                <div className="space-y-3">
-                  <Label className="uppercase font-bold text-xs tracking-widest text-black/70">Community Photo (Optional)</Label>
-                  <div className="flex justify-center">
-                    {imagePreview ? (
-                      <div className="relative w-48 h-48 rounded-2xl overflow-hidden border-2 border-[#FFC400]/30 bg-gray-50">
-                        <img 
-                          src={imagePreview} 
-                          alt="Preview" 
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={removeImage}
-                          className="absolute top-2 right-2 p-1.5 bg-black/70 hover:bg-black rounded-full transition-colors"
-                        >
-                          <X className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    ) : (
-                      <label 
-                        htmlFor="community-image" 
-                        className="flex flex-col items-center justify-center w-48 h-48 rounded-2xl border-2 border-dashed border-black/20 bg-gray-50 cursor-pointer hover:border-[#FFC400] hover:bg-[#FFC400]/5 transition-all"
-                      >
-                        <div className="flex flex-col items-center justify-center p-4">
-                          <div className="w-12 h-12 mb-3 bg-[#FFC400]/10 rounded-full flex items-center justify-center">
-                            <ImageIcon className="w-6 h-6 text-[#FFC400]" />
-                          </div>
-                          <p className="mb-1 text-sm text-black/70 text-center">
-                            <span className="font-bold">Click to upload</span>
-                          </p>
-                          <p className="text-xs text-black/50 text-center">or drag and drop</p>
-                          <p className="text-xs text-black/40 mt-2 text-center">PNG, JPG, WebP, GIF<br/>(MAX. 2MB)</p>
-                        </div>
-                        <input 
-                          id="community-image" 
-                          type="file" 
-                          className="hidden" 
-                          accept="image/jpeg,image/png,image/webp,image/gif"
-                          onChange={handleImageChange}
-                          ref={fileInputRef}
-                        />
-                      </label>
-                    )}
-                  </div>
-                  <p className="text-xs text-black/50">Add a photo to make your community stand out. This will be displayed on the community card.</p>
-                </div>
 
                 <FormField
                   control={form.control}
