@@ -37,6 +37,7 @@ export const pendingCommunities = pgTable("pending_communities", {
   inviteLink: text("invite_link").notNull(),
   visibility: text("visibility").notNull().default("public"),
   submittedBy: text("submitted_by"),
+  userId: varchar("user_id"),
   submittedAt: timestamp("submitted_at").notNull().defaultNow(),
 });
 
@@ -53,7 +54,23 @@ export const approvedCommunities = pgTable("approved_communities", {
   category: text("category").notNull(),
   inviteLink: text("invite_link").notNull(),
   visibility: text("visibility").notNull().default("public"),
+  userId: varchar("user_id"),
   approvedAt: timestamp("approved_at").notNull().defaultNow(),
+});
+
+export const rejectedCommunities = pgTable("rejected_communities", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  platform: text("platform").notNull(),
+  memberCount: integer("member_count").notNull().default(0),
+  description: text("description").notNull(),
+  tags: json("tags").$type<string[]>().notNull().default([]),
+  category: text("category").notNull(),
+  inviteLink: text("invite_link").notNull(),
+  visibility: text("visibility").notNull().default("public"),
+  userId: varchar("user_id"),
+  rejectionReason: text("rejection_reason"),
+  rejectedAt: timestamp("rejected_at").notNull().defaultNow(),
 });
 
 export const insertPendingCommunitySchema = createInsertSchema(pendingCommunities).omit({
@@ -66,7 +83,14 @@ export const insertApprovedCommunitySchema = createInsertSchema(approvedCommunit
   approvedAt: true,
 });
 
+export const insertRejectedCommunitySchema = createInsertSchema(rejectedCommunities).omit({
+  id: true,
+  rejectedAt: true,
+});
+
 export type InsertPendingCommunity = z.infer<typeof insertPendingCommunitySchema>;
 export type PendingCommunity = typeof pendingCommunities.$inferSelect;
 export type InsertApprovedCommunity = z.infer<typeof insertApprovedCommunitySchema>;
 export type ApprovedCommunity = typeof approvedCommunities.$inferSelect;
+export type InsertRejectedCommunity = z.infer<typeof insertRejectedCommunitySchema>;
+export type RejectedCommunity = typeof rejectedCommunities.$inferSelect;

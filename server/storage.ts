@@ -5,9 +5,12 @@ import {
   type InsertPendingCommunity,
   type ApprovedCommunity,
   type InsertApprovedCommunity,
+  type RejectedCommunity,
+  type InsertRejectedCommunity,
   users,
   pendingCommunities,
-  approvedCommunities
+  approvedCommunities,
+  rejectedCommunities
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -20,11 +23,16 @@ export interface IStorage {
   createPendingCommunity(community: InsertPendingCommunity): Promise<PendingCommunity>;
   getAllPendingCommunities(): Promise<PendingCommunity[]>;
   getPendingCommunity(id: string): Promise<PendingCommunity | undefined>;
+  getPendingCommunitiesByUserId(userId: string): Promise<PendingCommunity[]>;
   deletePendingCommunity(id: string): Promise<void>;
   
   createApprovedCommunity(community: InsertApprovedCommunity): Promise<ApprovedCommunity>;
   getAllApprovedCommunities(): Promise<ApprovedCommunity[]>;
   getApprovedCommunity(id: string): Promise<ApprovedCommunity | undefined>;
+  getApprovedCommunitiesByUserId(userId: string): Promise<ApprovedCommunity[]>;
+  
+  createRejectedCommunity(community: InsertRejectedCommunity): Promise<RejectedCommunity>;
+  getRejectedCommunitiesByUserId(userId: string): Promise<RejectedCommunity[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -79,6 +87,26 @@ export class DatabaseStorage implements IStorage {
   async getApprovedCommunity(id: string): Promise<ApprovedCommunity | undefined> {
     const [community] = await db.select().from(approvedCommunities).where(eq(approvedCommunities.id, id));
     return community;
+  }
+
+  async getPendingCommunitiesByUserId(userId: string): Promise<PendingCommunity[]> {
+    return db.select().from(pendingCommunities).where(eq(pendingCommunities.userId, userId));
+  }
+
+  async getApprovedCommunitiesByUserId(userId: string): Promise<ApprovedCommunity[]> {
+    return db.select().from(approvedCommunities).where(eq(approvedCommunities.userId, userId));
+  }
+
+  async createRejectedCommunity(community: InsertRejectedCommunity): Promise<RejectedCommunity> {
+    const [rejectedCommunity] = await db.insert(rejectedCommunities).values([{
+      ...community,
+      tags: community.tags as string[],
+    }]).returning();
+    return rejectedCommunity;
+  }
+
+  async getRejectedCommunitiesByUserId(userId: string): Promise<RejectedCommunity[]> {
+    return db.select().from(rejectedCommunities).where(eq(rejectedCommunities.userId, userId));
   }
 }
 
