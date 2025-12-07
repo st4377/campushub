@@ -238,6 +238,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .scrollbar-thin::-webkit-scrollbar-track {
   background: transparent;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
@@ -249,12 +251,21 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #FFC400;
 }
 
-.scrollbar-thin::-webkit-scrollbar-button {
-  display: none;
-  height: 0;
-  width: 0;
+.scrollbar-thin::-webkit-scrollbar-button,
+.scrollbar-thin::-webkit-scrollbar-button:single-button,
+.scrollbar-thin::-webkit-scrollbar-button:start,
+.scrollbar-thin::-webkit-scrollbar-button:end,
+.scrollbar-thin::-webkit-scrollbar-button:vertical:start,
+.scrollbar-thin::-webkit-scrollbar-button:vertical:end,
+.scrollbar-thin::-webkit-scrollbar-button:vertical:start:decrement,
+.scrollbar-thin::-webkit-scrollbar-button:vertical:end:increment {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  background: transparent !important;
 }
 
 .scrollbar-thin::-webkit-scrollbar-corner {
-  display: none;
+  display: none !important;
+  background: transparent !important;
 }
