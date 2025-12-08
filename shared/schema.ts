@@ -58,6 +58,7 @@ export const approvedCommunities = pgTable("approved_communities", {
   userId: varchar("user_id"),
   imageUrl: text("image_url"),
   approvedAt: timestamp("approved_at").notNull().defaultNow(),
+  deletedAt: timestamp("deleted_at"),
 });
 
 export const rejectedCommunities = pgTable("rejected_communities", {
@@ -98,7 +99,17 @@ export type UpdatePendingCommunity = z.infer<typeof updatePendingCommunitySchema
 export const insertApprovedCommunitySchema = createInsertSchema(approvedCommunities).omit({
   id: true,
   approvedAt: true,
+  deletedAt: true,
 });
+
+export const updateUserCommunitySchema = z.object({
+  name: z.string().min(1).optional(),
+  inviteLink: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  imageUrl: z.string().nullable().optional(),
+});
+
+export type UpdateUserCommunity = z.infer<typeof updateUserCommunitySchema>;
 
 export const insertRejectedCommunitySchema = createInsertSchema(rejectedCommunities).omit({
   id: true,

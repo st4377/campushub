@@ -1,14 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Mail, Calendar, Users, Plus, LogOut, Settings, ChevronRight, Hexagon, Clock, CheckCircle, XCircle, FileText, ExternalLink, Tag, Eye, Globe, Link2, MessageSquare, Shield, Bell, Palette, Home, Menu } from "lucide-react";
+import { User, Mail, Calendar, Users, Plus, LogOut, Settings, ChevronRight, Hexagon, Clock, CheckCircle, XCircle, FileText, ExternalLink, Tag, Eye, Globe, Link2, MessageSquare, Shield, Bell, Palette, Home, Menu, Pencil, Trash2, Upload, X, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Layout } from "@/components/layout";
 import { useAuth } from "@/context/auth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { CommunityCard } from "@/components/community-card";
+import { Community } from "@/lib/mock-data";
 
 interface Submission {
   id: string;
@@ -28,15 +32,49 @@ interface Submission {
   rejectedAt?: string;
 }
 
+interface UserCommunity {
+  id: string;
+  name: string;
+  platform: string;
+  category: string;
+  description: string;
+  inviteLink: string;
+  tags: string[];
+  visibility: string;
+  memberCount: number;
+  imageUrl?: string | null;
+  rating: number;
+  reviewCount: number;
+  isActive: boolean;
+  userId: string | null;
+  approvedAt: string;
+  deletedAt?: string | null;
+}
+
 type ActiveSection = "account" | "communities";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const { user, logout, isLoading } = useAuth();
+  const queryClient = useQueryClient();
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [activeSection, setActiveSection] = useState<ActiveSection>("account");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isEmailRevealed, setIsEmailRevealed] = useState(false);
+  
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editingCommunity, setEditingCommunity] = useState<UserCommunity | null>(null);
+  const [deletingCommunity, setDeletingCommunity] = useState<UserCommunity | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    inviteLink: "",
+    tags: "",
+    imageUrl: null as string | null,
+  });
+  const [isUploading, setIsUploading] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: submissionsData, isLoading: submissionsLoading } = useQuery({
     queryKey: ["user-submissions", user?.id],
@@ -48,6 +86,157 @@ export default function Dashboard() {
     },
     enabled: !!user?.id,
   });
+
+  const { data: userCommunities, isLoading: communitiesLoading } = useQuery({
+    queryKey: ["user-communities", user?.id],
+    queryFn: async () => {
+      const response = await fetch(`/api/user/communities/${user?.id}`);
+      if (!response.ok) throw new Error("Failed to fetch communities");
+      const data = await response.json();
+      return { active: data.active as UserCommunity[], deleted: data.deleted as UserCommunity[] };
+    },
+    enabled: !!user?.id,
+  });
+
+  const editMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: { name?: string; inviteLink?: string; tags?: string[]; imageUrl?: string | null } }) => {
+      const response = await fetch(`/api/user/communities/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user?.id, ...updates }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update community");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-communities", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["approved-communities"] });
+      toast.success("Community updated successfully");
+      setEditDialogOpen(false);
+      setEditingCommunity(null);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/user/communities/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user?.id }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to delete community");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-communities", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["approved-communities"] });
+      toast.success("Community removed from public view");
+      setDeleteDialogOpen(false);
+      setDeletingCommunity(null);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleOpenEdit = (community: UserCommunity) => {
+    setEditingCommunity(community);
+    setEditForm({
+      name: community.name,
+      inviteLink: community.inviteLink,
+      tags: community.tags.join(", "),
+      imageUrl: community.imageUrl || null,
+    });
+    setPreviewImage(community.imageUrl || null);
+    setEditDialogOpen(true);
+  };
+
+  const handleOpenDelete = (community: UserCommunity) => {
+    setDeletingCommunity(community);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingCommunity) return;
+    
+    const tagsArray = editForm.tags
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
+    
+    editMutation.mutate({
+      id: editingCommunity.id,
+      updates: {
+        name: editForm.name,
+        inviteLink: editForm.inviteLink,
+        tags: tagsArray,
+        imageUrl: editForm.imageUrl,
+      },
+    });
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deletingCommunity) return;
+    deleteMutation.mutate(deletingCommunity.id);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File too large. Maximum size is 2MB.");
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.");
+      return;
+    }
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await fetch("/api/upload/community-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to upload image");
+      }
+
+      const data = await response.json();
+      setEditForm({ ...editForm, imageUrl: data.imageUrl });
+      setPreviewImage(data.imageUrl);
+      toast.success("Image uploaded");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to upload image");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setEditForm({ ...editForm, imageUrl: null });
+    setPreviewImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -469,106 +658,207 @@ export default function Dashboard() {
                       </Button>
                     </div>
 
-                    {/* Communities Container */}
-                    <div className="bg-[#111] rounded-lg border border-[#2a2a2a] overflow-hidden">
-                      {submissionsLoading ? (
+                    {/* Active Communities Section */}
+                    <div className="mb-8">
+                      <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        Active Communities
+                      </h2>
+                      
+                      {communitiesLoading ? (
                         <div className="flex items-center justify-center py-16">
                           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#FFC400]"></div>
                         </div>
-                      ) : !submissionsData || submissionsData.length === 0 ? (
-                        <div className="text-center py-16 px-4">
+                      ) : !userCommunities?.active || userCommunities.active.length === 0 ? (
+                        <div className="bg-[#111] rounded-lg border border-[#2a2a2a] p-8 text-center">
                           <div className="w-16 h-16 rounded-full bg-[#2a2a2a] flex items-center justify-center mx-auto mb-4">
-                            <FileText className="w-8 h-8 text-gray-500" />
+                            <Hexagon className="w-8 h-8 text-gray-500" />
                           </div>
-                          <p className="text-gray-400 font-medium">No communities yet</p>
-                          <p className="text-gray-500 text-sm mt-1">List your first community to see it here</p>
-                          <Button
-                            onClick={handleListCommunity}
-                            className="mt-4 bg-[#FFC400] hover:bg-[#FFD700] text-black rounded-lg"
-                          >
-                            <Plus className="w-4 h-4 mr-2" />
-                            List a Community
-                          </Button>
+                          <p className="text-gray-400 font-medium">No active communities</p>
+                          <p className="text-gray-500 text-sm mt-1">Your approved communities will appear here</p>
                         </div>
                       ) : (
-                        <div className="divide-y divide-[#2a2a2a]">
-                          {submissionsData.map((submission, index) => (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {userCommunities.active.map((community, index) => (
                             <motion.div
-                              key={submission.id}
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
+                              key={community.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: index * 0.05 }}
-                              onClick={() => setSelectedSubmission(submission)}
-                              className="p-4 hover:bg-[#1a1a1a] cursor-pointer transition-colors group"
+                              className="relative"
                             >
-                              <div className="flex items-center gap-3 lg:gap-4">
-                                {/* Community Icon */}
-                                <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 ${
-                                  submission.platform === "WhatsApp" ? "bg-green-500/20" :
-                                  submission.platform === "Telegram" ? "bg-blue-500/20" :
-                                  submission.platform === "Discord" ? "bg-indigo-500/20" :
-                                  "bg-pink-500/20"
-                                }`}>
-                                  {submission.imageUrl ? (
-                                    <img 
-                                      src={submission.imageUrl} 
-                                      alt={submission.name}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  ) : (
-                                    <MessageSquare className={`w-5 h-5 lg:w-6 lg:h-6 ${getPlatformColor(submission.platform)}`} />
-                                  )}
-                                </div>
-
-                                {/* Community Info */}
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <h3 className="font-semibold text-white truncate">{submission.name}</h3>
-                                    <span className={`text-xs font-medium hidden sm:inline ${getPlatformColor(submission.platform)}`}>
-                                      {submission.platform}
-                                    </span>
-                                  </div>
-                                  <p className="text-sm text-gray-500 truncate">{submission.category}</p>
-                                </div>
-
-                                {/* Status */}
-                                <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
-                                  {getStatusBadge(submission.status)}
-                                  <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors hidden sm:block" />
-                                </div>
+                              <CommunityCard
+                                community={{
+                                  ...community,
+                                  imageUrl: community.imageUrl || undefined,
+                                } as Community}
+                              />
+                              <div className="absolute top-10 right-4 flex gap-2 z-30">
+                                <Button
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleOpenEdit(community);
+                                  }}
+                                  className="bg-[#FFC400] hover:bg-[#FFD700] text-black rounded-lg h-8 px-3"
+                                >
+                                  <Pencil className="w-3.5 h-3.5 mr-1" />
+                                  Edit
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleOpenDelete(community);
+                                  }}
+                                  className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-8 px-3"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
                               </div>
-
-                              {/* Rejection Reason */}
-                              {submission.status === "rejected" && submission.rejectionReason && (
-                                <div className="mt-3 ml-13 lg:ml-16 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                                  <p className="text-sm text-red-400">
-                                    <span className="font-medium">Rejection reason:</span> {submission.rejectionReason}
-                                  </p>
-                                </div>
-                              )}
                             </motion.div>
                           ))}
                         </div>
                       )}
                     </div>
 
-                    {/* Summary Stats */}
-                    {totalSubmissions > 0 && (
-                      <div className="grid grid-cols-3 gap-3 lg:gap-4 mt-6">
-                        <div className="bg-[#111] rounded-lg border border-[#2a2a2a] p-3 lg:p-4 text-center">
-                          <p className="text-xl lg:text-2xl font-bold text-white">{totalSubmissions}</p>
-                          <p className="text-xs lg:text-sm text-gray-400">Total</p>
-                        </div>
-                        <div className="bg-[#111] rounded-lg border border-green-500/20 p-3 lg:p-4 text-center">
-                          <p className="text-xl lg:text-2xl font-bold text-green-400">{approvedCount}</p>
-                          <p className="text-xs lg:text-sm text-gray-400">Approved</p>
-                        </div>
-                        <div className="bg-[#111] rounded-lg border border-yellow-500/20 p-3 lg:p-4 text-center">
-                          <p className="text-xl lg:text-2xl font-bold text-yellow-400">{pendingCount}</p>
-                          <p className="text-xs lg:text-sm text-gray-400">Pending</p>
+                    {/* Pending/Rejected Submissions Section */}
+                    {submissionsData && submissionsData.filter(s => s.status !== "approved").length > 0 && (
+                      <div className="mb-8">
+                        <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                          <Clock className="w-5 h-5 text-yellow-400" />
+                          Submission Status
+                        </h2>
+                        <div className="bg-[#111] rounded-lg border border-[#2a2a2a] overflow-hidden">
+                          <div className="divide-y divide-[#2a2a2a]">
+                            {submissionsData.filter(s => s.status !== "approved").map((submission, index) => (
+                              <motion.div
+                                key={submission.id}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: index * 0.05 }}
+                                onClick={() => setSelectedSubmission(submission)}
+                                className="p-4 hover:bg-[#1a1a1a] cursor-pointer transition-colors group"
+                              >
+                                <div className="flex items-center gap-3 lg:gap-4">
+                                  <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 ${
+                                    submission.platform === "WhatsApp" ? "bg-green-500/20" :
+                                    submission.platform === "Telegram" ? "bg-blue-500/20" :
+                                    submission.platform === "Discord" ? "bg-indigo-500/20" :
+                                    "bg-pink-500/20"
+                                  }`}>
+                                    {submission.imageUrl ? (
+                                      <img 
+                                        src={submission.imageUrl} 
+                                        alt={submission.name}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <MessageSquare className={`w-5 h-5 lg:w-6 lg:h-6 ${getPlatformColor(submission.platform)}`} />
+                                    )}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <h3 className="font-semibold text-white truncate">{submission.name}</h3>
+                                      <span className={`text-xs font-medium hidden sm:inline ${getPlatformColor(submission.platform)}`}>
+                                        {submission.platform}
+                                      </span>
+                                    </div>
+                                    <p className="text-sm text-gray-500 truncate">{submission.category}</p>
+                                  </div>
+                                  <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
+                                    {getStatusBadge(submission.status)}
+                                    <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors hidden sm:block" />
+                                  </div>
+                                </div>
+                                {submission.status === "rejected" && submission.rejectionReason && (
+                                  <div className="mt-3 ml-13 lg:ml-16 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                                    <p className="text-sm text-red-400">
+                                      <span className="font-medium">Rejection reason:</span> {submission.rejectionReason}
+                                    </p>
+                                  </div>
+                                )}
+                              </motion.div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     )}
+
+                    {/* Deleted Communities Section */}
+                    {userCommunities?.deleted && userCommunities.deleted.length > 0 && (
+                      <div className="mb-8">
+                        <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                          <Trash2 className="w-5 h-5 text-gray-400" />
+                          Deleted Communities
+                          <span className="text-xs font-normal text-gray-500 ml-2">(Read-only history)</span>
+                        </h2>
+                        <div className="bg-[#111] rounded-lg border border-[#2a2a2a] overflow-hidden">
+                          <div className="divide-y divide-[#2a2a2a]">
+                            {userCommunities.deleted.map((community, index) => (
+                              <motion.div
+                                key={community.id}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: index * 0.05 }}
+                                className="p-4 opacity-60"
+                              >
+                                <div className="flex items-center gap-3 lg:gap-4">
+                                  <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 grayscale ${
+                                    community.platform === "WhatsApp" ? "bg-green-500/20" :
+                                    community.platform === "Telegram" ? "bg-blue-500/20" :
+                                    community.platform === "Discord" ? "bg-indigo-500/20" :
+                                    "bg-pink-500/20"
+                                  }`}>
+                                    {community.imageUrl ? (
+                                      <img 
+                                        src={community.imageUrl} 
+                                        alt={community.name}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <MessageSquare className={`w-5 h-5 lg:w-6 lg:h-6 ${getPlatformColor(community.platform)}`} />
+                                    )}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <h3 className="font-semibold text-gray-400 truncate line-through">{community.name}</h3>
+                                      <span className={`text-xs font-medium hidden sm:inline text-gray-500`}>
+                                        {community.platform}
+                                      </span>
+                                    </div>
+                                    <p className="text-sm text-gray-600 truncate">{community.category}</p>
+                                  </div>
+                                  <div className="flex items-center gap-2 flex-shrink-0">
+                                    <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">
+                                      <Trash2 className="w-3 h-3 mr-1" />
+                                      Deleted {community.deletedAt ? formatDate(community.deletedAt) : ""}
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Summary Stats */}
+                    <div className="grid grid-cols-3 gap-3 lg:gap-4">
+                      <div className="bg-[#111] rounded-lg border border-green-500/20 p-3 lg:p-4 text-center">
+                        <p className="text-xl lg:text-2xl font-bold text-green-400">{userCommunities?.active?.length || 0}</p>
+                        <p className="text-xs lg:text-sm text-gray-400">Active</p>
+                      </div>
+                      <div className="bg-[#111] rounded-lg border border-yellow-500/20 p-3 lg:p-4 text-center">
+                        <p className="text-xl lg:text-2xl font-bold text-yellow-400">{pendingCount}</p>
+                        <p className="text-xs lg:text-sm text-gray-400">Pending</p>
+                      </div>
+                      <div className="bg-[#111] rounded-lg border border-gray-500/20 p-3 lg:p-4 text-center">
+                        <p className="text-xl lg:text-2xl font-bold text-gray-400">{userCommunities?.deleted?.length || 0}</p>
+                        <p className="text-xs lg:text-sm text-gray-400">Deleted</p>
+                      </div>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -702,6 +992,173 @@ export default function Dashboard() {
                 </div>
               </>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Community Dialog */}
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+          <DialogContent className="bg-[#1a1a1a] border-[#333] rounded-3xl max-w-lg p-0 overflow-hidden">
+            <div className="p-6 bg-gradient-to-r from-[#FFC400]/20 to-[#FF8C00]/10">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold text-white">Edit Community</DialogTitle>
+                <DialogDescription className="text-gray-400">
+                  Update your community details. Only name, invite link, logo, and tags can be edited.
+                </DialogDescription>
+              </DialogHeader>
+            </div>
+            
+            <div className="p-6 space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="edit-name" className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                  Community Name
+                </Label>
+                <Input
+                  id="edit-name"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="bg-black/30 border-[#333] text-white placeholder:text-gray-500 focus:border-[#FFC400] rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-link" className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                  Invite/Join Link
+                </Label>
+                <Input
+                  id="edit-link"
+                  value={editForm.inviteLink}
+                  onChange={(e) => setEditForm({ ...editForm, inviteLink: e.target.value })}
+                  className="bg-black/30 border-[#333] text-white placeholder:text-gray-500 focus:border-[#FFC400] rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                  Logo/Icon
+                </Label>
+                <div className="flex items-center gap-4">
+                  {previewImage ? (
+                    <div className="relative">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden border border-[#333]">
+                        <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                      <button
+                        onClick={handleRemoveImage}
+                        className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#333] flex items-center justify-center">
+                      <ImageIcon className="w-6 h-6 text-gray-500" />
+                    </div>
+                  )}
+                  <div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="border-[#333] text-gray-300 hover:bg-[#2a2a2a] rounded-lg"
+                    >
+                      {isUploading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 mr-2" />
+                          Upload Image
+                        </>
+                      )}
+                    </Button>
+                    <p className="text-xs text-gray-500 mt-1">Max 2MB. JPEG, PNG, WebP, GIF</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-tags" className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                  Tags (comma-separated)
+                </Label>
+                <Input
+                  id="edit-tags"
+                  value={editForm.tags}
+                  onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })}
+                  placeholder="e.g., study, coding, networking"
+                  className="bg-black/30 border-[#333] text-white placeholder:text-gray-500 focus:border-[#FFC400] rounded-xl"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setEditDialogOpen(false)}
+                  disabled={editMutation.isPending}
+                  className="flex-1 border-[#333] text-gray-300 hover:bg-[#2a2a2a] rounded-xl"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSaveEdit}
+                  disabled={editMutation.isPending}
+                  className="flex-1 bg-[#FFC400] hover:bg-[#FFD700] text-black font-bold rounded-xl"
+                >
+                  {editMutation.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Community Dialog */}
+        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <DialogContent className="bg-[#1a1a1a] border-[#333] rounded-3xl max-w-md p-0 overflow-hidden">
+            <div className="p-6 bg-gradient-to-r from-red-500/20 to-red-900/10">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold text-white">Delete Community</DialogTitle>
+                <DialogDescription className="text-gray-400">
+                  This will remove your community from the public homepage and browse pages. The community will be moved to your deleted history.
+                </DialogDescription>
+              </DialogHeader>
+            </div>
+            
+            <div className="p-6">
+              {deletingCommunity && (
+                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 mb-6">
+                  <p className="text-white font-medium">{deletingCommunity.name}</p>
+                  <p className="text-gray-400 text-sm">{deletingCommunity.platform} • {deletingCommunity.category}</p>
+                </div>
+              )}
+              
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setDeleteDialogOpen(false)}
+                  disabled={deleteMutation.isPending}
+                  className="flex-1 border-[#333] text-gray-300 hover:bg-[#2a2a2a] rounded-xl"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleConfirmDelete}
+                  disabled={deleteMutation.isPending}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  {deleteMutation.isPending ? "Deleting..." : "Delete Community"}
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       </div>

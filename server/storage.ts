@@ -8,13 +8,14 @@ import {
   type InsertApprovedCommunity,
   type RejectedCommunity,
   type InsertRejectedCommunity,
+  type UpdateUserCommunity,
   users,
   pendingCommunities,
   approvedCommunities,
   rejectedCommunities
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, isNull, isNotNull, and } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -30,8 +31,13 @@ export interface IStorage {
   
   createApprovedCommunity(community: InsertApprovedCommunity): Promise<ApprovedCommunity>;
   getAllApprovedCommunities(): Promise<ApprovedCommunity[]>;
+  getActiveApprovedCommunities(): Promise<ApprovedCommunity[]>;
   getApprovedCommunity(id: string): Promise<ApprovedCommunity | undefined>;
   getApprovedCommunitiesByUserId(userId: string): Promise<ApprovedCommunity[]>;
+  getActiveApprovedCommunitiesByUserId(userId: string): Promise<ApprovedCommunity[]>;
+  getDeletedCommunitiesByUserId(userId: string): Promise<ApprovedCommunity[]>;
+  updateUserCommunity(id: string, userId: string, updates: UpdateUserCommunity): Promise<ApprovedCommunity | undefined>;
+  softDeleteApprovedCommunity(id: string, userId: string): Promise<ApprovedCommunity | undefined>;
   deleteApprovedCommunity(id: string): Promise<void>;
   
   createRejectedCommunity(community: InsertRejectedCommunity): Promise<RejectedCommunity>;
@@ -113,6 +119,10 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(approvedCommunities);
   }
 
+  async getActiveApprovedCommunities(): Promise<ApprovedCommunity[]> {
+    return db.select().from(approvedCommunities).where(isNull(approvedCommunities.deletedAt));
+  }
+
   async getApprovedCommunity(id: string): Promise<ApprovedCommunity | undefined> {
     const [community] = await db.select().from(approvedCommunities).where(eq(approvedCommunities.id, id));
     return community;
@@ -124,6 +134,74 @@ export class DatabaseStorage implements IStorage {
 
   async getApprovedCommunitiesByUserId(userId: string): Promise<ApprovedCommunity[]> {
     return db.select().from(approvedCommunities).where(eq(approvedCommunities.userId, userId));
+  }
+
+  async getActiveApprovedCommunitiesByUserId(userId: string): Promise<ApprovedCommunity[]> {
+    return db.select().from(approvedCommunities).where(
+      and(
+        eq(approvedCommunities.userId, userId),
+        isNull(approvedCommunities.deletedAt)
+      )
+    );
+  }
+
+  async getDeletedCommunitiesByUserId(userId: string): Promise<ApprovedCommunity[]> {
+    return db.select().from(approvedCommunities).where(
+      and(
+        eq(approvedCommunities.userId, userId),
+        isNotNull(approvedCommunities.deletedAt)
+      )
+    );
+  }
+
+  async updateUserCommunity(id: string, userId: string, updates: UpdateUserCommunity): Promise<ApprovedCommunity | undefined> {
+    const [existing] = await db.select().from(approvedCommunities).where(
+      and(
+        eq(approvedCommunities.id, id),
+        eq(approvedCommunities.userId, userId),
+        isNull(approvedCommunities.deletedAt)
+      )
+    );
+    
+    if (!existing) return undefined;
+    
+    const updateData: Record<string, unknown> = {};
+    if (updates.name !== undefined) updateData.name = updates.name;
+    if (updates.inviteLink !== undefined) updateData.inviteLink = updates.inviteLink;
+    if (updates.tags !== undefined) updateData.tags = updates.tags;
+    if (updates.imageUrl !== undefined) updateData.imageUrl = updates.imageUrl;
+    
+    if (Object.keys(updateData).length === 0) {
+      return existing;
+    }
+    
+    const [updated] = await db
+      .update(approvedCommunities)
+      .set(updateData)
+      .where(eq(approvedCommunities.id, id))
+      .returning();
+    
+    return updated;
+  }
+
+  async softDeleteApprovedCommunity(id: string, userId: string): Promise<ApprovedCommunity | undefined> {
+    const [existing] = await db.select().from(approvedCommunities).where(
+      and(
+        eq(approvedCommunities.id, id),
+        eq(approvedCommunities.userId, userId),
+        isNull(approvedCommunities.deletedAt)
+      )
+    );
+    
+    if (!existing) return undefined;
+    
+    const [updated] = await db
+      .update(approvedCommunities)
+      .set({ deletedAt: new Date() })
+      .where(eq(approvedCommunities.id, id))
+      .returning();
+    
+    return updated;
   }
 
   async deleteApprovedCommunity(id: string): Promise<void> {

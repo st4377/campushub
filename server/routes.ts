@@ -2,7 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import express from "express";
 import { storage } from "./storage";
-import { insertPendingCommunitySchema, signupSchema, updatePendingCommunitySchema } from "@shared/schema";
+import { insertPendingCommunitySchema, signupSchema, updatePendingCommunitySchema, updateUserCommunitySchema } from "@shared/schema";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import multer from "multer";
@@ -104,7 +104,7 @@ export async function registerRoutes(
 
   app.get("/api/communities/approved", async (req, res) => {
     try {
-      const communities = await storage.getAllApprovedCommunities();
+      const communities = await storage.getActiveApprovedCommunities();
       res.json({ success: true, communities });
     } catch (error) {
       console.error("Error fetching approved communities:", error);
@@ -314,6 +314,72 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error during login:", error);
       res.status(500).json({ success: false, error: "Failed to login" });
+    }
+  });
+
+  app.get("/api/user/communities/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      const [active, deleted] = await Promise.all([
+        storage.getActiveApprovedCommunitiesByUserId(userId),
+        storage.getDeletedCommunitiesByUserId(userId),
+      ]);
+
+      res.json({ success: true, active, deleted });
+    } catch (error) {
+      console.error("Error fetching user communities:", error);
+      res.status(500).json({ success: false, error: "Failed to fetch communities" });
+    }
+  });
+
+  app.patch("/api/user/communities/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { userId, ...updates } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ success: false, error: "User ID is required" });
+      }
+      
+      const validatedData = updateUserCommunitySchema.parse(updates);
+      
+      const updatedCommunity = await storage.updateUserCommunity(id, userId, validatedData);
+      
+      if (!updatedCommunity) {
+        return res.status(404).json({ success: false, error: "Community not found or you don't have permission to edit it" });
+      }
+      
+      res.json({ success: true, community: updatedCommunity });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, error: "Invalid data", details: error.errors });
+      } else {
+        console.error("Error updating user community:", error);
+        res.status(500).json({ success: false, error: "Failed to update community" });
+      }
+    }
+  });
+
+  app.delete("/api/user/communities/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ success: false, error: "User ID is required" });
+      }
+      
+      const deletedCommunity = await storage.softDeleteApprovedCommunity(id, userId);
+      
+      if (!deletedCommunity) {
+        return res.status(404).json({ success: false, error: "Community not found or you don't have permission to delete it" });
+      }
+      
+      res.json({ success: true, message: "Community deleted from public view", community: deletedCommunity });
+    } catch (error) {
+      console.error("Error deleting user community:", error);
+      res.status(500).json({ success: false, error: "Failed to delete community" });
     }
   });
 
