@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { Zap, ArrowLeft, Clock, Rocket } from "lucide-react";
@@ -105,6 +105,31 @@ export default function Boost() {
   const bumpStatus = userCommunities?.bumpStatus;
   const currentlyBumpedId = bumpStatus?.lastBumpCommunityId;
 
+  const [countdown, setCountdown] = useState({ hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    if (!bumpStatus?.nextAvailableAt || bumpStatus.canBump) return;
+
+    const calculateTimeLeft = () => {
+      const nextAvailable = new Date(bumpStatus.nextAvailableAt!).getTime();
+      const now = Date.now();
+      const diff = Math.max(0, nextAvailable - now);
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setCountdown({ hours, minutes, seconds });
+    };
+
+    calculateTimeLeft();
+    const interval = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(interval);
+  }, [bumpStatus?.nextAvailableAt, bumpStatus?.canBump]);
+
+  const formatTime = (num: number) => num.toString().padStart(2, '0');
+
   return (
     <Layout hideFooter>
       <div className="min-h-[calc(100vh-64px)] bg-[#0a0a0f]">
@@ -146,13 +171,6 @@ export default function Boost() {
               <p className="text-gray-400 text-lg max-w-lg mx-auto">
                 Bump your community to the top of the homepage for 24 hours
               </p>
-              {bumpStatus && !bumpStatus.canBump && bumpStatus.hoursRemaining !== null && (
-                <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800/50 border border-gray-700">
-                  <Clock className="w-5 h-5 text-gray-400" />
-                  <span className="text-gray-400 text-base">Next bump in</span>
-                  <span className="text-[#FFC400] font-mono font-bold text-lg">{bumpStatus.hoursRemaining}h</span>
-                </div>
-              )}
             </div>
 
             {bumpStatus && (
@@ -190,12 +208,21 @@ export default function Boost() {
                     ) : (
                       <>
                         <p className="text-gray-300 font-bold text-lg">Bump on Cooldown</p>
-                        <p className="text-gray-500 text-base">
-                          Next bump available in <span className="text-[#FFC400] font-mono font-bold">{bumpStatus.hoursRemaining}h</span>
-                        </p>
+                        <p className="text-gray-500 text-base">Next bump available soon</p>
                       </>
                     )}
                   </div>
+                  {!bumpStatus.canBump && (
+                    <div className="flex items-center gap-1 bg-gray-900/80 px-4 py-3 rounded-xl border border-gray-700">
+                      <div className="flex items-center gap-1 font-mono text-2xl font-bold">
+                        <span className="text-[#FFC400] bg-gray-800 px-2 py-1 rounded">{formatTime(countdown.hours)}</span>
+                        <span className="text-gray-500">:</span>
+                        <span className="text-[#FFC400] bg-gray-800 px-2 py-1 rounded">{formatTime(countdown.minutes)}</span>
+                        <span className="text-gray-500">:</span>
+                        <span className="text-[#FFC400] bg-gray-800 px-2 py-1 rounded">{formatTime(countdown.seconds)}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}
