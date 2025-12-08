@@ -5,8 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle, XCircle, Clock, Users, ExternalLink, RefreshCw, Shield, Lock, LogIn } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Users, ExternalLink, RefreshCw, Shield, Lock, LogIn, Pencil, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
@@ -34,6 +36,18 @@ export default function AdminApprovals() {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectingCommunityId, setRejectingCommunityId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingCommunity, setEditingCommunity] = useState<PendingCommunity | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    description: "",
+    platform: "",
+    inviteLink: "",
+    tags: "",
+    category: "",
+    visibility: "",
+  });
 
   const handleLogin = async () => {
     if (!passwordInput.trim()) {
@@ -161,6 +175,94 @@ export default function AdminApprovals() {
       rejectMutation.mutate({ id: rejectingCommunityId, reason: rejectionReason });
     }
   };
+
+  const editMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Record<string, unknown> }) => {
+      const response = await fetch(`/api/admin/pending/${id}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${adminPassword}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) throw new Error("Failed to update community");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pending-communities"] });
+      setEditDialogOpen(false);
+      setEditingCommunity(null);
+      toast({
+        title: "Updated",
+        description: "Community has been updated successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update community.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleOpenEditDialog = (community: PendingCommunity) => {
+    setEditingCommunity(community);
+    setEditForm({
+      name: community.name,
+      description: community.description,
+      platform: community.platform,
+      inviteLink: community.inviteLink,
+      tags: community.tags.join(", "),
+      category: community.category,
+      visibility: community.visibility,
+    });
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingCommunity) return;
+    
+    const tagsArray = editForm.tags
+      .split(",")
+      .map(tag => tag.trim())
+      .filter(tag => tag.length > 0);
+    
+    editMutation.mutate({
+      id: editingCommunity.id,
+      updates: {
+        name: editForm.name,
+        description: editForm.description,
+        platform: editForm.platform,
+        inviteLink: editForm.inviteLink,
+        tags: tagsArray,
+        category: editForm.category,
+        visibility: editForm.visibility,
+      },
+    });
+  };
+
+  const categories = [
+    "Study Groups",
+    "Coding & Tech",
+    "Trading & Finance",
+    "Entertainment & Memes",
+    "Sports & Fitness",
+    "Arts & Creativity",
+    "Hostel Life",
+    "Career & Internships",
+    "Gaming",
+    "Music & Movies",
+    "Other",
+  ];
+
+  const platforms = ["WhatsApp", "Telegram", "Discord", "Instagram"];
+  const visibilityOptions = [
+    { value: "public", label: "Public" },
+    { value: "boys-only", label: "Boys Only" },
+    { value: "girls-only", label: "Girls Only" },
+  ];
 
   const getVisibilityBadge = (visibility: string) => {
     switch (visibility) {
@@ -366,10 +468,19 @@ export default function AdminApprovals() {
                     </a>
                   </div>
 
-                  <div className="flex gap-4 pt-4 border-t border-black/10">
+                  <div className="flex gap-3 pt-4 border-t border-black/10">
+                    <Button
+                      onClick={() => handleOpenEditDialog(community)}
+                      disabled={approveMutation.isPending || rejectMutation.isPending || editMutation.isPending}
+                      variant="outline"
+                      className="flex-1 border-[#FFC400] text-[#FFC400] hover:bg-[#FFC400]/10 font-bold uppercase tracking-wider rounded-xl h-12"
+                    >
+                      <Pencil className="mr-2 h-5 w-5" />
+                      Edit
+                    </Button>
                     <Button
                       onClick={() => approveMutation.mutate(community.id)}
-                      disabled={approveMutation.isPending || rejectMutation.isPending}
+                      disabled={approveMutation.isPending || rejectMutation.isPending || editMutation.isPending}
                       className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold uppercase tracking-wider rounded-xl h-12"
                     >
                       <CheckCircle className="mr-2 h-5 w-5" />
@@ -377,7 +488,7 @@ export default function AdminApprovals() {
                     </Button>
                     <Button
                       onClick={() => handleOpenRejectDialog(community.id)}
-                      disabled={approveMutation.isPending || rejectMutation.isPending}
+                      disabled={approveMutation.isPending || rejectMutation.isPending || editMutation.isPending}
                       variant="outline"
                       className="flex-1 border-red-300 text-red-600 hover:bg-red-50 font-bold uppercase tracking-wider rounded-xl h-12"
                     >
@@ -424,6 +535,154 @@ export default function AdminApprovals() {
                 className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-wider px-8 rounded-2xl h-12"
               >
                 {rejectMutation.isPending ? "Rejecting..." : "Confirm Reject"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+          <DialogContent className="bg-white rounded-3xl max-w-2xl shadow-2xl border-0 p-8 max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black uppercase tracking-tight text-black text-center">Edit Community</DialogTitle>
+              <DialogDescription className="text-black/70 mt-3 text-center">
+                Modify the community details before approving or rejecting.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="mt-6 space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="edit-name" className="text-sm font-bold uppercase tracking-wider text-black/70">
+                  Community Name
+                </Label>
+                <Input
+                  id="edit-name"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="bg-gray-50 border-black/20 h-12 text-black placeholder:text-black/40 focus:border-[#FFC400] rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-description" className="text-sm font-bold uppercase tracking-wider text-black/70">
+                  Description
+                </Label>
+                <Textarea
+                  id="edit-description"
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  className="bg-gray-50 border-black/20 min-h-[100px] text-black placeholder:text-black/40 focus:border-[#FFC400] rounded-xl"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-platform" className="text-sm font-bold uppercase tracking-wider text-black/70">
+                    Platform
+                  </Label>
+                  <Select
+                    value={editForm.platform}
+                    onValueChange={(value) => setEditForm({ ...editForm, platform: value })}
+                  >
+                    <SelectTrigger className="bg-gray-50 border-black/20 h-12 text-black focus:border-[#FFC400] rounded-xl">
+                      <SelectValue placeholder="Select platform" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-black/20 rounded-xl">
+                      {platforms.map((platform) => (
+                        <SelectItem key={platform} value={platform} className="text-black">
+                          {platform}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-category" className="text-sm font-bold uppercase tracking-wider text-black/70">
+                    Category
+                  </Label>
+                  <Select
+                    value={editForm.category}
+                    onValueChange={(value) => setEditForm({ ...editForm, category: value })}
+                  >
+                    <SelectTrigger className="bg-gray-50 border-black/20 h-12 text-black focus:border-[#FFC400] rounded-xl">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-black/20 rounded-xl">
+                      {categories.map((category) => (
+                        <SelectItem key={category} value={category} className="text-black">
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-visibility" className="text-sm font-bold uppercase tracking-wider text-black/70">
+                  Visibility
+                </Label>
+                <Select
+                  value={editForm.visibility}
+                  onValueChange={(value) => setEditForm({ ...editForm, visibility: value })}
+                >
+                  <SelectTrigger className="bg-gray-50 border-black/20 h-12 text-black focus:border-[#FFC400] rounded-xl">
+                    <SelectValue placeholder="Select visibility" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-black/20 rounded-xl">
+                    {visibilityOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value} className="text-black">
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-link" className="text-sm font-bold uppercase tracking-wider text-black/70">
+                  Invite Link
+                </Label>
+                <Input
+                  id="edit-link"
+                  value={editForm.inviteLink}
+                  onChange={(e) => setEditForm({ ...editForm, inviteLink: e.target.value })}
+                  className="bg-gray-50 border-black/20 h-12 text-black placeholder:text-black/40 focus:border-[#FFC400] rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-tags" className="text-sm font-bold uppercase tracking-wider text-black/70">
+                  Tags (comma-separated)
+                </Label>
+                <Input
+                  id="edit-tags"
+                  value={editForm.tags}
+                  onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })}
+                  placeholder="e.g., study, coding, networking"
+                  className="bg-gray-50 border-black/20 h-12 text-black placeholder:text-black/40 focus:border-[#FFC400] rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-center items-center mx-auto w-full mt-8">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEditDialogOpen(false)}
+                disabled={editMutation.isPending}
+                className="border-black/30 text-black hover:bg-gray-100 font-bold uppercase tracking-wider px-8 rounded-2xl h-12"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleSaveEdit}
+                disabled={editMutation.isPending}
+                className="bg-[#FFC400] hover:bg-[#FFD000] text-black font-bold uppercase tracking-wider px-8 rounded-2xl h-12"
+              >
+                <Save className="mr-2 h-5 w-5" />
+                {editMutation.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           </DialogContent>

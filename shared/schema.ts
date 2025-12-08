@@ -81,6 +81,20 @@ export const insertPendingCommunitySchema = createInsertSchema(pendingCommunitie
   submittedAt: true,
 });
 
+export const updatePendingCommunitySchema = z.object({
+  name: z.string().min(1).optional(),
+  platform: z.string().optional(),
+  memberCount: z.number().optional(),
+  description: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  category: z.string().optional(),
+  inviteLink: z.string().optional(),
+  visibility: z.string().optional(),
+  imageUrl: z.string().nullable().optional(),
+});
+
+export type UpdatePendingCommunity = z.infer<typeof updatePendingCommunitySchema>;
+
 export const insertApprovedCommunitySchema = createInsertSchema(approvedCommunities).omit({
   id: true,
   approvedAt: true,

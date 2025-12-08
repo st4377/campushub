@@ -2,7 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import express from "express";
 import { storage } from "./storage";
-import { insertPendingCommunitySchema, signupSchema } from "@shared/schema";
+import { insertPendingCommunitySchema, signupSchema, updatePendingCommunitySchema } from "@shared/schema";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import multer from "multer";
@@ -119,6 +119,28 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching pending communities:", error);
       res.status(500).json({ success: false, error: "Failed to fetch pending communities" });
+    }
+  });
+
+  app.put("/api/admin/pending/:id", adminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = updatePendingCommunitySchema.parse(req.body);
+      
+      const existingCommunity = await storage.getPendingCommunity(id);
+      if (!existingCommunity) {
+        return res.status(404).json({ success: false, error: "Community not found" });
+      }
+      
+      const updatedCommunity = await storage.updatePendingCommunity(id, validatedData);
+      res.json({ success: true, community: updatedCommunity });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, error: "Invalid data", details: error.errors });
+      } else {
+        console.error("Error updating pending community:", error);
+        res.status(500).json({ success: false, error: "Failed to update community" });
+      }
     }
   });
 

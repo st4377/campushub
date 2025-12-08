@@ -3,6 +3,7 @@ import {
   type InsertUser,
   type PendingCommunity,
   type InsertPendingCommunity,
+  type UpdatePendingCommunity,
   type ApprovedCommunity,
   type InsertApprovedCommunity,
   type RejectedCommunity,
@@ -24,6 +25,7 @@ export interface IStorage {
   getAllPendingCommunities(): Promise<PendingCommunity[]>;
   getPendingCommunity(id: string): Promise<PendingCommunity | undefined>;
   getPendingCommunitiesByUserId(userId: string): Promise<PendingCommunity[]>;
+  updatePendingCommunity(id: string, updates: UpdatePendingCommunity): Promise<PendingCommunity | undefined>;
   deletePendingCommunity(id: string): Promise<void>;
   
   createApprovedCommunity(community: InsertApprovedCommunity): Promise<ApprovedCommunity>;
@@ -70,6 +72,32 @@ export class DatabaseStorage implements IStorage {
 
   async deletePendingCommunity(id: string): Promise<void> {
     await db.delete(pendingCommunities).where(eq(pendingCommunities.id, id));
+  }
+
+  async updatePendingCommunity(id: string, updates: UpdatePendingCommunity): Promise<PendingCommunity | undefined> {
+    const updateData: Record<string, unknown> = {};
+    
+    if (updates.name !== undefined) updateData.name = updates.name;
+    if (updates.platform !== undefined) updateData.platform = updates.platform;
+    if (updates.memberCount !== undefined) updateData.memberCount = updates.memberCount;
+    if (updates.description !== undefined) updateData.description = updates.description;
+    if (updates.tags !== undefined) updateData.tags = updates.tags;
+    if (updates.category !== undefined) updateData.category = updates.category;
+    if (updates.inviteLink !== undefined) updateData.inviteLink = updates.inviteLink;
+    if (updates.visibility !== undefined) updateData.visibility = updates.visibility;
+    if (updates.imageUrl !== undefined) updateData.imageUrl = updates.imageUrl;
+    
+    if (Object.keys(updateData).length === 0) {
+      return this.getPendingCommunity(id);
+    }
+    
+    const [updated] = await db
+      .update(pendingCommunities)
+      .set(updateData)
+      .where(eq(pendingCommunities.id, id))
+      .returning();
+    
+    return updated;
   }
 
   async createApprovedCommunity(community: InsertApprovedCommunity): Promise<ApprovedCommunity> {
