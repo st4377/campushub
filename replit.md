@@ -14,7 +14,16 @@ Preferred communication style: Simple, everyday language.
 
 ### Completed Features
 
-1. **Dashboard Separation into Distinct Pages**
+1. **Admin Pin Community Feature**
+   - Admins can pin communities to keep them fixed at the first position on the homepage
+   - Pinned communities stay at the top of the grid regardless of when new communities are added
+   - Database: Added isPinned column to approved_communities table (default: false)
+   - API endpoint: PATCH /api/admin/approved/:id/pin with { isPinned: boolean } body
+   - Admin panel shows Pin/Unpin button and visual "PINNED" badge on approved community cards
+   - Homepage sorts communities with pinned ones appearing first
+   - Storage layer: togglePinCommunity method to update pin status
+
+2. **Dashboard Separation into Distinct Pages**
    - **Submission Status page** (`/submission-status`): Dedicated page for tracking all submissions
      - Displays pending, approved, and rejected submissions in separate sections
      - Shows rejection reasons for rejected submissions

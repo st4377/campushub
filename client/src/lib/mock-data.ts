@@ -14,6 +14,7 @@ export interface Community {
   rating: number;
   reviewCount: number;
   isActive: boolean;
+  isPinned?: boolean;
   category: string;
   imageUrl?: string;
   inviteLink: string;

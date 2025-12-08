@@ -24,6 +24,7 @@ interface ApprovedCommunity {
   rating: number;
   reviewCount: number;
   isActive: boolean;
+  isPinned: boolean;
   category: string;
   inviteLink: string;
   visibility: string;
@@ -69,6 +70,7 @@ export default function Home() {
         rating: c.rating,
         reviewCount: c.reviewCount,
         isActive: c.isActive,
+        isPinned: c.isPinned,
         category: c.category,
         inviteLink: c.inviteLink,
         visibility: c.visibility as Community["visibility"],
@@ -154,6 +156,13 @@ export default function Home() {
         filters.categories.includes(community.category)
       );
     }
+
+    // Sort pinned communities first (clone to avoid mutation)
+    result = [...result].sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return 0;
+    });
 
     return result;
   }, [activeSearch, filters, allCommunities]);
