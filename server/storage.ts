@@ -32,6 +32,7 @@ export interface IStorage {
   getAllApprovedCommunities(): Promise<ApprovedCommunity[]>;
   getApprovedCommunity(id: string): Promise<ApprovedCommunity | undefined>;
   getApprovedCommunitiesByUserId(userId: string): Promise<ApprovedCommunity[]>;
+  deleteApprovedCommunity(id: string): Promise<void>;
   
   createRejectedCommunity(community: InsertRejectedCommunity): Promise<RejectedCommunity>;
   getRejectedCommunitiesByUserId(userId: string): Promise<RejectedCommunity[]>;
@@ -123,6 +124,10 @@ export class DatabaseStorage implements IStorage {
 
   async getApprovedCommunitiesByUserId(userId: string): Promise<ApprovedCommunity[]> {
     return db.select().from(approvedCommunities).where(eq(approvedCommunities.userId, userId));
+  }
+
+  async deleteApprovedCommunity(id: string): Promise<void> {
+    await db.delete(approvedCommunities).where(eq(approvedCommunities.id, id));
   }
 
   async createRejectedCommunity(community: InsertRejectedCommunity): Promise<RejectedCommunity> {

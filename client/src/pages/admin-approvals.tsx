@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle, XCircle, Clock, Users, ExternalLink, RefreshCw, Shield, Lock, LogIn, Pencil, Save } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Users, ExternalLink, RefreshCw, Shield, Lock, LogIn, Pencil, Save, Trash2, ListChecks } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
@@ -25,6 +26,21 @@ interface PendingCommunity {
   imageUrl: string | null;
   submittedBy: string | null;
   submittedAt: string;
+}
+
+interface ApprovedCommunity {
+  id: string;
+  name: string;
+  platform: string;
+  memberCount: number;
+  description: string;
+  tags: string[];
+  category: string;
+  inviteLink: string;
+  visibility: string;
+  imageUrl: string | null;
+  userId: string | null;
+  approvedAt: string;
 }
 
 export default function AdminApprovals() {
@@ -48,6 +64,10 @@ export default function AdminApprovals() {
     category: "",
     visibility: "",
   });
+  
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingCommunityId, setDeletingCommunityId] = useState<string | null>(null);
+  const [deletingCommunityName, setDeletingCommunityName] = useState("");
 
   const handleLogin = async () => {
     if (!passwordInput.trim()) {
@@ -89,7 +109,7 @@ export default function AdminApprovals() {
     }
   };
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data: pendingData, isLoading: pendingLoading, error: pendingError, refetch: refetchPending } = useQuery({
     queryKey: ["pending-communities", adminPassword],
     queryFn: async () => {
       const response = await fetch("/api/admin/pending", {
@@ -100,6 +120,21 @@ export default function AdminApprovals() {
       if (!response.ok) throw new Error("Failed to fetch pending communities");
       const data = await response.json();
       return data.communities as PendingCommunity[];
+    },
+    enabled: isAuthenticated,
+  });
+
+  const { data: approvedData, isLoading: approvedLoading, error: approvedError, refetch: refetchApproved } = useQuery({
+    queryKey: ["admin-approved-communities", adminPassword],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/approved", {
+        headers: {
+          "Authorization": `Bearer ${adminPassword}`,
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch approved communities");
+      const data = await response.json();
+      return data.communities as ApprovedCommunity[];
     },
     enabled: isAuthenticated,
   });
@@ -243,6 +278,49 @@ export default function AdminApprovals() {
     });
   };
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/admin/approved/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${adminPassword}`,
+        },
+      });
+      if (!response.ok) throw new Error("Failed to delete community");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-approved-communities"] });
+      queryClient.invalidateQueries({ queryKey: ["approved-communities"] });
+      setDeleteDialogOpen(false);
+      setDeletingCommunityId(null);
+      setDeletingCommunityName("");
+      toast({
+        title: "Deleted",
+        description: "Community has been permanently removed.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete community.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleOpenDeleteDialog = (community: ApprovedCommunity) => {
+    setDeletingCommunityId(community.id);
+    setDeletingCommunityName(community.name);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingCommunityId) {
+      deleteMutation.mutate(deletingCommunityId);
+    }
+  };
+
   const categories = [
     "Study Groups",
     "Coding & Tech",
@@ -352,7 +430,10 @@ export default function AdminApprovals() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => refetch()}
+              onClick={() => {
+                refetchPending();
+                refetchApproved();
+              }}
               className="border-black/20 gap-2"
             >
               <RefreshCw className="h-4 w-4" />
@@ -361,34 +442,53 @@ export default function AdminApprovals() {
           </div>
         </div>
 
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
-          </div>
-        ) : error ? (
-          <Card className="bg-red-50 border-red-200">
-            <CardContent className="py-10 text-center">
-              <p className="text-red-600">Failed to load pending communities. Please try again.</p>
-            </CardContent>
-          </Card>
-        ) : data && data.length === 0 ? (
-          <Card className="bg-white border-black/10 rounded-3xl">
-            <CardContent className="py-20 text-center">
-              <Clock className="w-16 h-16 text-black/20 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-black uppercase mb-2">No Pending Submissions</h3>
-              <p className="text-black/60">All communities have been reviewed. Check back later!</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 bg-[#FFC400]/10 p-4 rounded-2xl border border-[#FFC400]/30">
-              <Clock className="h-5 w-5 text-[#FFC400]" />
-              <span className="font-bold text-black">
-                {data?.length} pending submission{data?.length !== 1 ? "s" : ""} awaiting review
-              </span>
-            </div>
+        <Tabs defaultValue="pending" className="w-full">
+          <TabsList className="mb-8 bg-black/5 p-1 rounded-2xl">
+            <TabsTrigger 
+              value="pending" 
+              className="rounded-xl px-6 py-3 font-bold uppercase tracking-wider data-[state=active]:bg-[#FFC400] data-[state=active]:text-black"
+            >
+              <Clock className="w-4 h-4 mr-2" />
+              Pending ({pendingData?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger 
+              value="approved" 
+              className="rounded-xl px-6 py-3 font-bold uppercase tracking-wider data-[state=active]:bg-[#FFC400] data-[state=active]:text-black"
+            >
+              <ListChecks className="w-4 h-4 mr-2" />
+              Approved ({approvedData?.length || 0})
+            </TabsTrigger>
+          </TabsList>
 
-            {data?.map((community) => (
+          <TabsContent value="pending">
+            {pendingLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+              </div>
+            ) : pendingError ? (
+              <Card className="bg-red-50 border-red-200">
+                <CardContent className="py-10 text-center">
+                  <p className="text-red-600">Failed to load pending communities. Please try again.</p>
+                </CardContent>
+              </Card>
+            ) : pendingData && pendingData.length === 0 ? (
+              <Card className="bg-white border-black/10 rounded-3xl">
+                <CardContent className="py-20 text-center">
+                  <Clock className="w-16 h-16 text-black/20 mx-auto mb-6" />
+                  <h3 className="text-2xl font-bold text-black uppercase mb-2">No Pending Submissions</h3>
+                  <p className="text-black/60">All communities have been reviewed. Check back later!</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 bg-[#FFC400]/10 p-4 rounded-2xl border border-[#FFC400]/30">
+                  <Clock className="h-5 w-5 text-[#FFC400]" />
+                  <span className="font-bold text-black">
+                    {pendingData?.length} pending submission{pendingData?.length !== 1 ? "s" : ""} awaiting review
+                  </span>
+                </div>
+
+                {pendingData?.map((community: PendingCommunity) => (
               <Card key={community.id} className="bg-white border-black/10 rounded-3xl overflow-hidden shadow-lg">
                 <CardHeader className="bg-gradient-to-r from-[#0A0A0A] to-[#1A1A1A] text-white p-6">
                   <div className="flex items-start justify-between">
@@ -499,8 +599,134 @@ export default function AdminApprovals() {
                 </CardContent>
               </Card>
             ))}
-          </div>
-        )}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="approved">
+            {approvedLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+              </div>
+            ) : approvedError ? (
+              <Card className="bg-red-50 border-red-200">
+                <CardContent className="py-10 text-center">
+                  <p className="text-red-600">Failed to load approved communities. Please try again.</p>
+                </CardContent>
+              </Card>
+            ) : approvedData && approvedData.length === 0 ? (
+              <Card className="bg-white border-black/10 rounded-3xl">
+                <CardContent className="py-20 text-center">
+                  <ListChecks className="w-16 h-16 text-black/20 mx-auto mb-6" />
+                  <h3 className="text-2xl font-bold text-black uppercase mb-2">No Approved Communities</h3>
+                  <p className="text-black/60">No communities have been approved yet.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 bg-green-500/10 p-4 rounded-2xl border border-green-500/30">
+                  <ListChecks className="h-5 w-5 text-green-600" />
+                  <span className="font-bold text-black">
+                    {approvedData?.length} approved communit{approvedData?.length !== 1 ? "ies" : "y"} live
+                  </span>
+                </div>
+
+                {approvedData?.map((community: ApprovedCommunity) => (
+                  <Card key={community.id} className="bg-white border-black/10 rounded-3xl overflow-hidden shadow-lg">
+                    <CardHeader className="bg-gradient-to-r from-green-800 to-green-900 text-white p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-4">
+                          {community.imageUrl && (
+                            <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 border-green-600">
+                              <img 
+                                src={community.imageUrl} 
+                                alt={community.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          <div>
+                            <CardTitle className="text-2xl font-bold uppercase tracking-wide flex items-center gap-3">
+                              {community.name}
+                              {getPlatformBadge(community.platform)}
+                            </CardTitle>
+                            <CardDescription className="text-green-200 mt-2">
+                              Approved on {new Date(community.approvedAt).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })}
+                            </CardDescription>
+                          </div>
+                        </div>
+                        {getVisibilityBadge(community.visibility)}
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-6 space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Category</h4>
+                          <p className="text-black font-medium">{community.category}</p>
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Member Count</h4>
+                          <p className="text-black font-medium flex items-center gap-2">
+                            <Users className="h-4 w-4" />
+                            {community.memberCount.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Description</h4>
+                        <p className="text-black/80 line-clamp-3">{community.description}</p>
+                      </div>
+
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Tags</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {community.tags.map((tag: string) => (
+                            <span
+                              key={tag}
+                              className="px-3 py-1 bg-black/5 text-black/70 text-sm rounded-full border border-black/10"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Invite Link</h4>
+                        <a
+                          href={community.inviteLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 flex items-center gap-2 break-all"
+                        >
+                          {community.inviteLink}
+                          <ExternalLink className="h-4 w-4 flex-shrink-0" />
+                        </a>
+                      </div>
+
+                      <div className="flex gap-3 pt-4 border-t border-black/10">
+                        <Button
+                          onClick={() => handleOpenDeleteDialog(community)}
+                          disabled={deleteMutation.isPending}
+                          variant="outline"
+                          className="flex-1 border-red-300 text-red-600 hover:bg-red-50 font-bold uppercase tracking-wider rounded-xl h-12"
+                        >
+                          <Trash2 className="mr-2 h-5 w-5" />
+                          Delete Permanently
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
 
         <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
           <DialogContent className="bg-white rounded-3xl max-w-md shadow-2xl border-0 p-8">
@@ -683,6 +909,37 @@ export default function AdminApprovals() {
               >
                 <Save className="mr-2 h-5 w-5" />
                 {editMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <DialogContent className="bg-white rounded-3xl max-w-md shadow-2xl border-0 p-8">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black uppercase tracking-tight text-black text-center">Delete Community</DialogTitle>
+              <DialogDescription className="text-black/70 mt-3 text-center">
+                Are you sure you want to permanently delete "{deletingCommunityName}"? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex gap-3 justify-center items-center mx-auto w-full mt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDeleteDialogOpen(false)}
+                disabled={deleteMutation.isPending}
+                className="border-black/30 text-black hover:bg-gray-100 font-bold uppercase tracking-wider px-8 rounded-2xl h-12"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={deleteMutation.isPending}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-wider px-8 rounded-2xl h-12"
+              >
+                <Trash2 className="mr-2 h-5 w-5" />
+                {deleteMutation.isPending ? "Deleting..." : "Delete Forever"}
               </Button>
             </div>
           </DialogContent>

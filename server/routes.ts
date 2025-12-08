@@ -211,6 +211,34 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/admin/approved", adminAuth, async (req, res) => {
+    try {
+      const communities = await storage.getAllApprovedCommunities();
+      res.json({ success: true, communities });
+    } catch (error) {
+      console.error("Error fetching approved communities:", error);
+      res.status(500).json({ success: false, error: "Failed to fetch approved communities" });
+    }
+  });
+
+  app.delete("/api/admin/approved/:id", adminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const community = await storage.getApprovedCommunity(id);
+      
+      if (!community) {
+        return res.status(404).json({ success: false, error: "Community not found" });
+      }
+
+      await storage.deleteApprovedCommunity(id);
+
+      res.json({ success: true, message: "Community deleted permanently" });
+    } catch (error) {
+      console.error("Error deleting approved community:", error);
+      res.status(500).json({ success: false, error: "Failed to delete community" });
+    }
+  });
+
   app.get("/api/user/submissions/:userId", async (req, res) => {
     try {
       const { userId } = req.params;
