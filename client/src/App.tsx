@@ -13,6 +13,8 @@ import FAQ from "@/pages/faq";
 import Login from "@/pages/login";
 import AdminApprovals from "@/pages/admin-approvals";
 import Dashboard from "@/pages/dashboard";
+import SubmissionStatus from "@/pages/submission-status";
+import MyCommunities from "@/pages/my-communities";
 
 function Router() {
   return (
@@ -23,6 +25,8 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/submission-status" component={SubmissionStatus} />
+      <Route path="/my-communities" component={MyCommunities} />
       <Route path="/admin/approvals" component={AdminApprovals} />
       <Route component={NotFound} />
     </Switch>

@@ -14,7 +14,24 @@ Preferred communication style: Simple, everyday language.
 
 ### Completed Features
 
-1. **Admin Search System and Unique Tag ID**
+1. **Dashboard Separation into Distinct Pages**
+   - **Submission Status page** (`/submission-status`): Dedicated page for tracking all submissions
+     - Displays pending, approved, and rejected submissions in separate sections
+     - Shows rejection reasons for rejected submissions
+     - Stats summary showing counts for each status
+     - Detail modal for viewing full submission information
+   - **My Communities page** (`/my-communities`): Dedicated page for managing approved communities
+     - List of active communities using CommunityCard display
+     - Edit functionality (name, invite link, tags, image only)
+     - Delete functionality with soft-delete (keeps history)
+     - Deleted communities history section (read-only)
+   - **Dashboard page** (`/dashboard`): Simplified overview
+     - User profile card with account details
+     - Stats grid showing active, pending, approved, rejected counts
+     - Quick access cards linking to Submission Status and My Communities
+     - Sidebar navigation with links to all management pages
+
+2. **Admin Search System and Unique Tag ID**
    - Unique Admin Tag IDs generated for every community submission (format: XXCM0001)
    - Category-based prefixes: SG=Study Groups, CT=Coding & Tech, TF=Trading & Finance, etc.
    - Search functionality in admin panel for both Pending and Approved tabs
@@ -24,7 +41,7 @@ Preferred communication style: Simple, everyday language.
    - Tag IDs preserved when moving communities between approval states
    - Existing communities backfilled with appropriate tag IDs
 
-2. **My Communities Management Section**
+3. **My Communities Management Section**
    - Users can manage their approved communities from the dashboard
    - Active communities displayed using CommunityCard component (same as homepage)
    - Edit functionality restricted to: name, invite link, logo/icon, tags only
