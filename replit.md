@@ -82,12 +82,13 @@ The build process uses Vite for the client (to `dist/public`) and esbuild for th
 - Database: Added isPinned column to approved_communities table (default: false)
 - API endpoint: PATCH /api/admin/approved/:id/pin with { isPinned: boolean } body
 
-### Dedicated Boost Center (Separate Section)
-- Created dedicated "/boost" page for boosting communities (removed from My Communities)
-- Futuristic cyan/blue neon design with glowing effects and modern UI
+### Dedicated Bump Center (Separate Section)
+- Created dedicated "/boost" page for bumping communities (removed from My Communities)
+- Futuristic yellow/orange neon design with glowing effects and modern UI
+- Larger fonts and elements for better readability
 - Compact cards showing only: community icon, name, and Tag ID
-- Prominent "Boost Now" button with neon glow effect (cyan gradient)
-- Shows boost status: available or cooldown timer
-- Currently boosted community displays with "BOOSTED" badge
-- Dashboard sidebar includes new "Boost" tab with gradient text
-- Quick access card on dashboard overview with neon styling
+- Prominent "Bump Now" button with neon glow effect (yellow/orange gradient)
+- Shows bump status: available or cooldown timer
+- Currently bumped community displays with "BUMPED" badge
+- Dashboard sidebar includes new "Bump" tab with yellow gradient text
+- Quick access card on dashboard overview with yellow neon styling

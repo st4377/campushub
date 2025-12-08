@@ -220,9 +220,9 @@ export default function Dashboard() {
             }}
             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-[#2a2a2a] transition-all group"
           >
-            <Zap className="w-4 h-4 text-cyan-400 group-hover:text-cyan-300" />
-            <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-semibold">
-              Boost
+            <Zap className="w-4 h-4 text-[#FFC400] group-hover:text-[#FFD700]" />
+            <span className="bg-gradient-to-r from-[#FFC400] to-[#FF8C00] bg-clip-text text-transparent font-semibold">
+              Bump
             </span>
           </button>
         </div>
@@ -524,20 +524,20 @@ export default function Dashboard() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setLocation("/boost")}
-                    className="bg-gradient-to-r from-cyan-500/10 to-blue-600/5 rounded-lg border border-cyan-500/30 p-6 text-left hover:border-cyan-400 transition-colors group"
-                    style={{ boxShadow: "0 0 20px rgba(34, 211, 238, 0.1)" }}
+                    className="bg-gradient-to-r from-[#FFC400]/10 to-[#FF8C00]/5 rounded-lg border border-[#FFC400]/30 p-6 text-left hover:border-[#FFC400] transition-colors group"
+                    style={{ boxShadow: "0 0 20px rgba(255, 196, 0, 0.1)" }}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FFC400] to-[#FF8C00] flex items-center justify-center">
                           <Zap className="w-6 h-6 text-black" />
                         </div>
                         <div>
-                          <h3 className="font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Boost Center</h3>
-                          <p className="text-sm text-gray-400">Boost your community to the top</p>
+                          <h3 className="font-semibold bg-gradient-to-r from-[#FFC400] to-[#FF8C00] bg-clip-text text-transparent">Bump Center</h3>
+                          <p className="text-sm text-gray-400">Bump your community to the top</p>
                         </div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-cyan-400" />
+                      <ChevronRight className="w-5 h-5 text-[#FFC400]" />
                     </div>
                   </motion.button>
 

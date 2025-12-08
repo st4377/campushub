@@ -59,21 +59,21 @@ export default function Boost() {
       });
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error || "Failed to boost community");
+        throw new Error(data.error || "Failed to bump community");
       }
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-communities", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["approved-communities"] });
-      toast.success("Community boosted to the top!");
+      toast.success("Community bumped to the top!");
     },
     onError: (error: Error) => {
       toast.error(error.message);
     },
   });
 
-  const handleBoost = (communityId: string) => {
+  const handleBump = (communityId: string) => {
     bumpMutation.mutate(communityId);
   };
 
@@ -88,7 +88,7 @@ export default function Boost() {
 
   useEffect(() => {
     if (!isLoading && !user) {
-      toast.error("Please log in to boost your communities");
+      toast.error("Please log in to bump your communities");
       setLocation("/login");
     }
   }, [user, isLoading, setLocation]);
@@ -96,55 +96,55 @@ export default function Boost() {
   if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FFC400]"></div>
       </div>
     );
   }
 
   const activeCommunities = userCommunities?.active || [];
   const bumpStatus = userCommunities?.bumpStatus;
-  const currentlyBoostedId = bumpStatus?.lastBumpCommunityId;
+  const currentlyBumpedId = bumpStatus?.lastBumpCommunityId;
 
   return (
     <Layout hideFooter>
       <div className="min-h-[calc(100vh-64px)] bg-[#0a0a0f]">
-        <div className="max-w-4xl mx-auto p-4 lg:p-8">
+        <div className="max-w-5xl mx-auto p-6 lg:p-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center gap-4 mb-8">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setLocation("/dashboard")}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-white text-base"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
+                <ArrowLeft className="w-5 h-5 mr-2" />
                 Back to Dashboard
               </Button>
             </div>
 
-            <div className="text-center mb-10">
+            <div className="text-center mb-12">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.1 }}
-                className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/30 mb-4"
+                className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-[#FFC400]/20 to-[#FF8C00]/20 border border-[#FFC400]/30 mb-6"
                 style={{
-                  boxShadow: "0 0 40px rgba(34, 211, 238, 0.2), inset 0 0 20px rgba(34, 211, 238, 0.1)"
+                  boxShadow: "0 0 50px rgba(255, 196, 0, 0.25), inset 0 0 25px rgba(255, 196, 0, 0.1)"
                 }}
               >
-                <Rocket className="w-10 h-10 text-cyan-400" />
+                <Rocket className="w-12 h-12 text-[#FFC400]" />
               </motion.div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                  Boost Center
+              <h1 className="text-4xl lg:text-5xl font-bold text-white mb-3">
+                <span className="bg-gradient-to-r from-[#FFC400] to-[#FF8C00] bg-clip-text text-transparent">
+                  Bump Center
                 </span>
               </h1>
-              <p className="text-gray-400 max-w-md mx-auto">
-                Boost your community to the top of the homepage for 24 hours
+              <p className="text-gray-400 text-lg max-w-lg mx-auto">
+                Bump your community to the top of the homepage for 24 hours
               </p>
             </div>
 
@@ -153,38 +153,38 @@ export default function Boost() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className={`rounded-xl p-4 mb-8 border ${
+                className={`rounded-2xl p-6 mb-10 border ${
                   bumpStatus.canBump
-                    ? "bg-gradient-to-r from-cyan-500/10 to-blue-600/5 border-cyan-500/30"
+                    ? "bg-gradient-to-r from-[#FFC400]/10 to-[#FF8C00]/5 border-[#FFC400]/30"
                     : "bg-gradient-to-r from-gray-800/50 to-gray-900/50 border-gray-700"
                 }`}
                 style={bumpStatus.canBump ? {
-                  boxShadow: "0 0 30px rgba(34, 211, 238, 0.1)"
+                  boxShadow: "0 0 40px rgba(255, 196, 0, 0.1)"
                 } : {}}
               >
-                <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                <div className="flex items-center gap-5">
+                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
                     bumpStatus.canBump
-                      ? "bg-cyan-500/20"
+                      ? "bg-[#FFC400]/20"
                       : "bg-gray-700/50"
                   }`}>
                     {bumpStatus.canBump ? (
-                      <Zap className="w-6 h-6 text-cyan-400" />
+                      <Zap className="w-7 h-7 text-[#FFC400]" />
                     ) : (
-                      <Clock className="w-6 h-6 text-gray-400" />
+                      <Clock className="w-7 h-7 text-gray-400" />
                     )}
                   </div>
                   <div className="flex-1">
                     {bumpStatus.canBump ? (
                       <>
-                        <p className="text-cyan-400 font-semibold">Boost Available</p>
-                        <p className="text-gray-400 text-sm">Select a community below to boost it to the top</p>
+                        <p className="text-[#FFC400] font-bold text-lg">Bump Available</p>
+                        <p className="text-gray-400 text-base">Select a community below to bump it to the top</p>
                       </>
                     ) : (
                       <>
-                        <p className="text-gray-300 font-semibold">Boost on Cooldown</p>
-                        <p className="text-gray-500 text-sm">
-                          Next boost available in <span className="text-cyan-400 font-mono">{bumpStatus.hoursRemaining}h</span>
+                        <p className="text-gray-300 font-bold text-lg">Bump on Cooldown</p>
+                        <p className="text-gray-500 text-base">
+                          Next bump available in <span className="text-[#FFC400] font-mono font-bold">{bumpStatus.hoursRemaining}h</span>
                         </p>
                       </>
                     )}
@@ -194,32 +194,32 @@ export default function Boost() {
             )}
 
             {communitiesLoading ? (
-              <div className="flex items-center justify-center py-16">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-400"></div>
+              <div className="flex items-center justify-center py-20">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#FFC400]"></div>
               </div>
             ) : activeCommunities.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="bg-[#111118] rounded-xl border border-gray-800 p-12 text-center"
+                className="bg-[#111118] rounded-2xl border border-gray-800 p-16 text-center"
               >
-                <div className="w-20 h-20 rounded-full bg-gray-800 flex items-center justify-center mx-auto mb-4">
-                  <Zap className="w-10 h-10 text-gray-600" />
+                <div className="w-24 h-24 rounded-full bg-gray-800 flex items-center justify-center mx-auto mb-6">
+                  <Zap className="w-12 h-12 text-gray-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">No Communities to Boost</h3>
-                <p className="text-gray-500 mb-6">Get your communities approved first to boost them</p>
+                <h3 className="text-xl font-bold text-white mb-3">No Communities to Bump</h3>
+                <p className="text-gray-500 text-base mb-8">Get your communities approved first to bump them</p>
                 <Button
                   onClick={() => setLocation("/list-community")}
-                  className="bg-cyan-500 hover:bg-cyan-600 text-black font-semibold rounded-lg"
+                  className="bg-[#FFC400] hover:bg-[#FFD700] text-black font-bold rounded-xl px-8 py-3 text-base"
                 >
                   List a Community
                 </Button>
               </motion.div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {activeCommunities.map((community, index) => {
-                  const isBoosted = community.id === currentlyBoostedId && !bumpStatus?.canBump;
+                  const isBumped = community.id === currentlyBumpedId && !bumpStatus?.canBump;
                   
                   return (
                     <motion.div
@@ -227,24 +227,24 @@ export default function Boost() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 + index * 0.05 }}
-                      className={`relative group rounded-xl p-4 border transition-all duration-300 ${
-                        isBoosted
-                          ? "bg-gradient-to-br from-cyan-500/10 to-blue-600/5 border-cyan-500/40"
-                          : "bg-[#111118] border-gray-800 hover:border-cyan-500/30"
+                      className={`relative group rounded-2xl p-6 border transition-all duration-300 ${
+                        isBumped
+                          ? "bg-gradient-to-br from-[#FFC400]/10 to-[#FF8C00]/5 border-[#FFC400]/40"
+                          : "bg-[#111118] border-gray-800 hover:border-[#FFC400]/30"
                       }`}
-                      style={isBoosted ? {
-                        boxShadow: "0 0 25px rgba(34, 211, 238, 0.15)"
+                      style={isBumped ? {
+                        boxShadow: "0 0 30px rgba(255, 196, 0, 0.15)"
                       } : {}}
                     >
-                      {isBoosted && (
-                        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-cyan-500 text-black text-xs font-bold rounded-full flex items-center gap-1">
-                          <Zap className="w-3 h-3" />
-                          BOOSTED
+                      {isBumped && (
+                        <div className="absolute -top-3 -right-3 px-3 py-1 bg-[#FFC400] text-black text-sm font-bold rounded-full flex items-center gap-1.5">
+                          <Zap className="w-4 h-4" />
+                          BUMPED
                         </div>
                       )}
                       
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-gray-700">
+                      <div className="flex items-center gap-4 mb-5">
+                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 border-gray-700">
                           {community.imageUrl ? (
                             <img 
                               src={community.imageUrl} 
@@ -252,8 +252,8 @@ export default function Boost() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-cyan-500/20 to-blue-600/20 flex items-center justify-center">
-                              <span className="text-lg font-bold text-cyan-400">
+                            <div className="w-full h-full bg-gradient-to-br from-[#FFC400]/20 to-[#FF8C00]/20 flex items-center justify-center">
+                              <span className="text-xl font-bold text-[#FFC400]">
                                 {getInitials(community.name)}
                               </span>
                             </div>
@@ -261,36 +261,36 @@ export default function Boost() {
                         </div>
                         
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-white truncate text-sm">
+                          <h3 className="font-bold text-white truncate text-lg">
                             {community.name}
                           </h3>
-                          <p className="text-xs text-cyan-400/80 font-mono">
+                          <p className="text-base text-[#FFC400]/80 font-mono">
                             #{community.adminTagId || "---"}
                           </p>
                         </div>
                       </div>
 
                       <button
-                        onClick={() => handleBoost(community.id)}
-                        disabled={!bumpStatus?.canBump || bumpMutation.isPending || isBoosted}
-                        className={`w-full py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 ${
-                          isBoosted
-                            ? "bg-cyan-500/20 text-cyan-400 cursor-default border border-cyan-500/30"
+                        onClick={() => handleBump(community.id)}
+                        disabled={!bumpStatus?.canBump || bumpMutation.isPending || isBumped}
+                        className={`w-full py-3.5 px-5 rounded-xl font-bold text-base transition-all duration-300 flex items-center justify-center gap-2.5 ${
+                          isBumped
+                            ? "bg-[#FFC400]/20 text-[#FFC400] cursor-default border border-[#FFC400]/30"
                             : bumpStatus?.canBump
-                              ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-black hover:from-cyan-400 hover:to-blue-500 cursor-pointer"
+                              ? "bg-gradient-to-r from-[#FFC400] to-[#FF8C00] text-black hover:from-[#FFD700] hover:to-[#FFA500] cursor-pointer"
                               : "bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700"
                         }`}
-                        style={bumpStatus?.canBump && !isBoosted ? {
-                          boxShadow: "0 0 20px rgba(34, 211, 238, 0.3), 0 0 40px rgba(34, 211, 238, 0.1)"
+                        style={bumpStatus?.canBump && !isBumped ? {
+                          boxShadow: "0 0 25px rgba(255, 196, 0, 0.4), 0 0 50px rgba(255, 196, 0, 0.15)"
                         } : {}}
                       >
-                        <Zap className={`w-4 h-4 ${bumpStatus?.canBump && !isBoosted ? "animate-pulse" : ""}`} />
+                        <Zap className={`w-5 h-5 ${bumpStatus?.canBump && !isBumped ? "animate-pulse" : ""}`} />
                         {bumpMutation.isPending ? (
-                          "Boosting..."
-                        ) : isBoosted ? (
-                          "Currently Boosted"
+                          "Bumping..."
+                        ) : isBumped ? (
+                          "Currently Bumped"
                         ) : bumpStatus?.canBump ? (
-                          "Boost Now"
+                          "Bump Now"
                         ) : (
                           "On Cooldown"
                         )}
@@ -305,17 +305,16 @@ export default function Boost() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="mt-10 p-4 rounded-xl bg-[#111118] border border-gray-800"
+              className="mt-12 p-6 rounded-2xl bg-[#111118] border border-gray-800"
             >
-              <h3 className="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
-                <Zap className="w-4 h-4 text-cyan-400" />
-                How Boost Works
+              <h3 className="text-base font-bold text-gray-300 mb-3 flex items-center gap-2">
+                <Zap className="w-5 h-5 text-[#FFC400]" />
+                How Bump Works
               </h3>
-              <ul className="text-xs text-gray-500 space-y-1">
-                <li>• Boosted communities appear after pinned ones on the homepage</li>
-                <li>• You can boost one community at a time</li>
-                <li>• 24-hour cooldown between boosts</li>
-                <li>• Boosting a new community replaces the previous boost</li>
+              <ul className="text-sm text-gray-500 space-y-2">
+                <li>You can bump one community at a time</li>
+                <li>24-hour cooldown between bumps</li>
+                <li>Bumping a new community replaces the previous bump</li>
               </ul>
             </motion.div>
           </motion.div>
