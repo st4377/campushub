@@ -146,6 +146,13 @@ export default function Boost() {
               <p className="text-gray-400 text-lg max-w-lg mx-auto">
                 Bump your community to the top of the homepage for 24 hours
               </p>
+              {bumpStatus && !bumpStatus.canBump && bumpStatus.hoursRemaining !== null && (
+                <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800/50 border border-gray-700">
+                  <Clock className="w-5 h-5 text-gray-400" />
+                  <span className="text-gray-400 text-base">Next bump in</span>
+                  <span className="text-[#FFC400] font-mono font-bold text-lg">{bumpStatus.hoursRemaining}h</span>
+                </div>
+              )}
             </div>
 
             {bumpStatus && (
