@@ -36,6 +36,7 @@ export default function Dashboard() {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [activeSection, setActiveSection] = useState<ActiveSection>("account");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isEmailRevealed, setIsEmailRevealed] = useState(false);
 
   const { data: submissionsData, isLoading: submissionsLoading } = useQuery({
     queryKey: ["user-submissions", user?.id],
@@ -151,7 +152,6 @@ export default function Dashboard() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-white font-semibold text-sm truncate">{user.fullName}</p>
-            <p className="text-gray-500 text-xs truncate">{user.email}</p>
           </div>
         </div>
       </div>
@@ -325,16 +325,16 @@ export default function Dashboard() {
                         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 -mt-10 lg:-mt-12">
                           <div className="flex items-end gap-4">
                             {/* Avatar */}
-                            <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-[#FFC400] to-[#FF8C00] flex items-center justify-center text-2xl lg:text-3xl font-bold text-black border-4 border-[#111] shadow-xl">
+                            <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-[#FFC400] to-[#FF8C00] flex items-center justify-center text-2xl lg:text-3xl font-bold text-black border-4 border-[#111] shadow-xl flex-shrink-0">
                               {getInitials(user.fullName)}
                             </div>
-                            <div className="pb-2">
-                              <h2 className="text-lg lg:text-xl font-bold text-white flex items-center gap-2">
-                                {user.fullName}
-                                <span className="text-gray-500 hidden sm:inline">•••</span>
+                            <div className="pb-2 pt-12 lg:pt-14">
+                              <h2 className="text-lg lg:text-xl font-bold text-white flex items-center gap-2 flex-wrap">
+                                <span className="break-words">{user.fullName}</span>
+                                <span className="text-gray-500">•••</span>
                               </h2>
                               <div className="flex items-center gap-2 mt-1">
-                                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                                <div className="w-3 h-3 rounded-full bg-green-500 flex-shrink-0"></div>
                                 <span className="text-sm text-gray-400">Online</span>
                               </div>
                             </div>
@@ -377,12 +377,27 @@ export default function Dashboard() {
                               Email
                             </p>
                             <p className="text-white font-medium truncate">
-                              <span className="hidden sm:inline">{maskEmail(user.email)}</span>
-                              <span className="sm:hidden">{user.email.length > 20 ? maskEmail(user.email) : user.email}</span>
-                              {" "}
-                              <button className="text-[#FFC400] text-sm hover:underline">
-                                Reveal
-                              </button>
+                              {isEmailRevealed ? (
+                                <>
+                                  {user.email}{" "}
+                                  <button 
+                                    onClick={() => setIsEmailRevealed(false)}
+                                    className="text-[#FFC400] text-sm hover:underline"
+                                  >
+                                    Hide
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  {maskEmail(user.email)}{" "}
+                                  <button 
+                                    onClick={() => setIsEmailRevealed(true)}
+                                    className="text-[#FFC400] text-sm hover:underline"
+                                  >
+                                    Reveal
+                                  </button>
+                                </>
+                              )}
                             </p>
                           </div>
                           <Button
