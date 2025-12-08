@@ -396,8 +396,15 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="pt-12 px-6 pb-8">
-                <div className="flex justify-between items-start mb-6">
+              <div className="pt-2 px-6 pb-8">
+                {selectedCommunity.adminTagId && (
+                  <div className="flex justify-end">
+                    <span className="text-[11px] font-mono text-gray-400 tracking-wider">
+                      Tag ID: {selectedCommunity.adminTagId}
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between items-start mb-6 mt-10">
                   <div>
                     <h2 className="text-2xl font-bold font-heading uppercase tracking-wide text-white flex items-center gap-3">
                       {selectedCommunity.name}
@@ -414,22 +421,15 @@ export default function Home() {
                       </span>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-3">
-                    {selectedCommunity.adminTagId && (
-                      <span className="text-sm font-mono text-white tracking-wider">
-                        Tag ID: {selectedCommunity.adminTagId}
+                  {selectedCommunity.isActive && (
+                    <span className="flex items-center gap-1.5 text-xs text-[#FFC400] font-bold uppercase tracking-wider bg-[#FFC400]/10 px-3 py-1 rounded-full border border-[#FFC400]/20">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFC400] opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FFC400]"></span>
                       </span>
-                    )}
-                    {selectedCommunity.isActive && (
-                      <span className="flex items-center gap-1.5 text-xs text-[#FFC400] font-bold uppercase tracking-wider bg-[#FFC400]/10 px-3 py-1 rounded-full border border-[#FFC400]/20">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFC400] opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FFC400]"></span>
-                        </span>
-                        Active Now
-                      </span>
-                    )}
-                  </div>
+                      Active Now
+                    </span>
+                  )}
                 </div>
 
                 <p className="text-gray-300 leading-relaxed mb-8 text-lg">
