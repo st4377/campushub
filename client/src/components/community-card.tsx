@@ -2,7 +2,7 @@ import { Community, getPlatformColor, getPlatformIcon, CommunityVisibility } fro
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Star, Users, ExternalLink, MoreHorizontal, Hexagon, Globe, User } from "lucide-react";
+import { Star, Users, ExternalLink, MoreHorizontal, Hexagon, Globe, User, Pin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const getVisibilityInfo = (visibility: CommunityVisibility) => {
@@ -49,6 +49,14 @@ export function CommunityCard({ community, onClick }: CommunityCardProps) {
 
       {/* Decorative corner */}
       <div className="absolute -top-6 -right-6 w-12 h-12 bg-white/5 rotate-45 group-hover:bg-[#FFC400]/20 transition-colors"></div>
+
+      {/* Pinned Badge */}
+      {community.isPinned && (
+        <div className="absolute top-9 right-3 z-30 flex items-center gap-1 px-2 py-1 bg-[#FFC400] text-black rounded-md shadow-lg">
+          <Pin className="h-3 w-3 fill-current" />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Pinned</span>
+        </div>
+      )}
 
       <CardHeader className="pb-3 pt-10 px-6 flex flex-row items-start justify-between gap-4 relative z-10">
         <div className="flex items-center gap-4">
