@@ -326,7 +326,7 @@ export default function Dashboard() {
 
                   <div className="px-4 lg:px-6 pb-6">
                     <div className="flex items-end gap-4 -mt-10 lg:-mt-12">
-                      <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-[#FFC400] to-[#FF8C00] flex items-center justify-center text-2xl lg:text-3xl font-bold text-black border-[3px] border-black shadow-xl flex-shrink-0 ring-2 ring-[#111]">
+                      <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-[#FFC400] to-[#FF8C00] flex items-center justify-center text-2xl lg:text-3xl font-bold text-black border-[4px] border-black shadow-xl flex-shrink-0 ring-4 ring-black">
                         {getInitials(user.fullName)}
                       </div>
                       <div className="pb-2 pt-12 lg:pt-14">
