@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle, XCircle, Clock, Users, ExternalLink, RefreshCw, Shield, Lock, LogIn, Pencil, Save, Trash2, ListChecks, Search } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Users, ExternalLink, RefreshCw, Shield, Lock, LogIn, Pencil, Save, Trash2, ListChecks, Search, Pin, PinOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
 
@@ -42,6 +42,7 @@ interface ApprovedCommunity {
   visibility: string;
   imageUrl: string | null;
   userId: string | null;
+  isPinned: boolean;
   approvedAt: string;
 }
 
@@ -354,6 +355,38 @@ export default function AdminApprovals() {
       deleteMutation.mutate(deletingCommunityId);
     }
   };
+
+  const pinMutation = useMutation({
+    mutationFn: async ({ id, isPinned }: { id: string; isPinned: boolean }) => {
+      const response = await fetch(`/api/admin/approved/${id}/pin`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${adminPassword}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isPinned }),
+      });
+      if (!response.ok) throw new Error("Failed to update pin status");
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-approved-communities"] });
+      queryClient.invalidateQueries({ queryKey: ["approved-communities"] });
+      toast({
+        title: variables.isPinned ? "Pinned" : "Unpinned",
+        description: variables.isPinned 
+          ? "Community is now pinned to the top of the homepage." 
+          : "Community has been unpinned.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update pin status.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const categories = [
     "Study Groups",
@@ -734,8 +767,14 @@ export default function AdminApprovals() {
                                 {community.name}
                                 {getPlatformBadge(community.platform)}
                               </CardTitle>
+                              {community.isPinned && (
+                                <Badge className="bg-[#FFC400] text-black font-bold text-xs tracking-wider">
+                                  <Pin className="h-3 w-3 mr-1" />
+                                  PINNED
+                                </Badge>
+                              )}
                               {community.adminTagId && (
-                                <Badge className="bg-[#FFC400] text-black font-mono text-xs tracking-wider hover:bg-[#FFD700]">
+                                <Badge className="bg-white/20 text-white font-mono text-xs tracking-wider">
                                   {community.adminTagId}
                                 </Badge>
                               )}
@@ -801,13 +840,35 @@ export default function AdminApprovals() {
 
                       <div className="flex gap-3 pt-4 border-t border-black/10">
                         <Button
+                          onClick={() => pinMutation.mutate({ id: community.id, isPinned: !community.isPinned })}
+                          disabled={pinMutation.isPending || deleteMutation.isPending}
+                          variant="outline"
+                          className={`flex-1 font-bold uppercase tracking-wider rounded-xl h-12 ${
+                            community.isPinned 
+                              ? "border-[#FFC400] text-[#FFC400] bg-[#FFC400]/10 hover:bg-[#FFC400]/20" 
+                              : "border-black/30 text-black/70 hover:bg-black/5"
+                          }`}
+                        >
+                          {community.isPinned ? (
+                            <>
+                              <PinOff className="mr-2 h-5 w-5" />
+                              Unpin
+                            </>
+                          ) : (
+                            <>
+                              <Pin className="mr-2 h-5 w-5" />
+                              Pin to Top
+                            </>
+                          )}
+                        </Button>
+                        <Button
                           onClick={() => handleOpenDeleteDialog(community)}
-                          disabled={deleteMutation.isPending}
+                          disabled={deleteMutation.isPending || pinMutation.isPending}
                           variant="outline"
                           className="flex-1 border-red-300 text-red-600 hover:bg-red-50 font-bold uppercase tracking-wider rounded-xl h-12"
                         >
                           <Trash2 className="mr-2 h-5 w-5" />
-                          Delete Permanently
+                          Delete
                         </Button>
                       </div>
                     </CardContent>
