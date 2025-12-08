@@ -132,7 +132,7 @@ export default function Boost() {
 
   return (
     <Layout hideFooter>
-      <div className="min-h-[calc(100vh-64px)] bg-[#0a0a0f]">
+      <div className="min-h-[calc(100vh-64px)] bg-[#1a1a1a]">
         <div className="max-w-5xl mx-auto p-6 lg:p-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -236,7 +236,7 @@ export default function Boost() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="bg-[#111118] rounded-2xl border border-gray-800 p-16 text-center"
+                className="bg-[#111] rounded-2xl border border-[#2a2a2a] p-16 text-center"
               >
                 <div className="w-24 h-24 rounded-full bg-gray-800 flex items-center justify-center mx-auto mb-6">
                   <Zap className="w-12 h-12 text-gray-600" />
@@ -264,7 +264,7 @@ export default function Boost() {
                       className={`relative group rounded-2xl p-6 border transition-all duration-300 ${
                         isBumped
                           ? "bg-gradient-to-br from-[#FFC400]/10 to-[#FF8C00]/5 border-[#FFC400]/40"
-                          : "bg-[#111118] border-gray-800 hover:border-[#FFC400]/30"
+                          : "bg-[#111] border-[#2a2a2a] hover:border-[#FFC400]/30"
                       }`}
                       style={isBumped ? {
                         boxShadow: "0 0 30px rgba(255, 196, 0, 0.15)"
@@ -339,7 +339,7 @@ export default function Boost() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="mt-12 p-6 rounded-2xl bg-[#111118] border border-gray-800"
+              className="mt-12 p-6 rounded-2xl bg-[#111] border border-[#2a2a2a]"
             >
               <h3 className="text-base font-bold text-gray-300 mb-3 flex items-center gap-2">
                 <Zap className="w-5 h-5 text-[#FFC400]" />
