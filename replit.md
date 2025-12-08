@@ -56,3 +56,28 @@ The build process uses Vite for the client (to `dist/public`) and esbuild for th
 -   **tsx**: TypeScript execution
 -   **esbuild**: JavaScript bundler
 -   **@replit/vite-plugin-***: Replit-specific plugins
+
+## Recent Changes
+
+### Admin Dashboard Compact Grid Layout
+- Redesigned admin dashboard cards from oversized full-width to compact grid layout
+- New AdminCommunityCard component: reusable compact card for both pending and approved tabs
+- Grid layout: 1 column (mobile), 2 columns (md), 3 columns (lg), 4 columns (xl)
+- Card displays: name, logo/initials, platform badge, visibility badge, admin tag ID, category, member count, description preview, tags, invite link
+- Action buttons: Edit/Approve/Reject for pending; Pin/Unpin/Delete for approved
+- Dark theme matching homepage cards with hover effects
+
+### User Bump Community Feature
+- Community owners can bump their community to boost it higher on the homepage
+- Bumped communities appear after pinned ones but before regular communities
+- 24-hour cooldown per user from exact moment of bump (not daily reset)
+- Users can only have ONE bumped community at a time (bumping new community clears previous)
+- Database: Added bumpedAt to approved_communities, lastBumpAt and lastBumpCommunityId to users
+- API endpoint: POST /api/user/communities/:id/bump with user authentication
+- My Communities page shows Bump button with cooldown timer
+
+### Admin Pin Community Feature
+- Admins can pin communities to keep them fixed at the first position on the homepage
+- Pinned communities stay at the top of the grid regardless of sorting
+- Database: Added isPinned column to approved_communities table (default: false)
+- API endpoint: PATCH /api/admin/approved/:id/pin with { isPinned: boolean } body

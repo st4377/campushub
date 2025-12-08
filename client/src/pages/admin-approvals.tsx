@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AdminCommunityCard } from "@/components/admin-community-card";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle, XCircle, Clock, Users, ExternalLink, RefreshCw, Shield, Lock, LogIn, Pencil, Save, Trash2, ListChecks, Search, Pin, PinOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -576,124 +577,19 @@ export default function AdminApprovals() {
                   </span>
                 </div>
 
-                {filteredPending.map((community: PendingCommunity) => (
-              <Card key={community.id} className="bg-white border-black/10 rounded-3xl overflow-hidden shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-[#0A0A0A] to-[#1A1A1A] text-white p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-4">
-                      {community.imageUrl && (
-                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 border-[#333]">
-                          <img 
-                            src={community.imageUrl} 
-                            alt={community.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <div>
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <CardTitle className="text-2xl font-bold uppercase tracking-wide flex items-center gap-3">
-                            {community.name}
-                            {getPlatformBadge(community.platform)}
-                          </CardTitle>
-                          {community.adminTagId && (
-                            <Badge className="bg-[#FFC400] text-black font-mono text-xs tracking-wider hover:bg-[#FFD700]">
-                              {community.adminTagId}
-                            </Badge>
-                          )}
-                        </div>
-                        <CardDescription className="text-gray-400 mt-2">
-                          Submitted on {new Date(community.submittedAt).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </CardDescription>
-                      </div>
-                    </div>
-                    {getVisibilityBadge(community.visibility)}
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Category</h4>
-                      <p className="text-black font-medium">{community.category}</p>
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Member Count</h4>
-                      <p className="text-black font-medium flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        {community.memberCount.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Description</h4>
-                    <p className="text-black/80">{community.description}</p>
-                  </div>
-
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Tags</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {community.tags.map((tag: string) => (
-                        <span
-                          key={tag}
-                          className="px-3 py-1 bg-black/5 text-black/70 text-sm rounded-full border border-black/10"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Invite Link</h4>
-                    <a
-                      href={community.inviteLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 flex items-center gap-2 break-all"
-                    >
-                      {community.inviteLink}
-                      <ExternalLink className="h-4 w-4 flex-shrink-0" />
-                    </a>
-                  </div>
-
-                  <div className="flex gap-3 pt-4 border-t border-black/10">
-                    <Button
-                      onClick={() => handleOpenEditDialog(community)}
-                      disabled={approveMutation.isPending || rejectMutation.isPending || editMutation.isPending}
-                      variant="outline"
-                      className="flex-1 border-[#FFC400] text-[#FFC400] hover:bg-[#FFC400]/10 font-bold uppercase tracking-wider rounded-xl h-12"
-                    >
-                      <Pencil className="mr-2 h-5 w-5" />
-                      Edit
-                    </Button>
-                    <Button
-                      onClick={() => approveMutation.mutate(community.id)}
-                      disabled={approveMutation.isPending || rejectMutation.isPending || editMutation.isPending}
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold uppercase tracking-wider rounded-xl h-12"
-                    >
-                      <CheckCircle className="mr-2 h-5 w-5" />
-                      Approve
-                    </Button>
-                    <Button
-                      onClick={() => handleOpenRejectDialog(community.id)}
-                      disabled={approveMutation.isPending || rejectMutation.isPending || editMutation.isPending}
-                      variant="outline"
-                      className="flex-1 border-red-300 text-red-600 hover:bg-red-50 font-bold uppercase tracking-wider rounded-xl h-12"
-                    >
-                      <XCircle className="mr-2 h-5 w-5" />
-                      Reject
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {filteredPending.map((community: PendingCommunity) => (
+                    <AdminCommunityCard
+                      key={community.id}
+                      community={community}
+                      variant="pending"
+                      onEdit={() => handleOpenEditDialog(community)}
+                      onApprove={() => approveMutation.mutate(community.id)}
+                      onReject={() => handleOpenRejectDialog(community.id)}
+                      isLoading={approveMutation.isPending || rejectMutation.isPending || editMutation.isPending}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </TabsContent>
@@ -747,133 +643,18 @@ export default function AdminApprovals() {
                   </span>
                 </div>
 
-                {filteredApproved.map((community: ApprovedCommunity) => (
-                  <Card key={community.id} className="bg-white border-black/10 rounded-3xl overflow-hidden shadow-lg">
-                    <CardHeader className="bg-gradient-to-r from-green-800 to-green-900 text-white p-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-4">
-                          {community.imageUrl && (
-                            <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 border-green-600">
-                              <img 
-                                src={community.imageUrl} 
-                                alt={community.name}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          )}
-                          <div>
-                            <div className="flex items-center gap-3 flex-wrap">
-                              <CardTitle className="text-2xl font-bold uppercase tracking-wide flex items-center gap-3">
-                                {community.name}
-                                {getPlatformBadge(community.platform)}
-                              </CardTitle>
-                              {community.isPinned && (
-                                <Badge className="bg-[#FFC400] text-black font-bold text-xs tracking-wider">
-                                  <Pin className="h-3 w-3 mr-1" />
-                                  PINNED
-                                </Badge>
-                              )}
-                              {community.adminTagId && (
-                                <Badge className="bg-white/20 text-white font-mono text-xs tracking-wider">
-                                  {community.adminTagId}
-                                </Badge>
-                              )}
-                            </div>
-                            <CardDescription className="text-green-200 mt-2">
-                              Approved on {new Date(community.approvedAt).toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              })}
-                            </CardDescription>
-                          </div>
-                        </div>
-                        {getVisibilityBadge(community.visibility)}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="p-6 space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Category</h4>
-                          <p className="text-black font-medium">{community.category}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Member Count</h4>
-                          <p className="text-black font-medium flex items-center gap-2">
-                            <Users className="h-4 w-4" />
-                            {community.memberCount.toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Description</h4>
-                        <p className="text-black/80 line-clamp-3">{community.description}</p>
-                      </div>
-
-                      <div>
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Tags</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {community.tags.map((tag: string) => (
-                            <span
-                              key={tag}
-                              className="px-3 py-1 bg-black/5 text-black/70 text-sm rounded-full border border-black/10"
-                            >
-                              #{tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-black/50 mb-2">Invite Link</h4>
-                        <a
-                          href={community.inviteLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 flex items-center gap-2 break-all"
-                        >
-                          {community.inviteLink}
-                          <ExternalLink className="h-4 w-4 flex-shrink-0" />
-                        </a>
-                      </div>
-
-                      <div className="flex gap-3 pt-4 border-t border-black/10">
-                        <Button
-                          onClick={() => pinMutation.mutate({ id: community.id, isPinned: !community.isPinned })}
-                          disabled={pinMutation.isPending || deleteMutation.isPending}
-                          variant="outline"
-                          className={`flex-1 font-bold uppercase tracking-wider rounded-xl h-12 ${
-                            community.isPinned 
-                              ? "border-[#FFC400] text-[#FFC400] bg-[#FFC400]/10 hover:bg-[#FFC400]/20" 
-                              : "border-black/30 text-black/70 hover:bg-black/5"
-                          }`}
-                        >
-                          {community.isPinned ? (
-                            <>
-                              <PinOff className="mr-2 h-5 w-5" />
-                              Unpin
-                            </>
-                          ) : (
-                            <>
-                              <Pin className="mr-2 h-5 w-5" />
-                              Pin to Top
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          onClick={() => handleOpenDeleteDialog(community)}
-                          disabled={deleteMutation.isPending || pinMutation.isPending}
-                          variant="outline"
-                          className="flex-1 border-red-300 text-red-600 hover:bg-red-50 font-bold uppercase tracking-wider rounded-xl h-12"
-                        >
-                          <Trash2 className="mr-2 h-5 w-5" />
-                          Delete
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {filteredApproved.map((community: ApprovedCommunity) => (
+                    <AdminCommunityCard
+                      key={community.id}
+                      community={community}
+                      variant="approved"
+                      onPin={() => pinMutation.mutate({ id: community.id, isPinned: !community.isPinned })}
+                      onDelete={() => handleOpenDeleteDialog(community)}
+                      isLoading={pinMutation.isPending || deleteMutation.isPending}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </TabsContent>
