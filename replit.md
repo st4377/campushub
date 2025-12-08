@@ -14,7 +14,18 @@ Preferred communication style: Simple, everyday language.
 
 ### Completed Features
 
-1. **Admin Edit Feature for Pending Submissions**
+1. **My Communities Management Section**
+   - Users can manage their approved communities from the dashboard
+   - Active communities displayed using CommunityCard component (same as homepage)
+   - Edit functionality restricted to: name, invite link, logo/icon, tags only
+   - Delete performs soft-delete: removes from public view but keeps in database history
+   - Deleted Communities section shows read-only history with deletion dates
+   - API endpoints: GET /api/user/communities/:userId, PATCH /api/user/communities/:id, DELETE /api/user/communities/:id
+   - Database: Added deletedAt column to approved_communities for soft-delete tracking
+   - Ownership validation: Users can only edit/delete their own communities
+   - Public endpoints filter out soft-deleted communities (isActive=false)
+
+2. **Admin Edit Feature for Pending Submissions**
    - Admins can edit all community fields before approving/rejecting
    - Editable fields: name, description, platform, invite link, tags, category, visibility
    - Edit button added to each pending submission card in admin panel
