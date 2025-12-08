@@ -15,6 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 
 interface ApprovedCommunity {
   id: string;
+  adminTagId: string;
   name: string;
   platform: string;
   memberCount: number;
@@ -59,6 +60,7 @@ export default function Home() {
     if (approvedCommunities && approvedCommunities.length > 0) {
       return approvedCommunities.map((c) => ({
         id: c.id,
+        adminTagId: c.adminTagId,
         name: c.name,
         platform: c.platform as Community["platform"],
         memberCount: c.memberCount,
@@ -470,6 +472,14 @@ export default function Home() {
                     Share
                   </Button>
                 </div>
+
+                {selectedCommunity.adminTagId && (
+                  <div className="mt-6 flex justify-end">
+                    <span className="text-[10px] text-gray-500 font-mono tracking-wider">
+                      ID: {selectedCommunity.adminTagId}
+                    </span>
+                  </div>
+                )}
               </div>
             </>
           )}

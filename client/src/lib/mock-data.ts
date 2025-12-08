@@ -18,6 +18,7 @@ export interface Community {
   imageUrl?: string;
   inviteLink: string;
   visibility: CommunityVisibility;
+  adminTagId?: string;
 }
 
 export const CATEGORIES = [
