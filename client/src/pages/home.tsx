@@ -414,10 +414,10 @@ export default function Home() {
                       </span>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-col items-end gap-3">
                     {selectedCommunity.adminTagId && (
-                      <span className="text-xs font-mono text-white/80 tracking-wider">
-                        {selectedCommunity.adminTagId}
+                      <span className="text-sm font-mono text-white tracking-wider">
+                        Tag ID: {selectedCommunity.adminTagId}
                       </span>
                     )}
                     {selectedCommunity.isActive && (
