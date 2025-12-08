@@ -56,11 +56,27 @@ async function generateAdminTagId(category: string): Promise<string> {
   return `${prefix}CM${paddedNumber}`;
 }
 
+export interface BumpResult {
+  success: boolean;
+  error?: string;
+  community?: ApprovedCommunity;
+  nextAvailableAt?: Date;
+}
+
+export interface UserBumpStatus {
+  lastBumpAt: Date | null;
+  lastBumpCommunityId: string | null;
+  canBump: boolean;
+  nextAvailableAt: Date | null;
+  hoursRemaining: number | null;
+}
+
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserProfile(userId: string, updates: { fullName: string }): Promise<User | undefined>;
+  getUserBumpStatus(userId: string): Promise<UserBumpStatus>;
   
   createPendingCommunity(community: InsertPendingCommunity): Promise<PendingCommunity>;
   getAllPendingCommunities(): Promise<PendingCommunity[]>;
@@ -80,6 +96,7 @@ export interface IStorage {
   softDeleteApprovedCommunity(id: string, userId: string): Promise<ApprovedCommunity | undefined>;
   deleteApprovedCommunity(id: string): Promise<void>;
   togglePinCommunity(id: string, isPinned: boolean): Promise<ApprovedCommunity | undefined>;
+  bumpCommunity(userId: string, communityId: string): Promise<BumpResult>;
   
   createRejectedCommunity(community: InsertRejectedCommunity): Promise<RejectedCommunity>;
   getRejectedCommunitiesByUserId(userId: string): Promise<RejectedCommunity[]>;
@@ -108,6 +125,59 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     return updatedUser;
+  }
+
+  async getUserBumpStatus(userId: string): Promise<UserBumpStatus> {
+    const user = await this.getUser(userId);
+    if (!user) {
+      return {
+        lastBumpAt: null,
+        lastBumpCommunityId: null,
+        canBump: false,
+        nextAvailableAt: null,
+        hoursRemaining: null,
+      };
+    }
+
+    const lastBumpAt = user.lastBumpAt;
+    const lastBumpCommunityId = user.lastBumpCommunityId;
+    
+    if (!lastBumpAt) {
+      return {
+        lastBumpAt: null,
+        lastBumpCommunityId: null,
+        canBump: true,
+        nextAvailableAt: null,
+        hoursRemaining: null,
+      };
+    }
+
+    const now = new Date();
+    const cooldownMs = 24 * 60 * 60 * 1000;
+    const timeSinceBump = now.getTime() - lastBumpAt.getTime();
+    const canBump = timeSinceBump >= cooldownMs;
+    
+    if (canBump) {
+      return {
+        lastBumpAt,
+        lastBumpCommunityId,
+        canBump: true,
+        nextAvailableAt: null,
+        hoursRemaining: null,
+      };
+    }
+
+    const nextAvailableAt = new Date(lastBumpAt.getTime() + cooldownMs);
+    const msRemaining = nextAvailableAt.getTime() - now.getTime();
+    const hoursRemaining = Math.ceil(msRemaining / (60 * 60 * 1000));
+
+    return {
+      lastBumpAt,
+      lastBumpCommunityId,
+      canBump: false,
+      nextAvailableAt,
+      hoursRemaining,
+    };
   }
 
   async createPendingCommunity(community: InsertPendingCommunity): Promise<PendingCommunity> {
@@ -267,6 +337,52 @@ export class DatabaseStorage implements IStorage {
       .where(eq(approvedCommunities.id, id))
       .returning();
     return updated;
+  }
+
+  async bumpCommunity(userId: string, communityId: string): Promise<BumpResult> {
+    const community = await this.getApprovedCommunity(communityId);
+    if (!community) {
+      return { success: false, error: "Community not found" };
+    }
+
+    if (community.userId !== userId) {
+      return { success: false, error: "You can only bump your own communities" };
+    }
+
+    if (community.deletedAt) {
+      return { success: false, error: "Cannot bump a deleted community" };
+    }
+
+    const bumpStatus = await this.getUserBumpStatus(userId);
+    if (!bumpStatus.canBump) {
+      return { 
+        success: false, 
+        error: `Cooldown active. Next bump available in ${bumpStatus.hoursRemaining} hours`,
+        nextAvailableAt: bumpStatus.nextAvailableAt || undefined
+      };
+    }
+
+    const now = new Date();
+
+    const [updatedCommunity] = await db
+      .update(approvedCommunities)
+      .set({ bumpedAt: now })
+      .where(eq(approvedCommunities.id, communityId))
+      .returning();
+
+    await db
+      .update(users)
+      .set({ 
+        lastBumpAt: now,
+        lastBumpCommunityId: communityId
+      })
+      .where(eq(users.id, userId));
+
+    return { 
+      success: true, 
+      community: updatedCommunity,
+      nextAvailableAt: new Date(now.getTime() + 24 * 60 * 60 * 1000)
+    };
   }
 
   async createRejectedCommunity(community: InsertRejectedCommunity): Promise<RejectedCommunity> {
