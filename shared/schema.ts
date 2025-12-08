@@ -9,6 +9,8 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  lastBumpAt: timestamp("last_bump_at"),
+  lastBumpCommunityId: varchar("last_bump_community_id"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -62,6 +64,7 @@ export const approvedCommunities = pgTable("approved_communities", {
   imageUrl: text("image_url"),
   approvedAt: timestamp("approved_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
+  bumpedAt: timestamp("bumped_at"),
 });
 
 export const rejectedCommunities = pgTable("rejected_communities", {
