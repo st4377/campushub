@@ -30,6 +30,7 @@ interface ApprovedCommunity {
   visibility: string;
   imageUrl: string | null;
   approvedAt: string;
+  bumpedAt: string | null;
 }
 
 const initialFilters: FilterState = {
@@ -71,6 +72,7 @@ export default function Home() {
         reviewCount: c.reviewCount,
         isActive: c.isActive,
         isPinned: c.isPinned,
+        bumpedAt: c.bumpedAt,
         category: c.category,
         inviteLink: c.inviteLink,
         visibility: c.visibility as Community["visibility"],
@@ -157,10 +159,21 @@ export default function Home() {
       );
     }
 
-    // Sort pinned communities first (clone to avoid mutation)
+    // Sort: pinned first, then by bump time (most recent first), then the rest
     result = [...result].sort((a, b) => {
+      // Pinned communities always come first
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
+      
+      // Among non-pinned, sort by bumpedAt (most recent first)
+      if (!a.isPinned && !b.isPinned) {
+        const aBump = a.bumpedAt ? new Date(a.bumpedAt).getTime() : 0;
+        const bBump = b.bumpedAt ? new Date(b.bumpedAt).getTime() : 0;
+        if (aBump !== bBump) {
+          return bBump - aBump; // Descending order (newest bump first)
+        }
+      }
+      
       return 0;
     });
 

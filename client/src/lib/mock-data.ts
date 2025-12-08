@@ -15,6 +15,7 @@ export interface Community {
   reviewCount: number;
   isActive: boolean;
   isPinned?: boolean;
+  bumpedAt?: string | null;
   category: string;
   imageUrl?: string;
   inviteLink: string;

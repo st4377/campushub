@@ -364,6 +364,15 @@ export class DatabaseStorage implements IStorage {
 
     const now = new Date();
 
+    // Clear any previous bump from user's communities (enforce single bump rule)
+    const user = await this.getUser(userId);
+    if (user?.lastBumpCommunityId && user.lastBumpCommunityId !== communityId) {
+      await db
+        .update(approvedCommunities)
+        .set({ bumpedAt: null })
+        .where(eq(approvedCommunities.id, user.lastBumpCommunityId));
+    }
+
     const [updatedCommunity] = await db
       .update(approvedCommunities)
       .set({ bumpedAt: now })
