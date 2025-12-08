@@ -319,6 +319,29 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/user/profile/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { fullName } = req.body;
+      
+      if (!fullName || fullName.trim().length < 2) {
+        return res.status(400).json({ success: false, error: "Name must be at least 2 characters" });
+      }
+      
+      const updatedUser = await storage.updateUserProfile(userId, { fullName: fullName.trim() });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ success: false, error: "User not found" });
+      }
+      
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.json({ success: true, user: userWithoutPassword });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ success: false, error: "Failed to update profile" });
+    }
+  });
+
   app.get("/api/user/communities/:userId", async (req, res) => {
     try {
       const { userId } = req.params;

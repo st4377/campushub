@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Layout } from "@/components/layout";
 import { useAuth } from "@/context/auth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface Submission {
   id: string;
@@ -22,9 +25,51 @@ interface UserCommunity {
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
-  const { user, logout, isLoading } = useAuth();
+  const { user, logout, isLoading, updateUser } = useAuth();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isEmailRevealed, setIsEmailRevealed] = useState(false);
+  const [isEditNameDialogOpen, setIsEditNameDialogOpen] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const queryClient = useQueryClient();
+
+  const updateProfileMutation = useMutation({
+    mutationFn: async (newName: string) => {
+      const response = await fetch(`/api/user/profile/${user?.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName: newName }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update profile");
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (updateUser && data.user) {
+        updateUser(data.user);
+      }
+      toast.success("Display name updated successfully");
+      setIsEditNameDialogOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["user-submissions"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleEditName = () => {
+    setEditedName(user?.fullName || "");
+    setIsEditNameDialogOpen(true);
+  };
+
+  const handleSaveName = () => {
+    if (editedName.trim().length < 2) {
+      toast.error("Name must be at least 2 characters");
+      return;
+    }
+    updateProfileMutation.mutate(editedName.trim());
+  };
 
   const { data: submissionsData } = useQuery({
     queryKey: ["user-submissions", user?.id],
@@ -309,6 +354,7 @@ export default function Dashboard() {
                       <Button
                         variant="secondary"
                         size="sm"
+                        onClick={handleEditName}
                         className="bg-[#2a2a2a] text-white hover:bg-[#3a3a3a] rounded-lg flex-shrink-0"
                       >
                         Edit
@@ -344,13 +390,6 @@ export default function Dashboard() {
                           )}
                         </p>
                       </div>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="bg-[#2a2a2a] text-white hover:bg-[#3a3a3a] rounded-lg flex-shrink-0"
-                      >
-                        Edit
-                      </Button>
                     </div>
 
                     <div className="flex items-center justify-between py-4">
@@ -494,6 +533,45 @@ export default function Dashboard() {
           </main>
         </div>
       </div>
+
+      <Dialog open={isEditNameDialogOpen} onOpenChange={setIsEditNameDialogOpen}>
+        <DialogContent className="bg-[#1a1a1a] border-[#2a2a2a] text-white">
+          <DialogHeader>
+            <DialogTitle>Edit Display Name</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Update your display name. This will be visible across the platform.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="displayName" className="text-gray-300">Display Name</Label>
+              <Input
+                id="displayName"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                placeholder="Enter your display name"
+                className="bg-[#111] border-[#3a3a3a] text-white placeholder:text-gray-500 focus:border-[#FFC400]"
+              />
+            </div>
+            <div className="flex gap-3 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setIsEditNameDialogOpen(false)}
+                className="border-[#3a3a3a] text-gray-300 hover:bg-[#2a2a2a]"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSaveName}
+                disabled={updateProfileMutation.isPending}
+                className="bg-[#FFC400] text-black hover:bg-[#FFD700]"
+              >
+                {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }

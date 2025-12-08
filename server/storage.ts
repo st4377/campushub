@@ -60,6 +60,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserProfile(userId: string, updates: { fullName: string }): Promise<User | undefined>;
   
   createPendingCommunity(community: InsertPendingCommunity): Promise<PendingCommunity>;
   getAllPendingCommunities(): Promise<PendingCommunity[]>;
@@ -97,6 +98,15 @@ export class DatabaseStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+
+  async updateUserProfile(userId: string, updates: { fullName: string }): Promise<User | undefined> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ fullName: updates.fullName })
+      .where(eq(users.id, userId))
+      .returning();
+    return updatedUser;
   }
 
   async createPendingCommunity(community: InsertPendingCommunity): Promise<PendingCommunity> {
