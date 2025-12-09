@@ -1,107 +1,230 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Link, useLocation } from "wouter";
-import { Eye, EyeOff, Mail, Lock, Hexagon, User } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Hexagon, User, Code, Music, DollarSign, Utensils, Home, Laugh, Gamepad2, BookOpen, Camera, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { motion, useSpring } from "framer-motion";
+import { motion, useSpring, useMotionValue, useTransform } from "framer-motion";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
 
-interface BlobCharacterProps {
-  mousePosition: { x: number; y: number };
-  centerX: number;
-  centerY: number;
+interface NodeData {
+  id: number;
+  x: number;
+  y: number;
+  icon: React.ComponentType<{ className?: string }>;
+  size: number;
+  delay: number;
+  speed: number;
 }
 
-function TwoCharacters({ mousePosition, centerX, centerY }: BlobCharacterProps) {
-  const springConfig = { stiffness: 300, damping: 20 };
+interface NetworkAnimationProps {
+  mousePosition: { x: number; y: number };
+  containerWidth: number;
+  containerHeight: number;
+}
+
+function NetworkAnimation({ mousePosition, containerWidth, containerHeight }: NetworkAnimationProps) {
+  const [time, setTime] = useState(0);
   
-  const orangePupilX = useSpring(0, springConfig);
-  const orangePupilY = useSpring(0, springConfig);
-  const purplePupilX = useSpring(0, springConfig);
-  const purplePupilY = useSpring(0, springConfig);
+  const nodes: NodeData[] = useMemo(() => [
+    { id: 1, x: 20, y: 15, icon: Code, size: 48, delay: 0, speed: 1.2 },
+    { id: 2, x: 75, y: 20, icon: Music, size: 40, delay: 0.5, speed: 0.8 },
+    { id: 3, x: 15, y: 45, icon: DollarSign, size: 36, delay: 1, speed: 1.5 },
+    { id: 4, x: 80, y: 50, icon: Utensils, size: 44, delay: 0.3, speed: 1.1 },
+    { id: 5, x: 50, y: 35, icon: Home, size: 52, delay: 0.7, speed: 0.9 },
+    { id: 6, x: 30, y: 70, icon: Laugh, size: 38, delay: 1.2, speed: 1.3 },
+    { id: 7, x: 70, y: 75, icon: Gamepad2, size: 42, delay: 0.2, speed: 1.0 },
+    { id: 8, x: 45, y: 85, icon: BookOpen, size: 34, delay: 0.8, speed: 1.4 },
+    { id: 9, x: 85, y: 35, icon: Camera, size: 36, delay: 0.4, speed: 1.2 },
+    { id: 10, x: 25, y: 25, icon: Palette, size: 40, delay: 0.6, speed: 0.7 },
+  ], []);
+
+  const connections = useMemo(() => [
+    [0, 4], [1, 4], [2, 5], [3, 4], [4, 6], [4, 7],
+    [5, 7], [6, 7], [1, 8], [0, 9], [9, 2], [3, 8],
+    [1, 3], [5, 6], [2, 4]
+  ], []);
 
   useEffect(() => {
-    const maxPupilMove = 10;
-    const maxDistance = 400;
+    const interval = setInterval(() => {
+      setTime(t => t + 0.02);
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
+
+  const getNodePosition = (node: NodeData, mouseX: number, mouseY: number) => {
+    const baseX = (node.x / 100) * containerWidth;
+    const baseY = (node.y / 100) * containerHeight;
     
-    const orangePos = { x: centerX - 80, y: centerY + 60 };
-    const purplePos = { x: centerX + 30, y: centerY - 40 };
-
-    const calcPupil = (charX: number, charY: number) => {
-      const dx = mousePosition.x - charX;
-      const dy = mousePosition.y - charY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const factor = Math.min(distance / maxDistance, 1);
-      return {
-        x: (dx / (distance || 1)) * maxPupilMove * factor,
-        y: (dy / (distance || 1)) * maxPupilMove * factor
-      };
+    const floatX = Math.sin(time * node.speed + node.delay) * 15;
+    const floatY = Math.cos(time * node.speed * 0.8 + node.delay) * 12;
+    
+    const centerX = containerWidth / 2;
+    const centerY = containerHeight / 2;
+    const dx = mouseX - centerX;
+    const dy = mouseY - centerY;
+    const parallaxFactor = 0.03 * (node.size / 50);
+    const parallaxX = dx * parallaxFactor;
+    const parallaxY = dy * parallaxFactor;
+    
+    return {
+      x: baseX + floatX + parallaxX,
+      y: baseY + floatY + parallaxY
     };
+  };
 
-    const orange = calcPupil(orangePos.x, orangePos.y);
-    orangePupilX.set(orange.x);
-    orangePupilY.set(orange.y);
-
-    const purple = calcPupil(purplePos.x, purplePos.y);
-    purplePupilX.set(purple.x);
-    purplePupilY.set(purple.y);
-  }, [mousePosition, centerX, centerY, orangePupilX, orangePupilY, purplePupilX, purplePupilY]);
+  const nodePositions = nodes.map(node => 
+    getNodePosition(node, mousePosition.x, mousePosition.y)
+  );
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="absolute"
-      style={{
-        left: centerX - 160,
-        top: centerY - 140,
-      }}
-    >
-      <svg width="360" height="320" viewBox="0 0 360 320" fill="none">
-        <g transform="translate(40, 0)">
-          <path
-            d="M 15 0 
-               L 115 0 
-               Q 130 0 130 15 
-               L 130 235 
-               Q 130 250 115 250 
-               L 15 250 
-               Q 0 250 0 235 
-               L 0 15 
-               Q 0 0 15 0 Z"
-            fill="#6B5CE7"
-          />
-          <motion.g style={{ x: purplePupilX, y: purplePupilY }}>
-            <circle cx="45" cy="90" r="8" fill="#1a1a1a" />
-            <circle cx="42" cy="86" r="2.5" fill="white" />
-          </motion.g>
-          <motion.g style={{ x: purplePupilX, y: purplePupilY }}>
-            <circle cx="85" cy="90" r="8" fill="#1a1a1a" />
-            <circle cx="82" cy="86" r="2.5" fill="white" />
-          </motion.g>
-        </g>
-
-        <g transform="translate(0, 60)">
-          <path
-            d="M 20 240 
-               A 120 120 0 0 1 260 240 
-               L 20 240 Z"
-            fill="#FF6B35"
-          />
-          <motion.g style={{ x: orangePupilX, y: orangePupilY }}>
-            <circle cx="95" cy="190" r="10" fill="#1a1a1a" />
-            <circle cx="92" cy="186" r="3" fill="white" />
-          </motion.g>
-          <motion.g style={{ x: orangePupilX, y: orangePupilY }}>
-            <circle cx="185" cy="190" r="10" fill="#1a1a1a" />
-            <circle cx="182" cy="186" r="3" fill="white" />
-          </motion.g>
-        </g>
+    <div className="absolute inset-0 overflow-hidden">
+      <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
+        <defs>
+          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#FFC400" stopOpacity="0.6" />
+            <stop offset="50%" stopColor="#FF8C00" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#FFC400" stopOpacity="0.6" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        
+        {connections.map(([from, to], idx) => {
+          const fromPos = nodePositions[from];
+          const toPos = nodePositions[to];
+          const pulseOffset = (time * 2 + idx * 0.5) % 1;
+          
+          return (
+            <g key={`connection-${idx}`}>
+              <line
+                x1={fromPos.x}
+                y1={fromPos.y}
+                x2={toPos.x}
+                y2={toPos.y}
+                stroke="url(#lineGradient)"
+                strokeWidth="1.5"
+                opacity={0.3 + Math.sin(time + idx) * 0.15}
+                filter="url(#glow)"
+              />
+              <circle
+                cx={fromPos.x + (toPos.x - fromPos.x) * pulseOffset}
+                cy={fromPos.y + (toPos.y - fromPos.y) * pulseOffset}
+                r="3"
+                fill="#FFC400"
+                opacity={0.8}
+                filter="url(#glow)"
+              />
+            </g>
+          );
+        })}
       </svg>
-    </motion.div>
+
+      {nodes.map((node, idx) => {
+        const pos = nodePositions[idx];
+        const Icon = node.icon;
+        const distanceFromMouse = Math.sqrt(
+          Math.pow(mousePosition.x - pos.x, 2) + 
+          Math.pow(mousePosition.y - pos.y, 2)
+        );
+        const isNearMouse = distanceFromMouse < 120;
+        const glowIntensity = isNearMouse ? 1 : 0.4;
+        
+        return (
+          <motion.div
+            key={node.id}
+            className="absolute"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1,
+              x: pos.x - node.size / 2,
+              y: pos.y - node.size / 2,
+            }}
+            transition={{ 
+              opacity: { delay: node.delay * 0.3, duration: 0.5 },
+              scale: { delay: node.delay * 0.3, duration: 0.5, type: "spring" },
+              x: { duration: 0.1, ease: "linear" },
+              y: { duration: 0.1, ease: "linear" },
+            }}
+            style={{ zIndex: 2 }}
+          >
+            <div 
+              className="relative flex items-center justify-center rounded-2xl transition-all duration-300"
+              style={{
+                width: node.size,
+                height: node.size,
+                background: `linear-gradient(135deg, rgba(255, 196, 0, ${0.15 + glowIntensity * 0.15}) 0%, rgba(255, 140, 0, ${0.1 + glowIntensity * 0.1}) 100%)`,
+                border: `2px solid rgba(255, 196, 0, ${0.3 + glowIntensity * 0.4})`,
+                boxShadow: isNearMouse 
+                  ? `0 0 ${30 + glowIntensity * 20}px rgba(255, 196, 0, ${0.4 + glowIntensity * 0.3}), inset 0 0 20px rgba(255, 196, 0, 0.1)`
+                  : `0 0 15px rgba(255, 196, 0, 0.2)`,
+                transform: isNearMouse ? 'scale(1.15)' : 'scale(1)',
+              }}
+            >
+              <div
+                style={{ 
+                  width: node.size * 0.5, 
+                  height: node.size * 0.5,
+                  color: isNearMouse ? '#FFC400' : 'rgba(0, 0, 0, 0.7)',
+                  filter: isNearMouse ? 'drop-shadow(0 0 8px rgba(255, 196, 0, 0.8))' : 'none',
+                  transition: 'all 0.3s',
+                }}
+              >
+                <Icon className="w-full h-full" />
+              </div>
+            </div>
+            
+            <motion.div
+              className="absolute rounded-full"
+              style={{
+                width: node.size + 20,
+                height: node.size + 20,
+                left: -10,
+                top: -10,
+                border: '1px solid rgba(255, 196, 0, 0.2)',
+                borderRadius: '16px',
+              }}
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0, 0.3],
+              }}
+              transition={{
+                duration: 2 + node.delay,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          </motion.div>
+        );
+      })}
+
+      <motion.div
+        className="absolute rounded-full pointer-events-none"
+        style={{
+          width: 200,
+          height: 200,
+          left: mousePosition.x - 100,
+          top: mousePosition.y - 100,
+          background: 'radial-gradient(circle, rgba(255, 196, 0, 0.08) 0%, transparent 70%)',
+          zIndex: 0,
+        }}
+        animate={{
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+    </div>
   );
 }
 
@@ -282,7 +405,7 @@ export default function Login() {
           <div className="absolute bottom-1/4 left-0 w-1/2 h-1/2 bg-[#FFB300]/25 rounded-full filter blur-[100px]"></div>
         </div>
         
-        <div className="absolute inset-0 opacity-[0.08]">
+        <div className="absolute inset-0 opacity-[0.06]">
           {[...Array(12)].map((_, i) => (
             <div
               key={i}
@@ -295,11 +418,22 @@ export default function Login() {
           ))}
         </div>
 
-        <TwoCharacters 
+        <NetworkAnimation 
           mousePosition={mousePosition} 
-          centerX={containerSize.width / 2}
-          centerY={containerSize.height / 2}
+          containerWidth={containerSize.width}
+          containerHeight={containerSize.height}
         />
+        
+        <motion.div 
+          className="absolute bottom-8 left-8 right-8 z-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 0.6 }}
+        >
+          <p className="text-black/60 text-sm font-medium text-center">
+            Connect with 10+ campus communities
+          </p>
+        </motion.div>
       </div>
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-black relative overflow-hidden">
@@ -577,7 +711,7 @@ export default function Login() {
                     disabled={isSigningUp}
                     className="w-full h-12 bg-[#FFC400] hover:bg-[#E6B000] text-black font-bold uppercase tracking-wider rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                   >
-                    {isSigningUp ? "Creating Account..." : "Sign Up"}
+                    {isSigningUp ? "Creating account..." : "Sign up"}
                   </Button>
 
                   <div className="relative">
