@@ -124,8 +124,16 @@ export default function Home() {
 
     // Apply search filter
     if (activeSearch.trim()) {
+      const isTagIdSearch = activeSearch.startsWith('#');
       const query = activeSearch.toLowerCase().replace(/^#/, '');
+      
       result = result.filter((community) => {
+        // If searching with #, prioritize Tag ID search
+        if (isTagIdSearch) {
+          const tagIdMatch = community.adminTagId?.toLowerCase().includes(query);
+          if (tagIdMatch) return true;
+        }
+        
         const nameMatch = community.name.toLowerCase().includes(query);
         const descriptionMatch = community.description.toLowerCase().includes(query);
         const tagMatch = community.tags.some(tag => 
