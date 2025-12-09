@@ -9,29 +9,18 @@ type CommunityVisibility = "public" | "boys-only" | "girls-only";
 const getVisibilityInfo = (visibility: string) => {
   switch (visibility) {
     case "public":
-      return { label: "Public", icon: Globe, className: "bg-green-500 text-white border-green-600" };
+      return { label: "Public", icon: Globe, className: "bg-[#FFC400] text-black border-[#FFC400]" };
     case "boys-only":
-      return { label: "Boys Only", icon: User, className: "bg-blue-500 text-white border-blue-600" };
+      return { label: "Boys Only", icon: User, className: "bg-black text-white border-black" };
     case "girls-only":
-      return { label: "Girls Only", icon: User, className: "bg-pink-500 text-white border-pink-600" };
+      return { label: "Girls Only", icon: User, className: "bg-gray-700 text-white border-gray-700" };
     default:
-      return { label: "Public", icon: Globe, className: "bg-green-500 text-white border-green-600" };
+      return { label: "Public", icon: Globe, className: "bg-[#FFC400] text-black border-[#FFC400]" };
   }
 };
 
-const getPlatformColor = (platform: string) => {
-  switch (platform) {
-    case "WhatsApp":
-      return "text-white bg-green-500 border-green-600";
-    case "Discord":
-      return "text-white bg-indigo-500 border-indigo-600";
-    case "Telegram":
-      return "text-white bg-blue-500 border-blue-600";
-    case "Instagram":
-      return "text-white bg-pink-500 border-pink-600";
-    default:
-      return "text-white bg-gray-500 border-gray-600";
-  }
+const getPlatformColor = () => {
+  return "text-black bg-[#FFC400] border-[#FFC400]";
 };
 
 interface PendingCommunity {
@@ -125,7 +114,7 @@ export function AdminCommunityCard({
             {community.name}
           </h3>
           <div className="flex items-center gap-2 mt-2 flex-wrap">
-            <Badge className={cn("text-xs px-2.5 py-0.5 font-bold uppercase tracking-wider border", getPlatformColor(community.platform))}>
+            <Badge className={cn("text-xs px-2.5 py-0.5 font-bold uppercase tracking-wider border", getPlatformColor())}>
               {community.platform}
             </Badge>
             {community.adminTagId && (
