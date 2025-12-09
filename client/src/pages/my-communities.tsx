@@ -565,20 +565,20 @@ export default function MyCommunities() {
         </Dialog>
 
         <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <DialogContent className="bg-white border-gray-200 rounded-3xl max-w-md p-0 overflow-hidden">
-            <div className="p-6 bg-gradient-to-r from-red-50 to-red-100">
+          <DialogContent className="bg-[#1a1a1a] border-[#333] rounded-3xl max-w-md p-0 overflow-hidden">
+            <div className="p-6 bg-gradient-to-r from-[#FFC400]/20 to-[#FF8C00]/10">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold text-gray-900">Delete Community</DialogTitle>
-                <DialogDescription className="text-gray-600">
+                <DialogTitle className="text-xl font-bold text-white">Delete Community</DialogTitle>
+                <DialogDescription className="text-gray-400">
                   This will remove the community from public view
                 </DialogDescription>
               </DialogHeader>
             </div>
 
             <div className="p-6">
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
-                <p className="text-red-700 text-sm">
-                  Are you sure you want to delete <span className="font-bold">{deletingCommunity?.name}</span>? 
+              <div className="bg-[#111] border border-[#333] rounded-xl p-4 mb-6">
+                <p className="text-gray-300 text-sm">
+                  Are you sure you want to delete <span className="font-bold text-white">{deletingCommunity?.name}</span>? 
                   It will be removed from the public directory but kept in your deletion history.
                 </p>
               </div>
@@ -587,7 +587,7 @@ export default function MyCommunities() {
                 <Button
                   variant="outline"
                   onClick={() => setDeleteDialogOpen(false)}
-                  className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-100"
+                  className="flex-1 border-[#333] text-gray-300 hover:bg-[#2a2a2a]"
                 >
                   Cancel
                 </Button>
