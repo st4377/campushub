@@ -53,7 +53,7 @@ export default function FAQ() {
           <p className="text-black/60 mb-4">Still have questions?</p>
           <a 
             href="mailto:support@campushub.com" 
-            className="inline-flex items-center gap-2 text-black font-bold hover:text-[#FFC400] transition-colors underline underline-offset-4"
+            className="inline-flex items-center gap-2 text-black font-bold hover:scale-105 transition-transform underline underline-offset-4"
           >
             Contact us at support@campushub.com
           </a>
