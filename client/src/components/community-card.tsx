@@ -21,15 +21,19 @@ const getVisibilityInfo = (visibility: CommunityVisibility) => {
 interface CommunityCardProps {
   community: Community;
   onClick?: () => void;
+  disableHoverScale?: boolean;
 }
 
-export function CommunityCard({ community, onClick }: CommunityCardProps) {
+export function CommunityCard({ community, onClick, disableHoverScale = false }: CommunityCardProps) {
   const PlatformIcon = getPlatformIcon(community.platform);
   const platformStyle = getPlatformColor(community.platform);
 
   return (
     <Card 
-      className="h-[380px] bg-[#0A0A0A] overflow-hidden flex flex-col group relative rounded-3xl border border-[#222] shadow-xl cursor-pointer hover:scale-[1.02] transition-transform duration-300"
+      className={cn(
+        "h-[380px] bg-[#0A0A0A] overflow-hidden flex flex-col group relative rounded-3xl border border-[#222] shadow-xl cursor-pointer transition-transform duration-300",
+        !disableHoverScale && "hover:scale-[1.02]"
+      )}
       onClick={onClick}
     >
       {/* Visibility Badge - Highlighted at top */}

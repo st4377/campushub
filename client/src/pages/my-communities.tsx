@@ -336,13 +336,15 @@ export default function MyCommunities() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className="relative"
+                      className="relative hover:scale-[1.02] transition-transform duration-300"
+                      whileHover={{ scale: 1.02 }}
                     >
                       <CommunityCard
                         community={{
                           ...community,
                           imageUrl: community.imageUrl || undefined,
                         } as Community}
+                        disableHoverScale
                       />
                       <div className="absolute top-10 right-4 flex gap-2 z-30">
                         <Button
