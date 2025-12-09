@@ -49,6 +49,8 @@ export default function Boost() {
       };
     },
     enabled: !!user?.id,
+    refetchOnMount: "always",
+    staleTime: 0,
   });
 
   const bumpMutation = useMutation({
