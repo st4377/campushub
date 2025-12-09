@@ -360,12 +360,12 @@ export default function MyCommunities() {
                         </Button>
                         <Button
                           size="sm"
-                          variant="destructive"
+                          variant="outline"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleOpenDelete(community);
                           }}
-                          className="bg-red-600 hover:bg-red-700 text-white rounded-lg h-8 px-3"
+                          className="bg-[#333] hover:bg-red-800 border-[#444] hover:border-red-800 text-white rounded-lg h-8 px-3 transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>
