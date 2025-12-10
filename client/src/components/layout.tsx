@@ -44,7 +44,7 @@ export function Layout({ children, hideFooter = false }: LayoutProps) {
           {/* Right: CTA Buttons */}
           <div className="flex items-center gap-3 justify-self-end">
             <Link href="/list-community">
-              <Button variant="default" className="bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(0,0,0,0.5)] transition-all duration-300 text-xs px-4">
+              <Button variant="outline" className="border-black/30 bg-black/10 backdrop-blur-sm text-black hover:bg-black hover:text-white hover:border-black font-bold uppercase tracking-wider rounded-full transition-all duration-300 text-xs px-4">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 List Community
               </Button>
