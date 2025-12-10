@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+  scroll-behavior: smooth;
+}
+
 @theme inline {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -183,6 +187,11 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 800px;
     margin: 0 auto;
   }
+}
+
+/* Smooth community grid expansion */
+.community-grid {
+  transition: all 0.3s ease-out;
 }
 
 /* Modal Center Pop-in/Pop-out Animations - Pure center scale, no slide */
