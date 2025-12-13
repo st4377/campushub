@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "postgresql-16"]
+modules = ["nodejs-20", "web"]
 [nix]
 channel = "stable-25_05"
 packages = ["unzip"]
@@ -22,34 +22,19 @@ args = "Start application"
 name = "Start application"
 author = "agent"
 
+[workflows.workflow.metadata]
+outputType = "webview"
+
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
 
-[workflows.workflow.metadata]
-outputType = "webview"
-
 [[ports]]
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 33449
-externalPort = 3003
-
-[[ports]]
-localPort = 40245
-externalPort = 3001
-
-[[ports]]
-localPort = 40263
-externalPort = 3002
-
-[[ports]]
-localPort = 43539
-externalPort = 3000
-
-[[ports]]
-localPort = 45677
-externalPort = 4200
+[deployment]
+deploymentTarget = "autoscale"
+run = ["npm", "run", "start"]
+build = ["npm", "run", "build"]
