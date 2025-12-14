@@ -400,12 +400,12 @@ export default function SubmissionStatus() {
                 </div>
 
                 <div className="p-6 space-y-5">
-                  <div>
+                  <div className="overflow-hidden">
                     <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                       <FileText className="w-4 h-4" />
                       Description
                     </h4>
-                    <p className="text-white text-sm leading-relaxed whitespace-pre-wrap">
+                    <p className="text-white text-sm leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                       {selectedSubmission.description}
                     </p>
                   </div>
@@ -443,13 +443,13 @@ export default function SubmissionStatus() {
                     </div>
                   )}
 
-                  <div>
+                  <div className="overflow-hidden">
                     <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                       <Link2 className="w-4 h-4" />
                       Invite Link
                     </h4>
-                    <div className="p-3 rounded-xl bg-black/30 border border-[#333] flex items-center gap-2">
-                      <p className="text-white text-sm truncate flex-1">{selectedSubmission.inviteLink}</p>
+                    <div className="p-3 rounded-xl bg-black/30 border border-[#333] flex items-center gap-2 min-w-0">
+                      <p className="text-white text-sm flex-1 min-w-0 break-all">{selectedSubmission.inviteLink}</p>
                       <a 
                         href={selectedSubmission.inviteLink} 
                         target="_blank" 
