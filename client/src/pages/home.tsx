@@ -337,24 +337,24 @@ export default function Home() {
 
           {/* Grid */}
           <div className="flex-1">
-            <div className="flex items-center justify-between mb-8 bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 border-l-4 border-black rounded-2xl">
-              <div className="flex items-center gap-3">
-                <p className="text-sm text-black/70 font-medium uppercase tracking-wide">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-8 bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 border-l-4 border-black rounded-2xl overflow-hidden">
+              <div className="flex flex-wrap items-center gap-3 min-w-0 flex-1">
+                <p className="text-sm text-black/70 font-medium uppercase tracking-wide flex-shrink-0">
                   Showing <span className="text-black font-bold">{Math.min(visibleCount, filteredCommunities.length)}</span> of <span className="text-black font-bold">{filteredCommunities.length}</span> Results
                 </p>
                 {activeSearch && (
-                  <div className="flex items-center gap-2 bg-black/10 px-3 py-1 rounded-full">
-                    <span className="text-xs font-bold text-black uppercase">"{activeSearch}"</span>
+                  <div className="flex items-center gap-2 bg-black/10 px-3 py-1 rounded-full max-w-[200px] min-w-0">
+                    <span className="text-xs font-bold text-black uppercase truncate">"{activeSearch}"</span>
                     <button 
                       onClick={() => { setSearchQuery(""); setActiveSearch(""); }}
-                      className="text-black/60 hover:text-black transition-colors"
+                      className="text-black/60 hover:text-black transition-colors flex-shrink-0"
                     >
                       <X className="h-3 w-3" />
                     </button>
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-shrink-0">
                  <span className="text-sm text-black/60 font-bold uppercase tracking-wider hidden sm:inline">Sort by:</span>
                  <select className="bg-white border border-black/20 rounded-xl text-xs px-3 py-2 focus:outline-none focus:border-black text-black font-bold uppercase tracking-wide cursor-pointer hover:border-black transition-colors">
                     <option value="popular">Most Popular</option>
@@ -378,13 +378,13 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="flex flex-col items-center justify-center py-20 text-center px-4 overflow-hidden">
                 <div className="h-20 w-20 rounded-full bg-black/5 flex items-center justify-center mb-6">
                   <Search className="h-10 w-10 text-black/30" />
                 </div>
                 <h3 className="text-xl font-bold text-black mb-2 uppercase">No communities found</h3>
-                <p className="text-black/60 max-w-md">
-                  We couldn't find any communities matching "{activeSearch}". Try a different search term or browse all communities.
+                <p className="text-black/60 max-w-md break-words" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+                  We couldn't find any communities matching "{activeSearch.length > 30 ? activeSearch.substring(0, 30) + '...' : activeSearch}". Try a different search term or browse all communities.
                 </p>
                 <Button 
                   onClick={() => { setSearchQuery(""); setActiveSearch(""); }}

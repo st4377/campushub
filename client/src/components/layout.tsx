@@ -18,7 +18,7 @@ export function Layout({ children, hideFooter = false }: LayoutProps) {
   const isActive = (path: string) => location === path;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#FFB700] to-[#FF8C00] font-sans text-foreground selection:bg-black/30 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#FFB700] to-[#FF8C00] font-sans text-foreground selection:bg-black/30 selection:text-white overflow-x-hidden">
       {/* Navigation */}
       <header className="sticky top-0 z-50 w-full border-b border-black/20 bg-white/10 backdrop-blur-xl">
         {/* Desktop Layout: 3-column grid - only on large screens */}
