@@ -16,6 +16,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, isNull, isNotNull, and, sql } from "drizzle-orm";
+import { MemoryStorage } from "./memory-storage";
 
 const categoryPrefixes: Record<string, string> = {
   "Study Groups": "SG",
@@ -407,4 +408,7 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+// Use DatabaseStorage if DATABASE_URL is set, otherwise use MemoryStorage
+export const storage = process.env.DATABASE_URL 
+  ? new DatabaseStorage() 
+  : new MemoryStorage();

@@ -22,18 +22,22 @@ The server listens on `process.env.PORT` (defaults to port 5000).
 
 ## Environment Variables
 
-Required environment variables for production:
+### Optional Environment Variables
 
-### Port Configuration
+#### Port Configuration
 - `PORT` - Server port (default: 5000)
   - Render automatically sets PORT for you, no configuration needed
 
-### Node Environment
+#### Node Environment
 - `NODE_ENV` - Set to `production` (the build script does this automatically)
 
-### Database (if using PostgreSQL)
+#### Database (Optional)
 - `DATABASE_URL` - PostgreSQL connection string (e.g., `postgresql://user:password@host/dbname`)
-  - Only required if using database features; currently using in-memory storage by default
+  - Optional: If not set, the app uses in-memory storage (data will be reset on each restart)
+  - If you want persistent data, provide a DATABASE_URL to use Postgres
+
+#### Admin Authentication
+- `ADMIN_PASSWORD` - Password for admin endpoints (required if using admin features)
 
 ## Deployment on Render
 
@@ -79,9 +83,14 @@ The following changes were made to ensure the app works on Render:
 - Check that `npm run build` completes without errors
 - Verify `dist/public/index.html` exists locally before deploying
 
+### Error: "DATABASE_URL must be set" (FIXED ✓)
+- This error no longer occurs! The app now defaults to in-memory storage if DATABASE_URL is not set
+- Add DATABASE_URL only if you need persistent data storage
+- Without DATABASE_URL, data will reset when the service restarts
+
 ### Error: "ENOENT: no such file or directory"
-- This usually means a required environment variable is missing
-- Check the Environment Variables section above
+- Ensure the build outputs `dist/public/` with `index.html` inside
+- Check that you're running from the repository root
 - Review logs in Render Dashboard
 
 ### Port Already in Use
