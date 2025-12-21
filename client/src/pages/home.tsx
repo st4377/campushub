@@ -412,8 +412,7 @@ export default function Home() {
       {/* Community Details Dialog with Center Pop-in Animation */}
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent 
-          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-hidden rounded-3xl md:max-w-2xl md:max-h-[90vh] md:overflow-y-auto w-[95vw] md:w-auto md:h-auto flex flex-col md:block"
-          style={{ aspectRatio: '1 / 1.5' }}
+          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-hidden rounded-3xl md:max-w-2xl md:max-h-[90vh] md:overflow-y-auto w-[95vw] md:w-auto md:h-auto flex flex-col md:block aspect-[1/1.5] md:aspect-auto"
         >
           {selectedCommunity && (
             <>
@@ -445,7 +444,7 @@ export default function Home() {
                 {/* Title Section */}
                 <div className="mb-4 md:mb-6">
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h2 className="text-base md:text-2xl font-bold font-heading uppercase tracking-wide text-white leading-tight flex-1">
+                    <h2 className="text-lg md:text-2xl font-bold font-heading uppercase tracking-wide text-white leading-tight flex-1">
                       {selectedCommunity.name}
                     </h2>
                   </div>
@@ -477,12 +476,12 @@ export default function Home() {
                 </div>
 
                 {/* Description */}
-                <p className="text-gray-300 leading-relaxed mb-5 md:mb-6 text-[11px] md:text-base whitespace-pre-line break-words">
+                <p className="text-gray-300 leading-relaxed mb-3 md:mb-6 text-[12px] md:text-base whitespace-pre-line break-words">
                   {selectedCommunity.description}
                 </p>
 
                 {/* Tags Section */}
-                <div className="mb-6 md:mb-8">
+                <div className="mb-2 md:mb-8">
                   <div className="flex flex-wrap gap-2">
                     {selectedCommunity.tags.slice(0, 4).map((tag) => (
                       <span key={tag} className="text-[9px] md:text-xs px-2.5 md:px-3 py-1 md:py-1.5 bg-[#151515] text-gray-300 border border-[#333] rounded-md md:rounded-lg uppercase font-bold tracking-wide">
