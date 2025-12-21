@@ -240,8 +240,7 @@ export default function Home() {
           </h1>
           
           <p className="text-lg md:text-xl text-black/70 max-w-2xl mb-12 font-medium leading-relaxed">
-            Discover and join thousands of WhatsApp, Telegram, and Discord communities. 
-            <span className="text-black/90"> No login required</span> to browse.
+            Discover and join thousands of WhatsApp, Telegram, and Discord communities.
           </p>
 
           <div className="w-full max-w-2xl relative group">
@@ -289,7 +288,7 @@ export default function Home() {
         <div className="flex flex-col lg:flex-row gap-6 w-full">
           
           {/* Sidebar - Desktop only (1024px+) */}
-          <aside className="hidden lg:block w-80 flex-shrink-0">
+          <aside className="hidden lg:block w-80 flex-shrink-0 sticky top-0 self-start">
             <div className="flex items-center justify-between gap-2 mb-6 border-b border-black/20 pb-4">
               <h2 className="font-heading text-lg font-bold uppercase tracking-wider text-black flex items-center gap-2">
                 <Hexagon className="h-4 w-4 text-black" /> Filters
