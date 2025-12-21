@@ -141,16 +141,11 @@ export function AdminCommunityCard({
         </p>
 
         <div className="flex flex-wrap gap-1.5 mt-auto">
-          {community.tags.slice(0, 3).map((tag) => (
+          {community.tags.map((tag) => (
             <span key={tag} className="text-xs px-2.5 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-full uppercase font-medium tracking-wider">
               #{tag}
             </span>
           ))}
-          {community.tags.length > 3 && (
-            <span className="text-xs px-2.5 py-1 bg-gray-100 text-gray-500 border border-gray-200 rounded-full">
-              +{community.tags.length - 3}
-            </span>
-          )}
         </div>
 
         <a
