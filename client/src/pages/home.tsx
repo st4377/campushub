@@ -289,9 +289,9 @@ export default function Home() {
         <div className="flex flex-col lg:flex-row gap-10 max-w-7xl mx-auto">
           
           {/* Sidebar - Desktop only (1024px+) */}
-          <aside className="hidden lg:block w-72 flex-shrink-0">
-            <div className="flex flex-col">
-              <div className="flex items-center justify-between mb-6 border-b border-black/20 pb-4 flex-shrink-0">
+          <aside className="hidden lg:block w-72 flex-shrink-0 h-fit">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between border-b border-black/20 pb-4">
                 <h2 className="font-heading text-lg font-bold uppercase tracking-wider text-black flex items-center gap-2">
                   <Hexagon className="h-4 w-4 text-black" /> Filters
                 </h2>
@@ -304,7 +304,7 @@ export default function Home() {
                   Reset All
                 </Button>
               </div>
-              <div className="p-6 rounded-3xl border border-[#333] bg-[#0A0A0A] shadow-lg overflow-y-auto flex-1 scrollbar-thin scrollbar-thumb-[#333] scrollbar-track-transparent">
+              <div className="p-6 rounded-3xl border border-[#333] bg-[#0A0A0A] shadow-lg scrollbar-thin scrollbar-thumb-[#333] scrollbar-track-transparent">
                 <Filters 
                   filters={filters}
                   onFilterChange={handleFilterChange}
