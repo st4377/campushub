@@ -361,7 +361,7 @@ export default function Login() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#FFC400]/5 rounded-full filter blur-[100px]"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFC400]/3 rounded-full filter blur-[80px]"></div>
         
-        <div className="w-full max-w-md overflow-y-auto max-h-[calc(100vh-120px)]" style={{ perspective: "1000px", WebkitOverflowScrolling: 'touch' }}>
+        <div className="w-full max-w-md lg:max-h-none max-h-[calc(100vh-120px)] lg:overflow-visible overflow-y-auto" style={{ perspective: "1000px", WebkitOverflowScrolling: 'touch' }}>
           <Link href="/" className="flex items-center gap-2 mb-8 transition-opacity hover:opacity-80 cursor-pointer">
             <div className="relative flex h-10 w-10 items-center justify-center">
               <Hexagon className="absolute h-10 w-10 text-[#FFC400] fill-[#FFC400]/10" strokeWidth={1.5} />
@@ -373,11 +373,9 @@ export default function Login() {
           </Link>
 
           <motion.div
-            className="w-full"
+            className="relative w-full"
             style={{ 
               transformStyle: "preserve-3d",
-              position: "relative",
-              minHeight: "600px",
             }}
             animate={{ rotateY: isFlipped ? 180 : 0 }}
             transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
