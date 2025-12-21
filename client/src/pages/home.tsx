@@ -412,13 +412,14 @@ export default function Home() {
       {/* Community Details Dialog with Center Pop-in Animation */}
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent 
-          className="bg-[#0A0A0A] border-[#333] text-white max-w-2xl p-0 overflow-hidden rounded-3xl max-h-[90vh] overflow-y-auto"
+          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-hidden rounded-3xl md:max-w-2xl md:max-h-[90vh] md:overflow-y-auto w-[95vw] md:w-auto md:h-auto flex flex-col md:block"
+          style={{ aspectRatio: '1 / 1.5' }}
         >
           {selectedCommunity && (
             <>
-              <div className="relative h-28 sm:h-32 bg-gradient-to-r from-[#FFC400] to-[#FF8C00] flex items-end p-4 sm:p-6">
-                <div className="absolute -bottom-8 sm:-bottom-10 left-4 sm:left-6 flex items-end gap-3 sm:gap-4">
-                  <div className="h-16 w-16 sm:h-24 sm:w-24 rounded-2xl bg-[#151515] border-4 border-[#0A0A0A] flex items-center justify-center shadow-xl overflow-hidden">
+              <div className="relative h-20 md:h-32 bg-gradient-to-r from-[#FFC400] to-[#FF8C00] flex items-end p-3 md:p-6 flex-shrink-0">
+                <div className="absolute -bottom-6 md:-bottom-10 left-3 md:left-6 flex items-end gap-2 md:gap-4">
+                  <div className="h-12 w-12 md:h-24 md:w-24 rounded-lg md:rounded-2xl bg-[#151515] border-2 md:border-4 border-[#0A0A0A] flex items-center justify-center shadow-xl overflow-hidden flex-shrink-0">
                     {selectedCommunity.imageUrl ? (
                       <img 
                         src={selectedCommunity.imageUrl} 
@@ -426,75 +427,80 @@ export default function Home() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-3xl font-bold text-white font-heading">{selectedCommunity.name.substring(0, 2).toUpperCase()}</span>
+                      <span className="text-lg md:text-3xl font-bold text-white font-heading">{selectedCommunity.name.substring(0, 2).toUpperCase()}</span>
                     )}
                   </div>
                 </div>
               </div>
               
-              <div className="pt-10 sm:pt-12 px-4 sm:px-6 pb-6 sm:pb-8">
+              <div className="pt-8 md:pt-12 px-3 md:px-6 pb-4 md:pb-8 flex-1 overflow-y-auto">
                 {selectedCommunity.adminTagId && (
-                  <div className="flex justify-end">
-                    <span className="text-[11px] font-mono text-gray-400 tracking-wider">
+                  <div className="flex justify-end mb-2">
+                    <span className="text-[9px] md:text-[11px] font-mono text-gray-400 tracking-wider">
                       Tag ID: {selectedCommunity.adminTagId}
                     </span>
                   </div>
                 )}
-                <div className="flex justify-between items-start mb-6 mt-10">
-                  <div>
-                    <h2 className="text-2xl font-bold font-heading uppercase tracking-wide text-white flex items-center gap-3">
-                      {selectedCommunity.name}
-                      <Badge variant="outline" className="text-xs px-2 py-0.5 border-[#FFC400] text-[#FFC400] bg-[#FFC400]/10">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2 md:gap-0 mb-4 md:mb-6 mt-1 md:mt-10">
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-sm md:text-2xl font-bold font-heading uppercase tracking-wide text-white flex flex-col md:flex-row md:items-center gap-1 md:gap-3 mb-1 md:mb-0">
+                      <span className="break-words">{selectedCommunity.name}</span>
+                      <Badge variant="outline" className="text-[9px] md:text-xs px-2 py-0.5 h-5 border-[#FFC400] text-[#FFC400] bg-[#FFC400]/10 w-fit flex-shrink-0">
                         {selectedCommunity.platform}
                       </Badge>
                     </h2>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
-                      <span className="flex items-center gap-1.5">
-                        <Users className="h-4 w-4" /> {selectedCommunity.memberCount.toLocaleString()} Members
+                    <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 mt-1 md:mt-2 text-xs md:text-sm text-gray-400">
+                      <span className="flex items-center gap-1">
+                        <Users className="h-3 md:h-4 w-3 md:w-4 flex-shrink-0" /> <span className="truncate">{selectedCommunity.memberCount.toLocaleString()} Members</span>
                       </span>
-                      <span className="flex items-center gap-1.5 text-[#FFC400]">
-                        <Star className="h-4 w-4 fill-[#FFC400]" /> {selectedCommunity.rating} ({selectedCommunity.reviewCount} reviews)
+                      <span className="flex items-center gap-1 text-[#FFC400]">
+                        <Star className="h-3 md:h-4 w-3 md:w-4 fill-[#FFC400] flex-shrink-0" /> <span className="truncate">{selectedCommunity.rating} ({selectedCommunity.reviewCount})</span>
                       </span>
                     </div>
                   </div>
                   {selectedCommunity.isActive && (
-                    <span className="flex items-center gap-1.5 text-xs text-[#FFC400] font-bold uppercase tracking-wider bg-[#FFC400]/10 px-3 py-1 rounded-full border border-[#FFC400]/20">
-                      <span className="relative flex h-2 w-2">
+                    <span className="flex items-center gap-1 text-[9px] md:text-xs text-[#FFC400] font-bold uppercase tracking-wider bg-[#FFC400]/10 px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-[#FFC400]/20 flex-shrink-0 h-fit">
+                      <span className="relative flex h-1.5 w-1.5 md:h-2 md:w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFC400] opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FFC400]"></span>
+                        <span className="relative inline-flex rounded-full h-full w-full bg-[#FFC400]"></span>
                       </span>
-                      Active Now
+                      <span>Active</span>
                     </span>
                   )}
                 </div>
 
-                <p className="text-gray-300 leading-relaxed mb-8 text-lg whitespace-pre-line">
+                <p className="text-gray-300 leading-relaxed mb-4 md:mb-8 text-xs md:text-lg whitespace-pre-line break-words">
                   {selectedCommunity.description}
                 </p>
 
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {selectedCommunity.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-3 py-1.5 bg-[#151515] text-gray-300 border border-[#333] rounded-lg uppercase font-bold tracking-wide">
+                <div className="flex flex-wrap gap-1.5 md:gap-2 mb-4 md:mb-8">
+                  {selectedCommunity.tags.slice(0, 4).map((tag) => (
+                    <span key={tag} className="text-[8px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 bg-[#151515] text-gray-300 border border-[#333] rounded-md md:rounded-lg uppercase font-bold tracking-wide flex-shrink-0">
                       #{tag}
                     </span>
                   ))}
+                  {selectedCommunity.tags.length > 4 && (
+                    <span className="text-[8px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 bg-[#151515] text-gray-400 border border-[#333] rounded-md md:rounded-lg uppercase font-bold">
+                      +{selectedCommunity.tags.length - 4}
+                    </span>
+                  )}
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex gap-2 md:gap-4">
                   <Button 
-                    className="flex-1 h-12 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl text-base shadow-lg hover:shadow-[#FFC400]/20 transition-all"
+                    className="flex-1 h-8 md:h-12 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-lg md:rounded-xl text-[10px] md:text-base shadow-lg hover:shadow-[#FFC400]/20 transition-all flex items-center justify-center"
                     onClick={() => {
                       if (selectedCommunity?.inviteLink) {
                         window.open(selectedCommunity.inviteLink, '_blank', 'noopener,noreferrer');
                       }
                     }}
                   >
-                    Join Group Now
-                    <ExternalLink className="ml-2 h-4 w-4" />
+                    Join
+                    <ExternalLink className="ml-1 md:ml-2 h-3 md:h-4 w-3 md:w-4" />
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="h-12 px-6 border-[#333] hover:bg-[#1A1A1A] hover:text-white hover:border-[#FFC400] rounded-xl"
+                    className="h-8 md:h-12 px-3 md:px-6 border-[#333] hover:bg-[#1A1A1A] hover:text-white hover:border-[#FFC400] rounded-lg md:rounded-xl"
                     onClick={() => {
                       if (selectedCommunity) {
                         if (navigator.share) {
@@ -510,7 +516,7 @@ export default function Home() {
                       }
                     }}
                   >
-                    Share
+                    <span className="text-[10px] md:text-base">Share</span>
                   </Button>
                 </div>
               </div>
