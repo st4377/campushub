@@ -409,7 +409,7 @@ export default function Home() {
       {/* Community Details Dialog with Center Pop-in Animation */}
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent 
-          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-hidden rounded-3xl md:w-[650px] md:h-[650px] md:overflow-y-auto w-[95vw] flex flex-col"
+          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-hidden rounded-3xl w-[650px] h-[650px] overflow-y-auto flex flex-col scrollbar-hide"
         >
           {selectedCommunity && (
             <>
