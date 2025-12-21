@@ -361,7 +361,7 @@ export default function Login() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#FFC400]/5 rounded-full filter blur-[100px]"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFC400]/3 rounded-full filter blur-[80px]"></div>
         
-        <div className="relative flex flex-col items-center justify-center min-h-screen p-4 lg:p-8 overflow-y-auto">
+        <div className="relative flex flex-col items-center justify-start min-h-screen pt-8 lg:pt-16 px-4 lg:px-8 overflow-y-auto">
           <div className="w-full max-w-md flex-shrink-0" style={{ perspective: "1000px" }}>
           <Link href="/" className="flex items-center gap-2 mb-8 transition-opacity hover:opacity-80 cursor-pointer">
             <div className="relative flex h-10 w-10 items-center justify-center">
