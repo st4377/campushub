@@ -302,7 +302,7 @@ export default function Login() {
         />
       </div>
 
-      <div className="w-full lg:w-1/2 flex items-center justify-center min-h-screen lg:min-h-auto p-4 lg:p-8 bg-black relative overflow-hidden">
+      <div className="w-full lg:w-1/2 bg-black relative">
         <div className="absolute inset-0 opacity-[0.07]">
           {[...Array(8)].map((_, i) => (
             <div
@@ -361,7 +361,8 @@ export default function Login() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#FFC400]/5 rounded-full filter blur-[100px]"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFC400]/3 rounded-full filter blur-[80px]"></div>
         
-        <div className="w-full max-w-md" style={{ perspective: "1000px" }}>
+        <div className="relative flex flex-col items-center justify-center min-h-screen p-4 lg:p-8 overflow-y-auto">
+          <div className="w-full max-w-md flex-shrink-0" style={{ perspective: "1000px" }}>
           <Link href="/" className="flex items-center gap-2 mb-8 transition-opacity hover:opacity-80 cursor-pointer">
             <div className="relative flex h-10 w-10 items-center justify-center">
               <Hexagon className="absolute h-10 w-10 text-[#FFC400] fill-[#FFC400]/10" strokeWidth={1.5} />
@@ -613,6 +614,7 @@ export default function Login() {
               </div>
             </div>
           </motion.div>
+          </div>
         </div>
       </div>
     </div>
