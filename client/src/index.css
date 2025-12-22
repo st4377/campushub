@@ -287,11 +287,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Hide scrollbar utility */
-.scrollbar-hide, .dialog-content-mobile {
+.scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
 
-.scrollbar-hide::-webkit-scrollbar, .dialog-content-mobile::-webkit-scrollbar {
+.scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
+}
+
+@media (min-width: 768px) {
+  .md\:scrollbar-default::-webkit-scrollbar {
+    display: block;
+    width: 8px;
+  }
+  .md\:scrollbar-default {
+    -ms-overflow-style: auto;
+    scrollbar-width: auto;
+  }
 }

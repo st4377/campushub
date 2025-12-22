@@ -409,7 +409,7 @@ export default function Home() {
       {/* Community Details Dialog with Center Pop-in Animation */}
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent 
-          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-hidden rounded-3xl md:max-w-2xl md:max-h-[90vh] md:overflow-y-auto w-[95vw] md:w-auto md:h-auto flex flex-col md:block aspect-[1/1.5] md:aspect-auto scrollbar-hide dialog-content-mobile"
+          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-hidden rounded-3xl md:max-w-2xl md:max-h-[90vh] md:overflow-y-auto w-[95vw] md:w-auto md:h-auto flex flex-col md:block aspect-[1/1.5] md:aspect-auto scrollbar-hide"
         >
           {selectedCommunity && (
             <>
@@ -429,7 +429,7 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="pt-6 md:pt-12 px-3 md:px-6 pb-4 md:pb-8 flex-1 overflow-y-auto flex flex-col">
+              <div className="pt-6 md:pt-12 px-3 md:px-6 pb-4 md:pb-8 flex-1 overflow-y-auto flex flex-col scrollbar-hide md:scrollbar-default">
                 {selectedCommunity.adminTagId && (
                   <div className="flex justify-end mb-3 md:mb-4">
                     <span className="text-[8px] md:text-[10px] font-mono text-gray-500 tracking-wider">
