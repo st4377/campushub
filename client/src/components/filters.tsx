@@ -81,7 +81,7 @@ export function Filters({ filters, onFilterChange, onReset }: FiltersProps) {
                 />
                 <Label 
                   htmlFor={`visibility-${option.value}`} 
-                  className={`text-sm font-bold uppercase tracking-wide peer-disabled:cursor-not-allowed peer-disabled:opacity-70 transition-colors cursor-pointer flex items-center gap-2 ${isChecked ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}
+                  className={`text-sm font-bold uppercase tracking-wide peer-disabled:cursor-not-allowed peer-disabled:opacity-70 transition-colors cursor-pointer flex items-center gap-2 ${isChecked ? 'text-[#FFC400]' : 'text-gray-400 group-hover:text-white'}`}
                 >
                   <Icon className="h-3.5 w-3.5" />
                   {option.label}
@@ -109,7 +109,7 @@ export function Filters({ filters, onFilterChange, onReset }: FiltersProps) {
                 />
                 <Label 
                   htmlFor={`platform-${platform}`} 
-                  className={`text-sm font-bold uppercase tracking-wide peer-disabled:cursor-not-allowed peer-disabled:opacity-70 transition-colors cursor-pointer ${isChecked ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}
+                  className={`text-sm font-bold uppercase tracking-wide peer-disabled:cursor-not-allowed peer-disabled:opacity-70 transition-colors cursor-pointer ${isChecked ? 'text-[#FFC400]' : 'text-gray-400 group-hover:text-white'}`}
                 >
                   {platform}
                 </Label>
@@ -140,7 +140,7 @@ export function Filters({ filters, onFilterChange, onReset }: FiltersProps) {
                     />
                     <Label 
                       htmlFor={`category-${category}`} 
-                      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 transition-colors cursor-pointer ${isChecked ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}
+                      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 transition-colors cursor-pointer ${isChecked ? 'text-[#FFC400]' : 'text-gray-400 group-hover:text-white'}`}
                     >
                       {category}
                     </Label>

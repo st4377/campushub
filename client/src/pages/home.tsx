@@ -321,8 +321,15 @@ export default function Home() {
                   Filters
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[300px] bg-yellow-50 border-r border-black/10 p-6 overflow-y-auto">
-                <h2 className="font-heading text-xl font-bold mb-8 uppercase text-black">Filters</h2>
+              <SheetContent side="left" className="w-[300px] bg-[#0A0A0A] border-r border-[#333] p-6 overflow-y-auto">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="font-heading text-xl font-bold uppercase text-[#FFC400]">Filters</h2>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/10 rounded-full">
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                </div>
                 <Filters 
                   filters={filters}
                   onFilterChange={handleFilterChange}
