@@ -409,13 +409,13 @@ export default function Home() {
       {/* Community Details Dialog with Center Pop-in Animation */}
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent 
-          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-hidden rounded-3xl md:max-w-2xl md:max-h-[90vh] md:overflow-y-auto w-[95vw] md:w-auto md:h-auto flex flex-col md:block aspect-[1/1.5] md:aspect-auto scrollbar-hide"
+          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-y-auto rounded-3xl md:max-w-2xl md:max-h-[90vh] w-[95vw] md:w-auto md:h-auto aspect-[1/1.5] md:aspect-auto scrollbar-hide"
         >
           {selectedCommunity && (
             <>
-              <div className="relative h-24 md:h-32 bg-gradient-to-r from-[#FFC400] to-[#FF8C00] flex items-end p-4 md:p-6 flex-shrink-0">
+              <div className="relative h-24 md:h-32 bg-gradient-to-r from-[#FFC400] to-[#FF8C00] flex items-end p-4 md:p-6">
                 <div className="absolute -bottom-8 md:-bottom-10 left-4 md:left-6 flex items-end gap-3 md:gap-4">
-                  <div className="h-16 w-16 md:h-24 md:w-24 rounded-xl md:rounded-2xl bg-[#151515] border-2 md:border-4 border-[#0A0A0A] flex items-center justify-center shadow-xl overflow-hidden flex-shrink-0">
+                  <div className="h-16 w-16 md:h-24 md:w-24 rounded-xl md:rounded-2xl bg-[#151515] border-2 md:border-4 border-[#0A0A0A] flex items-center justify-center shadow-xl overflow-hidden">
                     {selectedCommunity.imageUrl ? (
                       <img 
                         src={selectedCommunity.imageUrl} 
@@ -429,7 +429,7 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="pt-10 md:pt-12 px-4 md:px-6 pb-6 md:pb-8 flex-1 overflow-y-auto flex flex-col scrollbar-hide md:scrollbar-default">
+              <div className="pt-10 md:pt-12 px-4 md:px-6 pb-6 md:pb-8 flex flex-col md:scrollbar-default">
                 {selectedCommunity.adminTagId && (
                   <div className="flex justify-end mb-4 md:mb-4">
                     <span className="text-[10px] md:text-[10px] font-mono text-gray-500 tracking-wider">
