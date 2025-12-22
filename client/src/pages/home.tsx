@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout";
 import { CommunityCard } from "@/components/community-card";
 import { Filters, FilterState } from "@/components/filters";
-import { MOCK_COMMUNITIES, Community, getPlatformIcon } from "@/lib/mock-data";
+import { Community, getPlatformIcon } from "@/lib/mock-data";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal, Zap, Filter, Hexagon, X, ExternalLink, Star } from "lucide-react";
@@ -80,7 +80,7 @@ export default function Home() {
         imageUrl: c.imageUrl || undefined,
       }));
     }
-    return MOCK_COMMUNITIES;
+    return [];
   }, [approvedCommunities]);
 
   const handleTagClick = (tag: string) => {
