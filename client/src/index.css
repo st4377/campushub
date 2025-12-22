@@ -287,11 +287,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Hide scrollbar utility */
-.scrollbar-hide {
+.scrollbar-hide, .dialog-content-mobile {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
 
-.scrollbar-hide::-webkit-scrollbar {
+.scrollbar-hide::-webkit-scrollbar, .dialog-content-mobile::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
