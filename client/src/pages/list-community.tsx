@@ -25,7 +25,7 @@ const formSchema = z.object({
   inviteLink: z.string().url("Please enter a valid URL."),
   category: z.string(),
   description: z.string()
-    .min(100, "Description must be at least 100 characters.")
+    .min(150, "Description must be at least 150 characters.")
     .max(1000, "Description cannot exceed 1000 characters."),
   tags: z.string().refine(
     (val) => {
@@ -458,11 +458,11 @@ export default function ListCommunity() {
                   name="description"
                   render={({ field }) => {
                     const charCount = field.value?.length || 0;
-                    const isValid = charCount >= 100 && charCount <= 1000;
+                    const isValid = charCount >= 150 && charCount <= 1000;
                     return (
                       <FormItem>
                         <div className="flex justify-between items-center mb-2">
-                          <FormLabel className="uppercase font-bold text-xs tracking-widest text-black/70">Description (100-1000 characters)</FormLabel>
+                          <FormLabel className="uppercase font-bold text-xs tracking-widest text-black/70">Description (150-1000 characters)</FormLabel>
                           <span className={`text-xs font-bold tracking-wider ${isValid ? "text-green-600" : charCount > 0 ? "text-orange-600" : "text-black/40"}`}>
                             {charCount}/1000
                           </span>
@@ -470,9 +470,9 @@ export default function ListCommunity() {
                         <FormControl>
                           <Textarea placeholder="Tell us what your community is about..." maxLength={1000} className="resize-none bg-gray-50 border-black/20 min-h-[120px] text-black placeholder:text-black/40 focus:border-[#FFC400] rounded-2xl focus:shadow-[0_0_15px_rgba(255,196,0,0.2)]" {...field} />
                         </FormControl>
-                        {charCount < 100 && charCount > 0 && (
+                        {charCount < 150 && charCount > 0 && (
                           <p className="text-xs text-orange-600 font-medium mt-2">
-                            You need {100 - charCount} more character{100 - charCount !== 1 ? "s" : ""} to submit.
+                            You need {150 - charCount} more character{150 - charCount !== 1 ? "s" : ""} to submit.
                           </p>
                         )}
                         {charCount > 1000 && (

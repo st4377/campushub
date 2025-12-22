@@ -88,8 +88,8 @@ export const insertPendingCommunitySchema = createInsertSchema(pendingCommunitie
   id: true,
   adminTagId: true,
   submittedAt: true,
-}).refine(data => data.description.length >= 100, {
-  message: "Description must be at least 100 characters.",
+}).refine(data => data.description.length >= 150, {
+  message: "Description must be at least 150 characters.",
   path: ["description"],
 });
 
