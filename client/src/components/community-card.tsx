@@ -127,8 +127,8 @@ export function CommunityCard({ community, onClick, disableHoverScale = false }:
         </p>
 
         <div className="flex flex-wrap gap-2 mt-auto pt-4">
-          {community.tags.map((tag, index) => (
-            <span key={`${tag}-${index}`} className="text-[10px] px-2 py-1 bg-[#151515] text-gray-400 border border-[#333] group-hover:border-[#FFC400]/40 transition-colors uppercase font-bold tracking-wider rounded-lg">
+          {community.tags.map((tag) => (
+            <span key={tag} className="text-[10px] px-2 py-1 bg-[#151515] text-gray-400 border border-[#333] group-hover:border-[#FFC400]/40 transition-colors uppercase font-bold tracking-wider rounded-lg">
               #{tag}
             </span>
           ))}
