@@ -30,6 +30,7 @@ export default function Dashboard() {
   const [isEmailRevealed, setIsEmailRevealed] = useState(false);
   const [isEditNameDialogOpen, setIsEditNameDialogOpen] = useState(false);
   const [editedName, setEditedName] = useState("");
+  const [hasCheckedSession, setHasCheckedSession] = useState(false);
   const queryClient = useQueryClient();
 
   const updateProfileMutation = useMutation({
@@ -95,7 +96,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Try to fetch current user from session (for Google OAuth redirect)
-    if (!user && !isLoading) {
+    // This handles the race condition where session cookie isn't available immediately
+    if (!user && !isLoading && !hasCheckedSession) {
+      setHasCheckedSession(true);
+      
       const attemptFetch = async (retryCount = 0) => {
         try {
           const response = await fetch("/api/auth/me");
@@ -103,36 +107,41 @@ export default function Dashboard() {
           
           if (data.success && data.user) {
             updateUser(data.user);
-            return true;
+            return { success: true, user: data.user };
           }
           
-          // If 401 and first attempt, retry after delay
-          if (response.status === 401 && retryCount === 0) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-            return attemptFetch(1);
+          // If 401 and retries remaining, retry with delay
+          if (response.status === 401 && retryCount < 2) {
+            const delayMs = 300 + (retryCount * 100); // 300ms, 400ms, 500ms
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+            return attemptFetch(retryCount + 1);
           }
           
-          return false;
+          return { success: false };
         } catch (error) {
-          return false;
+          // On network error, retry once more
+          if (retryCount < 2) {
+            const delayMs = 300 + (retryCount * 100);
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+            return attemptFetch(retryCount + 1);
+          }
+          return { success: false };
         }
       };
       
-      attemptFetch().then(success => {
-        if (!success) {
+      attemptFetch().then(result => {
+        if (!result.success) {
           toast.error("Please log in to access your dashboard");
           setLocation("/login");
         }
       });
     }
-  }, [user, isLoading, setLocation, updateUser]);
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      toast.error("Please log in to access your dashboard");
+    
+    // Fallback: if still no user after context is loaded, redirect
+    if (!isLoading && !user && hasCheckedSession) {
       setLocation("/login");
     }
-  }, [user, isLoading, setLocation]);
+  }, [user, isLoading, hasCheckedSession, setLocation, updateUser]);
 
   const handleLogout = () => {
     logout();
