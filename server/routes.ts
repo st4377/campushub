@@ -82,7 +82,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
             user = await storage.createUser({
               fullName: fullName || email.split("@")[0],
               email,
-              password: undefined,
+              password: null as any,
             });
           }
 
