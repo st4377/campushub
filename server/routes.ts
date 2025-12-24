@@ -411,14 +411,16 @@ export async function registerRoutes(
 
   app.get(
     "/api/auth/google/callback",
-    (req, res, next) => {
-      if (!process.env.GOOGLE_CLIENT_ID) {
-        return res.redirect("/login?error=oauth_not_configured");
-      }
-      passport.authenticate("google", { failureRedirect: "/login" })(req, res, next);
-    },
+    passport.authenticate("google", { failureRedirect: "/login" }),
     (req, res) => {
-      res.redirect("/dashboard");
+      // Save session explicitly before redirect
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.redirect("/login?error=session_failed");
+        }
+        res.redirect("/dashboard");
+      });
     }
   );
 

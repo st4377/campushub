@@ -12,6 +12,9 @@ const PostgresStore = connectPg(session);
 const app = express();
 const httpServer = createServer(app);
 
+// Trust proxy for Render and other reverse proxies
+app.set("trust proxy", 1);
+
 app.use(
   session({
     store: new PostgresStore({
@@ -23,9 +26,12 @@ app.use(
     secret: process.env.SESSION_SECRET || "fallback_secret",
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
       secure: process.env.NODE_ENV === "production",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      sameSite: "none",
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
   })
 );
