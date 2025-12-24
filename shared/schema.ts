@@ -7,7 +7,7 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   fullName: text("full_name").notNull(),
   email: text("email").notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   lastBumpAt: timestamp("last_bump_at"),
   lastBumpCommunityId: varchar("last_bump_community_id"),
@@ -17,6 +17,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
   fullName: true,
   email: true,
   password: true,
+}).extend({
+  password: z.string().optional(),
 });
 
 export const signupSchema = z.object({

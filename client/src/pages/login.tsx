@@ -204,9 +204,7 @@ export default function Login() {
   };
 
   const handleGoogleLogin = () => {
-    toast.info("Google Sign-in coming soon!", {
-      description: "We're working on adding Google authentication."
-    });
+    window.location.href = "/api/auth/google";
   };
 
   const handleForgotPassword = (e: React.MouseEvent) => {

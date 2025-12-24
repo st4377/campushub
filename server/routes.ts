@@ -8,6 +8,8 @@ import bcrypt from "bcrypt";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 const uploadDir = path.join(process.cwd(), "uploads", "communities");
 if (!fs.existsSync(uploadDir)) {
@@ -56,10 +58,63 @@ const adminAuth = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
+// Configure Passport Google Strategy (if credentials are available)
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CALLBACK_URL) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          const email = profile.emails?.[0]?.value;
+          const fullName = profile.displayName || `${profile.name?.givenName || ""} ${profile.name?.familyName || ""}`.trim();
+          
+          if (!email) {
+            return done(new Error("No email found in Google profile"));
+          }
+
+          let user = await storage.getUserByEmail(email);
+          
+          if (!user) {
+            user = await storage.createUser({
+              fullName: fullName || email.split("@")[0],
+              email,
+              password: undefined,
+            });
+          }
+
+          return done(null, user);
+        } catch (error) {
+          return done(error);
+        }
+      }
+    )
+  );
+}
+
+passport.serializeUser((user: any, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id: string, done) => {
+  try {
+    const user = await storage.getUser(id);
+    done(null, user);
+  } catch (error) {
+    done(error);
+  }
+});
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  
+  app.use(passport.initialize());
+  app.use(passport.session());
   
   app.use("/uploads", (req, res, next) => {
     res.setHeader("Cache-Control", "public, max-age=31536000");
@@ -330,6 +385,10 @@ export async function registerRoutes(
         return res.status(401).json({ success: false, error: "Invalid email or password" });
       }
 
+      if (!user.password) {
+        return res.status(401).json({ success: false, error: "Please sign in with Google" });
+      }
+
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword) {
         return res.status(401).json({ success: false, error: "Invalid email or password" });
@@ -341,6 +400,36 @@ export async function registerRoutes(
       console.error("Error during login:", error);
       res.status(500).json({ success: false, error: "Failed to login" });
     }
+  });
+
+  app.get("/api/auth/google", (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.status(500).json({ success: false, error: "Google OAuth is not configured" });
+    }
+    passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+  });
+
+  app.get(
+    "/api/auth/google/callback",
+    (req, res, next) => {
+      if (!process.env.GOOGLE_CLIENT_ID) {
+        return res.redirect("/login?error=oauth_not_configured");
+      }
+      passport.authenticate("google", { failureRedirect: "/login" })(req, res, next);
+    },
+    (req, res) => {
+      res.redirect("/dashboard");
+    }
+  );
+
+  app.get("/api/auth/me", (req, res) => {
+    if (!req.user) {
+      return res.status(401).json({ success: false, error: "Not authenticated" });
+    }
+
+    const user = req.user as any;
+    const { password: _, ...userWithoutPassword } = user;
+    res.json({ success: true, user: userWithoutPassword });
   });
 
   app.patch("/api/user/profile/:userId", async (req, res) => {

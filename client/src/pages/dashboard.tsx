@@ -94,6 +94,24 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
+    // Try to fetch current user from session (for Google OAuth redirect)
+    if (!user && !isLoading) {
+      fetch("/api/auth/me")
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.user) {
+            updateUser(data.user);
+          }
+        })
+        .catch(() => {
+          // User not authenticated, redirect to login
+          toast.error("Please log in to access your dashboard");
+          setLocation("/login");
+        });
+    }
+  }, [user, isLoading, setLocation, updateUser]);
+
+  useEffect(() => {
     if (!isLoading && !user) {
       toast.error("Please log in to access your dashboard");
       setLocation("/login");
