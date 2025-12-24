@@ -51,7 +51,7 @@ export function Layout({ children, hideFooter = false }: LayoutProps) {
             </Link>
             {user ? (
               <Link href="/dashboard">
-                <Button variant="outline" className="border-black/30 text-black hover:bg-black/10 hover:text-black hover:border-black font-bold uppercase tracking-wider rounded-full text-xs px-4">
+                <Button variant="outline" className="border border-black bg-[#FFB700] text-black hover:bg-black/5 font-bold uppercase tracking-wider rounded-full text-xs px-4">
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Dashboard
                 </Button>
@@ -105,7 +105,7 @@ export function Layout({ children, hideFooter = false }: LayoutProps) {
                   </Link>
                   {user ? (
                     <Link href="/dashboard">
-                      <Button variant="outline" className="w-full border-black/30 text-black font-bold uppercase hover:border-black hover:text-black rounded-full">
+                      <Button variant="outline" className="w-full border border-black text-black font-bold uppercase hover:bg-black/5 rounded-full">
                         <LayoutDashboard className="mr-2 h-4 w-4" />
                         Dashboard
                       </Button>
