@@ -415,11 +415,11 @@ export default function Home() {
 
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent 
-          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-y-auto rounded-3xl md:max-w-2xl md:max-h-[90vh] w-[calc(100%-24px)] md:w-auto md:h-auto aspect-[1/1.5] md:aspect-auto scrollbar-hide"
+          className="bg-[#0A0A0A] border-[#333] text-white p-0 rounded-3xl md:max-w-2xl md:max-h-[90vh] w-[calc(100%-24px)] md:w-auto md:h-auto aspect-[1/1.5] md:aspect-auto flex flex-col overflow-hidden"
         >
           {selectedCommunity && (
-            <>
-              <div className="relative h-24 md:h-32 bg-gradient-to-r from-[#FFC400] to-[#FF8C00] flex items-end p-4 md:p-6">
+            <div className="flex flex-col h-full overflow-hidden">
+              <div className="relative h-24 md:h-32 bg-gradient-to-r from-[#FFC400] to-[#FF8C00] flex items-end p-4 md:p-6 flex-shrink-0">
                 <div className="absolute -bottom-8 md:-bottom-10 left-4 md:left-6 flex items-end gap-3 md:gap-4">
                   <div className="h-16 w-16 md:h-24 md:w-24 rounded-xl md:rounded-2xl bg-[#151515] border-2 md:border-4 border-[#0A0A0A] flex items-center justify-center shadow-xl overflow-hidden">
                     {selectedCommunity.imageUrl ? (
@@ -435,7 +435,7 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="pt-10 md:pt-12 px-4 md:px-6 pb-6 md:pb-8 flex flex-col md:scrollbar-default overflow-x-hidden">
+              <div className="flex-1 overflow-y-auto pt-10 md:pt-12 px-4 md:px-6 pb-6 md:pb-8 flex flex-col scrollbar-hide">
                 {selectedCommunity.adminTagId && (
                   <div className="flex justify-end mb-4 md:mb-4">
                     <span className="text-[10px] md:text-[10px] font-mono text-gray-500 tracking-wider">
@@ -493,7 +493,7 @@ export default function Home() {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="mt-auto pt-4 flex flex-col gap-3 md:gap-3 w-full overflow-hidden">
+                <div className="mt-auto pt-4 flex flex-col gap-3 md:gap-3 w-full overflow-hidden flex-shrink-0">
                   <Button 
                     className="w-full h-11 md:h-12 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl md:rounded-xl text-sm md:text-base shadow-lg hover:shadow-[#FFC400]/30 transition-all flex items-center justify-center gap-2 px-4"
                     onClick={() => {
@@ -528,7 +528,7 @@ export default function Home() {
                   </Button>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>
