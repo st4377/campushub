@@ -92,11 +92,11 @@ export function CommunityCard({ community, onClick, disableHoverScale = false }:
               <PlatformIcon className="h-3.5 w-3.5" />
             </div>
           </div>
-          <div className="flex flex-col">
-            <h3 className="font-bold text-lg leading-tight text-white group-hover:text-[#FFC400] transition-colors line-clamp-1 uppercase tracking-wide" title={community.name}>
+          <div className="flex flex-col min-w-0 flex-1">
+            <h3 className="font-bold text-lg leading-tight text-white group-hover:text-[#FFC400] transition-colors line-clamp-1 uppercase tracking-wide break-words" title={community.name}>
               {community.name}
             </h3>
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
               <Badge variant="outline" className="text-[10px] px-2 py-0.5 h-5 font-bold border-[#333] bg-[#151515] text-gray-400 uppercase tracking-wider rounded-none">
                 {community.platform}
               </Badge>
@@ -126,9 +126,9 @@ export function CommunityCard({ community, onClick, disableHoverScale = false }:
           {community.description}
         </p>
 
-        <div className="flex flex-wrap gap-2 mt-auto pt-4">
+        <div className="flex flex-wrap gap-2 mt-auto pt-4 overflow-hidden">
           {community.tags.map((tag) => (
-            <span key={tag} className="text-[10px] px-2 py-1 bg-[#151515] text-gray-400 border border-[#333] group-hover:border-[#FFC400]/40 transition-colors uppercase font-bold tracking-wider rounded-lg">
+            <span key={tag} className="text-[10px] px-2 py-1 bg-[#151515] text-gray-400 border border-[#333] group-hover:border-[#FFC400]/40 transition-colors uppercase font-bold tracking-wider rounded-lg truncate max-w-[150px]">
               #{tag}
             </span>
           ))}
@@ -137,7 +137,7 @@ export function CommunityCard({ community, onClick, disableHoverScale = false }:
 
       <CardFooter className="px-6 py-5 bg-[#050505] border-t border-[#222] flex gap-3 relative z-10">
         <Button 
-          className="flex-1 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl shadow-[0_0_20px_rgba(255,196,0,0.2)] hover:shadow-[0_0_30px_rgba(255,196,0,0.4)] transition-all duration-300 group/btn"
+          className="flex-1 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl shadow-[0_0_20px_rgba(255,196,0,0.2)] hover:shadow-[0_0_30px_rgba(255,196,0,0.4)] transition-all duration-300 group/btn min-w-0"
           onClick={(e) => {
             e.stopPropagation();
             if (community.inviteLink) {
@@ -145,8 +145,8 @@ export function CommunityCard({ community, onClick, disableHoverScale = false }:
             }
           }}
         >
-          Join Group
-          <ExternalLink className="ml-2 h-3.5 w-3.5 opacity-70 group-hover/btn:opacity-100" />
+          <span className="truncate">Join Group</span>
+          <ExternalLink className="ml-2 h-3.5 w-3.5 opacity-70 group-hover/btn:opacity-100 flex-shrink-0" />
         </Button>
         <Button 
           variant="ghost" 
