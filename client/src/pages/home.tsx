@@ -485,9 +485,9 @@ export default function Home() {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-col gap-3 md:gap-5 w-full">
+                <div className="flex flex-col gap-3 md:gap-4 w-full">
                   <Button 
-                    className="w-full h-12 md:h-16 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl md:rounded-xl text-sm md:text-lg shadow-lg transition-all flex items-center justify-center gap-2"
+                    className="w-full h-12 md:h-14 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl md:rounded-xl text-sm md:text-base shadow-lg transition-all flex items-center justify-center gap-2"
                     onClick={() => {
                       if (selectedCommunity?.inviteLink) {
                         window.open(selectedCommunity.inviteLink, '_blank', 'noopener,noreferrer');
@@ -495,12 +495,12 @@ export default function Home() {
                     }}
                   >
                     <span className="truncate uppercase flex-1 text-center">Join Group Now</span>
-                    <ExternalLink className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0" />
+                    <ExternalLink className="h-5 w-5 md:h-5 md:w-5 flex-shrink-0" />
                   </Button>
                   
                   <Button 
                     variant="outline" 
-                    className="w-full h-11 md:h-14 border-[#333] text-gray-300 hover:bg-[#1A1A1A] hover:text-white hover:border-[#FFC400] rounded-xl md:rounded-xl text-xs md:text-base font-bold uppercase tracking-wider transition-all px-4 flex items-center justify-center"
+                    className="w-full h-11 md:h-12 border-[#333] text-gray-300 hover:bg-[#1A1A1A] hover:text-white hover:border-[#FFC400] rounded-xl md:rounded-xl text-[10px] md:text-sm font-bold uppercase tracking-wider transition-all px-4 flex items-center justify-center"
                     onClick={() => {
                       if (selectedCommunity) {
                         if (navigator.share) {
