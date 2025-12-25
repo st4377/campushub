@@ -487,7 +487,7 @@ export default function Home() {
                 {/* CTA Buttons */}
                 <div className="flex flex-col gap-2 md:gap-4 w-full">
                   <Button 
-                    className="w-full h-9 md:h-14 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-lg md:rounded-xl text-xs md:text-base shadow-lg transition-all flex items-center justify-center gap-2"
+                    className="w-full h-9 md:h-14 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl md:rounded-xl text-xs md:text-base shadow-lg transition-all flex items-center justify-center gap-2"
                     onClick={() => {
                       if (selectedCommunity?.inviteLink) {
                         window.open(selectedCommunity.inviteLink, '_blank', 'noopener,noreferrer');
@@ -500,7 +500,7 @@ export default function Home() {
                   
                   <Button 
                     variant="outline" 
-                    className="w-full h-11 md:h-12 border-[#333] text-gray-300 hover:bg-[#1A1A1A] hover:text-white hover:border-[#FFC400] rounded-xl md:rounded-xl text-xs md:text-sm font-bold uppercase tracking-wider transition-all px-4 flex items-center justify-center"
+                    className="w-full h-9 md:h-12 border-[#333] text-gray-300 hover:bg-[#1A1A1A] hover:text-white hover:border-[#FFC400] rounded-xl md:rounded-xl text-xs md:text-sm font-bold uppercase tracking-wider transition-all px-4 flex items-center justify-center"
                     onClick={() => {
                       if (selectedCommunity) {
                         if (navigator.share) {
