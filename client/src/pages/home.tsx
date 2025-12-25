@@ -415,11 +415,11 @@ export default function Home() {
 
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent 
-          className="bg-[#0A0A0A] border-none text-white p-0 rounded-3xl md:max-w-2xl max-h-[75vh] md:max-h-[90vh] w-[calc(100%-24px)] overflow-y-auto scrollbar-hide shadow-none outline-none"
+          className="bg-[#0A0A0A] border-none text-white p-0 rounded-3xl md:max-w-2xl h-[75vh] md:h-auto md:max-h-[90vh] w-[calc(100%-24px)] overflow-hidden shadow-none outline-none flex flex-col"
         >
           {selectedCommunity && (
-            <div className="flex flex-col w-full">
-              <div className="relative h-20 md:h-40 bg-[#FFC400] flex items-end p-4 md:p-6 w-full">
+            <div className="flex flex-col h-full w-full overflow-hidden">
+              <div className="relative h-20 md:h-40 bg-[#FFC400] flex items-end p-4 md:p-6 w-full flex-shrink-0">
                 <div className="absolute -bottom-10 md:-bottom-10 left-6 flex items-end">
                   <div className="h-20 w-20 md:h-28 md:w-28 rounded-2xl bg-[#151515] border-4 border-[#0A0A0A] flex items-center justify-center shadow-2xl overflow-hidden">
                     {selectedCommunity.imageUrl ? (
@@ -435,9 +435,9 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="pt-12 md:pt-14 px-6 pb-6 md:pb-8 flex flex-col">
+              <div className="pt-12 md:pt-14 px-6 pb-6 md:pb-8 flex flex-col flex-1 overflow-y-auto scrollbar-hide">
                 {/* Title Section */}
-                <div className="mb-3 md:mb-6 overflow-hidden">
+                <div className="mb-3 md:mb-6 flex-shrink-0">
                   <h2 className="text-lg md:text-3xl font-bold font-heading uppercase tracking-wide text-white leading-tight mb-2 md:mb-3">
                     {selectedCommunity.name}
                   </h2>
@@ -447,7 +447,7 @@ export default function Home() {
                 </div>
 
                 {/* Meta Information Row */}
-                <div className="flex items-center gap-3 mb-3 md:mb-6">
+                <div className="flex items-center gap-3 mb-3 md:mb-6 flex-shrink-0">
                   <div className="flex items-center gap-1">
                     <Star className="h-3 w-3 md:h-4 md:w-4 fill-[#FFC400] text-[#FFC400]" />
                     <span className="text-[10px] md:text-sm text-gray-300 font-medium">{selectedCommunity.rating}</span>
@@ -464,7 +464,7 @@ export default function Home() {
                   )}
                 </div>
 
-                <div className="h-px bg-[#222] w-full mb-3 md:mb-8" />
+                <div className="h-px bg-[#222] w-full mb-3 md:mb-8 flex-shrink-0" />
 
                 {/* Description */}
                 <div className="mb-4 md:mb-8">
@@ -485,7 +485,7 @@ export default function Home() {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-col gap-3 md:gap-5 w-full">
+                <div className="flex flex-col gap-3 md:gap-5 w-full mt-auto">
                   <Button 
                     className="w-full h-12 md:h-16 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl md:rounded-xl text-sm md:text-lg shadow-lg transition-all flex items-center justify-center gap-2"
                     onClick={() => {
