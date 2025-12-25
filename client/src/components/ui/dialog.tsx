@@ -36,7 +36,7 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-[calc(100%-24px)] sm:w-[calc(100%-2rem)] max-w-lg gap-4 bg-background p-4 sm:p-6 shadow-lg rounded-lg scrollbar-hide overflow-x-hidden",
+        "fixed left-[50%] top-[50%] z-50 grid w-[calc(100%-24px)] sm:w-[calc(100%-2rem)] max-w-lg gap-4 bg-background p-0 shadow-lg rounded-lg scrollbar-hide overflow-hidden border-none outline-none",
         "animate-modal-pop-in data-[state=closed]:animate-modal-pop-out",
         className
       )}
@@ -46,7 +46,7 @@ const DialogContent = React.forwardRef<
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 z-50 h-9 w-9 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 text-white transition-all focus:outline-none focus:ring-2 focus:ring-white/50 disabled:pointer-events-none shadow-lg md:h-auto md:w-auto md:p-2">
+      <DialogPrimitive.Close className="absolute right-4 top-4 z-50 h-9 w-9 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white transition-all focus:outline-none disabled:pointer-events-none shadow-lg">
         <X className="h-5 w-5" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>

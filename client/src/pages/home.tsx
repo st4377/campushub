@@ -415,13 +415,13 @@ export default function Home() {
 
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent 
-          className="bg-[#0A0A0A] border-none text-white p-0 rounded-3xl md:max-w-2xl max-h-[90vh] w-[calc(100%-24px)] overflow-y-auto scrollbar-hide shadow-none"
+          className="bg-[#0A0A0A] border-none text-white p-0 rounded-3xl md:max-w-2xl max-h-[90vh] w-[calc(100%-24px)] overflow-y-auto scrollbar-hide shadow-none outline-none"
         >
           {selectedCommunity && (
-            <>
-              <div className="relative h-24 md:h-32 bg-[#FFC400] flex items-end p-4 md:p-6 w-full">
-                <div className="absolute -bottom-8 md:-bottom-10 left-4 md:left-6 flex items-end gap-3 md:gap-4">
-                  <div className="h-16 w-16 md:h-24 md:w-24 rounded-xl md:rounded-2xl bg-[#151515] border-4 border-[#0A0A0A] flex items-center justify-center shadow-xl overflow-hidden">
+            <div className="flex flex-col w-full">
+              <div className="relative h-32 md:h-40 bg-[#FFC400] flex items-end p-6 w-full">
+                <div className="absolute -bottom-10 left-6 flex items-end">
+                  <div className="h-20 w-20 md:h-28 md:w-28 rounded-2xl bg-[#151515] border-4 border-[#0A0A0A] flex items-center justify-center shadow-2xl overflow-hidden">
                     {selectedCommunity.imageUrl ? (
                       <img 
                         src={selectedCommunity.imageUrl} 
@@ -429,65 +429,55 @@ export default function Home() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-xl md:text-3xl font-bold text-white font-heading">{selectedCommunity.name.substring(0, 2).toUpperCase()}</span>
+                      <span className="text-2xl md:text-4xl font-bold text-white font-heading">{selectedCommunity.name.substring(0, 2).toUpperCase()}</span>
                     )}
                   </div>
                 </div>
               </div>
               
-              <div className="pt-10 md:pt-12 px-4 md:px-6 pb-6 md:pb-8 flex flex-col">
-                {selectedCommunity.adminTagId && (
-                  <div className="flex justify-end mb-4 md:mb-4">
-                    <span className="text-[10px] md:text-[10px] font-mono text-gray-500 tracking-wider">
-                      ID: {selectedCommunity.adminTagId}
-                    </span>
-                  </div>
-                )}
-                
+              <div className="pt-14 px-6 pb-8 flex flex-col">
                 {/* Title Section */}
-                <div className="mb-6 md:mb-6 overflow-hidden">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h2 className="text-xl md:text-2xl font-bold font-heading uppercase tracking-wide text-white leading-tight flex-1 break-words">
-                      {selectedCommunity.name}
-                    </h2>
-                  </div>
+                <div className="mb-6 overflow-hidden">
+                  <h2 className="text-2xl md:text-3xl font-bold font-heading uppercase tracking-wide text-white leading-tight mb-3">
+                    {selectedCommunity.name}
+                  </h2>
                   <Badge variant="outline" className="text-[10px] md:text-xs px-3 py-1 border-[#FFC400] text-[#FFC400] bg-transparent rounded-full w-fit">
                     {selectedCommunity.platform}
                   </Badge>
                 </div>
 
                 {/* Meta Information Row */}
-                <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-5 md:mb-5">
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <Star className="h-4 md:h-4 w-4 md:w-4 fill-[#FFC400] text-[#FFC400] flex-shrink-0" />
-                    <span className="text-xs md:text-xs text-gray-300 font-medium">{selectedCommunity.rating}</span>
-                    <span className="text-xs md:text-xs text-gray-500">({selectedCommunity.reviewCount})</span>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="flex items-center gap-1.5">
+                    <Star className="h-4 w-4 fill-[#FFC400] text-[#FFC400]" />
+                    <span className="text-sm text-gray-300 font-medium">{selectedCommunity.rating}</span>
+                    <span className="text-sm text-gray-500">({selectedCommunity.reviewCount})</span>
                   </div>
                   {selectedCommunity.isActive && (
-                    <div className="flex items-center gap-1.5 ml-auto flex-shrink-0">
-                      <span className="relative flex h-1.5 md:h-1.5 w-1.5 md:w-1.5">
+                    <div className="flex items-center gap-1.5 ml-auto">
+                      <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFC400] opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-full w-full bg-[#FFC400]"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FFC400]"></span>
                       </span>
-                      <span className="text-xs md:text-xs text-[#FFC400] font-bold uppercase tracking-wider">Active</span>
+                      <span className="text-xs text-[#FFC400] font-bold uppercase tracking-wider">Active</span>
                     </div>
                   )}
                 </div>
 
-                <div className="h-px bg-[#222] w-full mb-6" />
+                <div className="h-px bg-[#222] w-full mb-8" />
 
                 {/* Description */}
-                <div className="mb-6 md:mb-6 overflow-hidden">
-                  <p className="text-gray-300 leading-relaxed text-sm md:text-base whitespace-pre-line break-words">
+                <div className="mb-8">
+                  <p className="text-gray-300 leading-relaxed text-sm md:text-base whitespace-pre-line">
                     {selectedCommunity.description}
                   </p>
                 </div>
 
                 {/* Tags Section */}
-                <div className="mb-6 md:mb-8 overflow-hidden">
-                  <div className="flex flex-wrap gap-2">
+                <div className="mb-10">
+                  <div className="flex flex-wrap gap-3">
                     {selectedCommunity.tags.map((tag) => (
-                      <span key={tag} className="text-[10px] md:text-xs px-3 py-1.5 bg-transparent text-gray-300 border border-[#333] rounded-lg uppercase font-bold tracking-wide">
+                      <span key={tag} className="text-[10px] md:text-xs px-4 py-2 bg-transparent text-gray-300 border border-[#333] rounded-lg uppercase font-bold tracking-wide">
                         #{tag}
                       </span>
                     ))}
@@ -495,9 +485,9 @@ export default function Home() {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="mt-auto flex flex-col gap-3 md:gap-3 w-full">
+                <div className="flex flex-col gap-4 w-full">
                   <Button 
-                    className="w-full h-11 md:h-12 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl text-sm md:text-base shadow-lg transition-all flex items-center justify-center gap-2"
+                    className="w-full h-12 md:h-14 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl text-base shadow-lg transition-all flex items-center justify-center gap-2"
                     onClick={() => {
                       if (selectedCommunity?.inviteLink) {
                         window.open(selectedCommunity.inviteLink, '_blank', 'noopener,noreferrer');
@@ -530,7 +520,7 @@ export default function Home() {
                   </Button>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>
