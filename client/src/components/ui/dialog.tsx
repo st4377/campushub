@@ -36,7 +36,7 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-[calc(100%-2rem)] max-w-lg gap-4 border bg-background p-6 shadow-lg rounded-lg scrollbar-hide overflow-x-hidden",
+        "fixed left-[50%] top-[50%] z-50 grid w-[calc(100%-24px)] sm:w-[calc(100%-2rem)] max-w-lg gap-4 border bg-background p-4 sm:p-6 shadow-lg rounded-lg scrollbar-hide overflow-x-hidden",
         "animate-modal-pop-in data-[state=closed]:animate-modal-pop-out",
         className
       )}

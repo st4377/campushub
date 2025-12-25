@@ -413,10 +413,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Community Details Dialog with Center Pop-in Animation */}
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent 
-          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-y-auto rounded-3xl md:max-w-2xl md:max-h-[90vh] w-[95vw] md:w-auto md:h-auto aspect-[1/1.5] md:aspect-auto scrollbar-hide"
+          className="bg-[#0A0A0A] border-[#333] text-white p-0 overflow-y-auto rounded-3xl md:max-w-2xl md:max-h-[90vh] w-[calc(100%-24px)] md:w-auto md:h-auto aspect-[1/1.5] md:aspect-auto scrollbar-hide"
         >
           {selectedCommunity && (
             <>
@@ -436,7 +435,7 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="pt-10 md:pt-12 px-4 md:px-6 pb-6 md:pb-8 flex flex-col md:scrollbar-default">
+              <div className="pt-10 md:pt-12 px-4 md:px-6 pb-6 md:pb-8 flex flex-col md:scrollbar-default overflow-x-hidden">
                 {selectedCommunity.adminTagId && (
                   <div className="flex justify-end mb-4 md:mb-4">
                     <span className="text-[10px] md:text-[10px] font-mono text-gray-500 tracking-wider">
@@ -446,9 +445,9 @@ export default function Home() {
                 )}
                 
                 {/* Title Section */}
-                <div className="mb-6 md:mb-6">
+                <div className="mb-6 md:mb-6 overflow-hidden">
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h2 className="text-xl md:text-2xl font-bold font-heading uppercase tracking-wide text-white leading-tight flex-1">
+                    <h2 className="text-xl md:text-2xl font-bold font-heading uppercase tracking-wide text-white leading-tight flex-1 break-words">
                       {selectedCommunity.name}
                     </h2>
                   </div>
@@ -458,14 +457,14 @@ export default function Home() {
                 </div>
 
                 {/* Meta Information Row */}
-                <div className="flex flex-wrap items-center gap-4 md:gap-4 mb-5 md:mb-5 pb-5 md:pb-5 border-b border-[#222]">
-                  <div className="flex items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-5 md:mb-5 pb-5 md:pb-5 border-b border-[#222]">
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
                     <Star className="h-4 md:h-4 w-4 md:w-4 fill-[#FFC400] text-[#FFC400] flex-shrink-0" />
                     <span className="text-xs md:text-xs text-gray-300 font-medium">{selectedCommunity.rating}</span>
                     <span className="text-xs md:text-xs text-gray-500">({selectedCommunity.reviewCount})</span>
                   </div>
                   {selectedCommunity.isActive && (
-                    <div className="flex items-center gap-1.5 ml-auto">
+                    <div className="flex items-center gap-1.5 ml-auto flex-shrink-0">
                       <span className="relative flex h-1.5 md:h-1.5 w-1.5 md:w-1.5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFC400] opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-full w-full bg-[#FFC400]"></span>
@@ -476,17 +475,17 @@ export default function Home() {
                 </div>
 
                 {/* Description */}
-                <div className="mb-6 md:mb-6">
-                  <p className="text-gray-300 leading-relaxed text-sm md:text-base whitespace-pre-line break-words overflow-hidden">
+                <div className="mb-6 md:mb-6 overflow-hidden">
+                  <p className="text-gray-300 leading-relaxed text-sm md:text-base whitespace-pre-line break-words">
                     {selectedCommunity.description}
                   </p>
                 </div>
 
                 {/* Tags Section */}
-                <div className="mb-6 md:mb-8">
-                  <div className="flex flex-wrap gap-2 overflow-x-hidden">
+                <div className="mb-6 md:mb-8 overflow-hidden">
+                  <div className="flex flex-wrap gap-2">
                     {selectedCommunity.tags.map((tag) => (
-                      <span key={tag} className="text-[10px] md:text-xs px-2.5 md:px-3 py-1 md:py-1.5 bg-[#151515] text-gray-300 border border-[#333] rounded-lg uppercase font-bold tracking-wide whitespace-nowrap">
+                      <span key={tag} className="text-[10px] md:text-xs px-2.5 md:px-3 py-1 md:py-1.5 bg-[#151515] text-gray-300 border border-[#333] rounded-lg uppercase font-bold tracking-wide whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
                         #{tag}
                       </span>
                     ))}
@@ -494,7 +493,7 @@ export default function Home() {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="mt-auto pt-4 flex flex-col gap-3 md:gap-3 w-full">
+                <div className="mt-auto pt-4 flex flex-col gap-3 md:gap-3 w-full overflow-hidden">
                   <Button 
                     className="w-full h-11 md:h-12 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl md:rounded-xl text-sm md:text-base shadow-lg hover:shadow-[#FFC400]/30 transition-all flex items-center justify-center gap-2 px-4"
                     onClick={() => {
@@ -503,13 +502,13 @@ export default function Home() {
                       }
                     }}
                   >
-                    <span className="truncate uppercase">Join Group Now</span>
+                    <span className="truncate uppercase flex-1 text-center">Join Group Now</span>
                     <ExternalLink className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
                   </Button>
                   
                   <Button 
                     variant="outline" 
-                    className="w-full h-11 md:h-12 border-[#333] text-gray-300 hover:bg-[#1A1A1A] hover:text-white hover:border-[#FFC400] rounded-xl md:rounded-xl text-xs md:text-sm font-bold uppercase tracking-wider transition-all px-4"
+                    className="w-full h-11 md:h-12 border-[#333] text-gray-300 hover:bg-[#1A1A1A] hover:text-white hover:border-[#FFC400] rounded-xl md:rounded-xl text-xs md:text-sm font-bold uppercase tracking-wider transition-all px-4 flex items-center justify-center"
                     onClick={() => {
                       if (selectedCommunity) {
                         if (navigator.share) {
@@ -525,7 +524,7 @@ export default function Home() {
                       }
                     }}
                   >
-                    <span className="truncate">Share</span>
+                    <span className="truncate flex-1 text-center">Share</span>
                   </Button>
                 </div>
               </div>
