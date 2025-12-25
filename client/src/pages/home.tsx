@@ -415,13 +415,13 @@ export default function Home() {
 
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent 
-          className="bg-[#0A0A0A] border-none text-white p-0 rounded-3xl md:max-w-2xl max-h-[75vh] md:max-h-[90vh] w-[calc(100%-24px)] overflow-y-auto scrollbar-hide shadow-none outline-none"
+          className="bg-[#0A0A0A] border-none text-white p-0 rounded-3xl md:max-w-2xl max-h-[60vh] md:max-h-[90vh] w-[calc(100%-24px)] overflow-y-auto scrollbar-hide shadow-none outline-none"
         >
           {selectedCommunity && (
             <div className="flex flex-col w-full">
               <div className="relative h-20 md:h-40 bg-[#FFC400] flex items-end p-4 md:p-6 w-full">
-                <div className="absolute -bottom-6 md:-bottom-10 left-6 flex items-end">
-                  <div className="h-12 w-12 md:h-28 md:w-28 rounded-xl md:rounded-2xl bg-[#151515] border-4 border-[#0A0A0A] flex items-center justify-center shadow-2xl overflow-hidden">
+                <div className="absolute -bottom-8 md:-bottom-10 left-6 flex items-end">
+                  <div className="h-16 w-16 md:h-28 md:w-28 rounded-2xl bg-[#151515] border-4 border-[#0A0A0A] flex items-center justify-center shadow-2xl overflow-hidden">
                     {selectedCommunity.imageUrl ? (
                       <img 
                         src={selectedCommunity.imageUrl} 
@@ -429,13 +429,13 @@ export default function Home() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-lg md:text-4xl font-bold text-white font-heading">{selectedCommunity.name.substring(0, 2).toUpperCase()}</span>
+                      <span className="text-xl md:text-4xl font-bold text-white font-heading">{selectedCommunity.name.substring(0, 2).toUpperCase()}</span>
                     )}
                   </div>
                 </div>
               </div>
               
-              <div className="pt-8 md:pt-14 px-6 pb-6 md:pb-8 flex flex-col">
+              <div className="pt-10 md:pt-14 px-6 pb-6 md:pb-8 flex flex-col">
                 {/* Title Section */}
                 <div className="mb-3 md:mb-6 overflow-hidden">
                   <h2 className="text-lg md:text-3xl font-bold font-heading uppercase tracking-wide text-white leading-tight mb-2 md:mb-3">
