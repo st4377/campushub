@@ -415,13 +415,13 @@ export default function Home() {
 
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent 
-          className="bg-[#0A0A0A] border-[#333] text-white p-0 rounded-3xl md:max-w-2xl max-h-[90vh] w-[calc(100%-24px)] overflow-y-auto scrollbar-hide"
+          className="bg-[#0A0A0A] border-none text-white p-0 rounded-3xl md:max-w-2xl max-h-[90vh] w-[calc(100%-24px)] overflow-y-auto scrollbar-hide shadow-none"
         >
           {selectedCommunity && (
             <>
-              <div className="relative h-24 md:h-32 bg-gradient-to-r from-[#FFC400] to-[#FF8C00] flex items-end p-4 md:p-6">
+              <div className="relative h-24 md:h-32 bg-[#FFC400] flex items-end p-4 md:p-6 w-full">
                 <div className="absolute -bottom-8 md:-bottom-10 left-4 md:left-6 flex items-end gap-3 md:gap-4">
-                  <div className="h-16 w-16 md:h-24 md:w-24 rounded-xl md:rounded-2xl bg-[#151515] border-2 md:border-4 border-[#0A0A0A] flex items-center justify-center shadow-xl overflow-hidden">
+                  <div className="h-16 w-16 md:h-24 md:w-24 rounded-xl md:rounded-2xl bg-[#151515] border-4 border-[#0A0A0A] flex items-center justify-center shadow-xl overflow-hidden">
                     {selectedCommunity.imageUrl ? (
                       <img 
                         src={selectedCommunity.imageUrl} 
@@ -451,13 +451,13 @@ export default function Home() {
                       {selectedCommunity.name}
                     </h2>
                   </div>
-                  <Badge variant="outline" className="text-[10px] md:text-xs px-2 py-0.5 border-[#FFC400] text-[#FFC400] bg-[#FFC400]/10 w-fit">
+                  <Badge variant="outline" className="text-[10px] md:text-xs px-3 py-1 border-[#FFC400] text-[#FFC400] bg-transparent rounded-full w-fit">
                     {selectedCommunity.platform}
                   </Badge>
                 </div>
 
                 {/* Meta Information Row */}
-                <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-5 md:mb-5 pb-5 md:pb-5 border-b border-[#222]">
+                <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-5 md:mb-5">
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     <Star className="h-4 md:h-4 w-4 md:w-4 fill-[#FFC400] text-[#FFC400] flex-shrink-0" />
                     <span className="text-xs md:text-xs text-gray-300 font-medium">{selectedCommunity.rating}</span>
@@ -474,6 +474,8 @@ export default function Home() {
                   )}
                 </div>
 
+                <div className="h-px bg-[#222] w-full mb-6" />
+
                 {/* Description */}
                 <div className="mb-6 md:mb-6 overflow-hidden">
                   <p className="text-gray-300 leading-relaxed text-sm md:text-base whitespace-pre-line break-words">
@@ -485,7 +487,7 @@ export default function Home() {
                 <div className="mb-6 md:mb-8 overflow-hidden">
                   <div className="flex flex-wrap gap-2">
                     {selectedCommunity.tags.map((tag) => (
-                      <span key={tag} className="text-[10px] md:text-xs px-2.5 md:px-3 py-1 md:py-1.5 bg-[#151515] text-gray-300 border border-[#333] rounded-lg uppercase font-bold tracking-wide whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
+                      <span key={tag} className="text-[10px] md:text-xs px-3 py-1.5 bg-transparent text-gray-300 border border-[#333] rounded-lg uppercase font-bold tracking-wide">
                         #{tag}
                       </span>
                     ))}
@@ -493,9 +495,9 @@ export default function Home() {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="mt-auto pt-4 flex flex-col gap-3 md:gap-3 w-full overflow-hidden">
+                <div className="mt-auto flex flex-col gap-3 md:gap-3 w-full">
                   <Button 
-                    className="w-full h-11 md:h-12 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl md:rounded-xl text-sm md:text-base shadow-lg hover:shadow-[#FFC400]/30 transition-all flex items-center justify-center gap-2 px-4"
+                    className="w-full h-11 md:h-12 bg-[#FFC400] hover:bg-[#FFD84D] text-black font-bold uppercase tracking-wider rounded-xl text-sm md:text-base shadow-lg transition-all flex items-center justify-center gap-2"
                     onClick={() => {
                       if (selectedCommunity?.inviteLink) {
                         window.open(selectedCommunity.inviteLink, '_blank', 'noopener,noreferrer');
