@@ -11,6 +11,7 @@ import fs from "fs";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import crypto from "crypto";
+import { Resend } from "resend";
 
 const uploadDir = path.join(process.cwd(), "uploads", "communities");
 if (!fs.existsSync(uploadDir)) {
@@ -574,14 +575,44 @@ export async function registerRoutes(
 
       const resetLink = `${process.env.FRONTEND_URL || "http://localhost:5000"}/reset-password?token=${resetToken}`;
 
-      console.log("Password reset link:", resetLink);
-      console.log("Note: In production, this should be sent via Resend email service");
-      console.log("Email would be sent to:", email);
+      if (process.env.RESEND_API_KEY) {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        
+        try {
+          await resend.emails.send({
+            from: "CampusHub <noreply@campushub.replit.dev>",
+            to: email,
+            subject: "Reset Your CampusHub Password",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2>Password Reset Request</h2>
+                <p>Hi ${user.fullName},</p>
+                <p>We received a request to reset your password. Click the button below to create a new password.</p>
+                <p style="margin: 30px 0;">
+                  <a href="${resetLink}" style="background-color: #FFC400; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">
+                    Reset Password
+                  </a>
+                </p>
+                <p>Or copy and paste this link: ${resetLink}</p>
+                <p style="color: #666; font-size: 12px;">This link will expire in 15 minutes.</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                <p style="color: #666; font-size: 12px;">If you didn't request a password reset, you can safely ignore this email.</p>
+              </div>
+            `,
+          });
+          
+          console.log("Password reset email sent to:", email);
+        } catch (emailError) {
+          console.error("Resend email error:", emailError);
+          console.log("Fallback - Reset link:", resetLink);
+        }
+      } else {
+        console.log("RESEND_API_KEY not configured. Reset link:", resetLink);
+      }
 
       return res.json({ 
         success: true, 
-        message: "Reset link sent to email",
-        testResetLink: resetLink
+        message: "Password reset email sent"
       });
     } catch (error) {
       console.error("Forgot password error:", error);
