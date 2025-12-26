@@ -72,13 +72,14 @@ export default function About() {
       <div className="w-full px-4 md:px-6 pb-32 -mt-16 relative z-20 max-w-7xl mx-auto">
         <div className="grid md:grid-cols-3 gap-8">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.02 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6, scale: { duration: 0.5, ease: "easeOut" } }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, scale: { duration: 0.3 } }}
+            className="cursor-pointer"
           >
-            <Card className="bg-white border-black/10 rounded-3xl relative overflow-hidden group shadow-xl hover:shadow-2xl transition-all duration-700 button-hover">
+            <Card className="bg-white border-black/10 rounded-3xl relative overflow-hidden group shadow-xl hover:shadow-2xl transition-all duration-700 button-hover h-full">
               <div className="absolute top-0 left-0 w-1 h-full bg-transparent group-hover:bg-gradient-to-b group-hover:from-[#FFC400] group-hover:to-[#FF8C00] transition-all duration-300"></div>
               <CardContent className="pt-10 text-center px-8 pb-10">
                 <div className="mx-auto mb-6 h-16 w-16 bg-[#FFC400] border border-black/10 flex items-center justify-center text-black shadow-lg group-hover:shadow-[0_0_20px_rgba(255,196,0,0.5)] transition-all rounded-2xl">
@@ -93,13 +94,14 @@ export default function About() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.02 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6, delay: 0.1, scale: { duration: 0.5, ease: "easeOut" } }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1, scale: { duration: 0.3 } }}
+            className="cursor-pointer"
           >
-            <Card className="bg-white border-black/10 rounded-3xl relative overflow-hidden group shadow-xl hover:shadow-2xl transition-all duration-700 button-hover">
+            <Card className="bg-white border-black/10 rounded-3xl relative overflow-hidden group shadow-xl hover:shadow-2xl transition-all duration-700 button-hover h-full">
               <div className="absolute top-0 left-0 w-1 h-full bg-transparent group-hover:bg-gradient-to-b group-hover:from-[#FFC400] group-hover:to-[#FF8C00] transition-all duration-300"></div>
               <CardContent className="pt-10 text-center px-8 pb-10">
                 <div className="mx-auto mb-6 h-16 w-16 bg-[#FFC400] border border-black/10 flex items-center justify-center text-black shadow-lg group-hover:shadow-[0_0_20px_rgba(255,196,0,0.5)] transition-all rounded-2xl">
@@ -114,13 +116,14 @@ export default function About() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.02 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6, delay: 0.2, scale: { duration: 0.5, ease: "easeOut" } }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.2, scale: { duration: 0.3 } }}
+            className="cursor-pointer"
           >
-            <Card className="bg-white border-black/10 rounded-3xl relative overflow-hidden group shadow-xl hover:shadow-2xl transition-all duration-700 button-hover">
+            <Card className="bg-white border-black/10 rounded-3xl relative overflow-hidden group shadow-xl hover:shadow-2xl transition-all duration-700 button-hover h-full">
               <div className="absolute top-0 left-0 w-1 h-full bg-transparent group-hover:bg-gradient-to-b group-hover:from-[#FFC400] group-hover:to-[#FF8C00] transition-all duration-300"></div>
               <CardContent className="pt-10 text-center px-8 pb-10">
                 <div className="mx-auto mb-6 h-16 w-16 bg-[#FFC400] border border-black/10 flex items-center justify-center text-black shadow-lg group-hover:shadow-[0_0_20px_rgba(255,196,0,0.5)] transition-all rounded-2xl">
@@ -136,11 +139,12 @@ export default function About() {
         </div>
 
         <motion.div 
-          className="mt-32 border border-black/10 bg-white rounded-3xl relative overflow-hidden shadow-2xl button-hover"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          className="mt-32 border border-black/10 bg-white rounded-3xl relative overflow-hidden shadow-2xl button-hover cursor-pointer"
+          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          whileHover={{ scale: 1.02 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, scale: { duration: 0.3 } }}
         >
            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#FFC400] to-[#FF8C00] rounded-l-3xl"></div>
            <div className="absolute top-0 right-0 p-12 opacity-5">
