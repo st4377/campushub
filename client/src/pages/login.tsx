@@ -361,22 +361,29 @@ export default function Login() {
         
         <div className="relative flex flex-col items-center justify-start min-h-screen pt-8 lg:pt-16 px-4 lg:px-8 overflow-y-auto mobile-scrollbar-hide">
           <div className="w-full max-w-md flex-shrink-0" style={{ perspective: "1000px" }}>
-          <Link href="/" className="flex items-center gap-2 mb-8 transition-opacity hover:opacity-80 cursor-pointer">
-            <div className="relative flex h-10 w-10 items-center justify-center">
-              <Hexagon className="absolute h-10 w-10 text-[#FFC400] fill-[#FFC400]/10" strokeWidth={1.5} />
-              <span className="relative z-10 text-lg font-bold text-[#FFC400]">C</span>
-            </div>
-            <span className="font-heading text-xl font-bold tracking-tight uppercase text-white">
-              CampusHub
-            </span>
-          </Link>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <Link href="/" className="flex items-center gap-2 mb-8 transition-opacity hover:opacity-80 cursor-pointer">
+              <div className="relative flex h-10 w-10 items-center justify-center">
+                <Hexagon className="absolute h-10 w-10 text-[#FFC400] fill-[#FFC400]/10" strokeWidth={1.5} />
+                <span className="relative z-10 text-lg font-bold text-[#FFC400]">C</span>
+              </div>
+              <span className="font-heading text-xl font-bold tracking-tight uppercase text-white">
+                CampusHub
+              </span>
+            </Link>
+          </motion.div>
 
           <motion.div
             className="relative w-full"
             style={{ 
               transformStyle: "preserve-3d",
             }}
-            animate={{ rotateY: isFlipped ? 180 : 0 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1, rotateY: isFlipped ? 180 : 0 }}
             transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
           >
             <div 
