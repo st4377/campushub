@@ -522,7 +522,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Animation utility classes */
 .animate-fade-in {
-  animation: fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: fade-in 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .animate-slide-in-down {
