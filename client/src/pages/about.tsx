@@ -74,7 +74,7 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, scale: { duration: 0.3 } }}
             className="cursor-pointer"
@@ -96,7 +96,7 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 0.1, scale: { duration: 0.3 } }}
             className="cursor-pointer"
@@ -118,7 +118,7 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 0.2, scale: { duration: 0.3 } }}
             className="cursor-pointer"
