@@ -183,6 +183,25 @@ export default function About() {
                  </motion.div>
                </div>
              </Link>
+             
+             <motion.div 
+               className="mt-12 text-center"
+               initial={{ opacity: 0 }}
+               whileInView={{ opacity: 1 }}
+               viewport={{ once: true, amount: 0.5 }}
+               transition={{ duration: 0.6 }}
+             >
+               <p className="text-black/60 mb-4">Need support?</p>
+               <motion.a 
+                 href="https://wa.me/919754424866?text=Hi%2C%20I%E2%80%99m%20reaching%20out%20for%20support%20related%20to%20CampusHub" 
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="inline-flex items-center gap-2 text-black font-bold transition-transform underline underline-offset-4 button-hover"
+                 whileHover={{ scale: 1.05 }}
+               >
+                 Contact me for support
+               </motion.a>
+             </motion.div>
            </div>
         </motion.div>
       </div>
