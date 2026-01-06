@@ -129,9 +129,9 @@ export function Layout({ children, hideFooter = false }: LayoutProps) {
       {!hideFooter && (
       <footer className="border-t border-white/10 bg-black py-12">
         <div className="w-full px-4 md:px-6 max-w-7xl mx-auto">
-          <div className="grid gap-8 md:grid-cols-4">
-            <div className="space-y-4">
-              <h4 className="text-lg font-bold font-heading uppercase tracking-wider text-white flex items-center gap-2">
+          <div className="flex flex-col items-center text-center space-y-8">
+            <div className="max-w-md space-y-4">
+              <h4 className="text-lg font-bold font-heading uppercase tracking-wider text-white flex items-center justify-center gap-2">
                  <Hexagon className="h-5 w-5 text-[#FFC400] fill-[#FFC400]/20" />
                  CampusHub
               </h4>
@@ -139,15 +139,17 @@ export function Layout({ children, hideFooter = false }: LayoutProps) {
                 The central hub for all college communities. Find WhatsApp, Telegram, and Discord groups for your campus.
               </p>
             </div>
-            <div>
+            
+            <div className="flex flex-col items-center">
               <h4 className="mb-4 text-sm font-bold uppercase tracking-widest text-[#FFC400]">Platform</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <ul className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
                 <li><Link href="/" className="hover:text-white transition-colors">Browse</Link></li>
                 <li><Link href="/list-community" className="hover:text-white transition-colors">List Community</Link></li>
                 <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
               </ul>
             </div>
-            <div>
+
+            <div className="flex flex-col items-center">
               <h4 className="mb-4 text-sm font-bold uppercase tracking-widest text-[#FFC400]">Connect</h4>
               <div className="flex gap-4">
                 {/* Instagram */}
