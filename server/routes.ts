@@ -11,23 +11,17 @@ import fs from "fs";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
-const uploadDir = path.join(process.cwd(), "uploads", "communities");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+import { v2 as cloudinary } from "cloudinary";
 
-const communityImageStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  },
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const uploadCommunityImage = multer({
-  storage: communityImageStorage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 2 * 1024 * 1024, // 2MB limit
   },
@@ -116,13 +110,14 @@ export async function registerRoutes(
   app.use(passport.initialize());
   app.use(passport.session());
   
+  // No longer serving local uploads directory, but keeping middleware for existing images
   app.use("/uploads", (req, res, next) => {
     res.setHeader("Cache-Control", "public, max-age=31536000");
     next();
   }, express.static(path.join(process.cwd(), "uploads")));
 
   app.post("/api/upload/community-image", (req, res) => {
-    uploadCommunityImage.single("image")(req, res, (err) => {
+    uploadCommunityImage.single("image")(req, res, async (err) => {
       if (err) {
         if (err instanceof multer.MulterError) {
           if (err.code === "LIMIT_FILE_SIZE") {
@@ -137,8 +132,27 @@ export async function registerRoutes(
         return res.status(400).json({ success: false, error: "No image file provided" });
       }
       
-      const imageUrl = `/uploads/communities/${req.file.filename}`;
-      res.json({ success: true, imageUrl });
+      try {
+        // Upload to Cloudinary using a buffer
+        const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: "communities",
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          uploadStream.end(req.file!.buffer);
+        });
+        
+        const imageUrl = (uploadResult as any).secure_url;
+        res.json({ success: true, imageUrl });
+      } catch (uploadError) {
+        console.error("Cloudinary upload error:", uploadError);
+        res.status(500).json({ success: false, error: "Failed to upload image to Cloudinary" });
+      }
     });
   });
 
