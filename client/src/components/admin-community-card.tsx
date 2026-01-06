@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { mapCategoryToDisplay } from "@/lib/category-mapper";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { CheckCircle, XCircle, ExternalLink, Pencil, Pin, PinOff, Trash2, Globe, User, MessageCircle, Hash } from "lucide-react";
@@ -128,7 +129,7 @@ export function AdminCommunityCard({
 
       <CardContent className="px-5 py-3 flex-1 flex flex-col relative z-10 min-h-0">
         <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-          <span className="text-gray-600 truncate font-medium">{community.category}</span>
+          <span className="text-gray-600 truncate font-medium">{mapCategoryToDisplay(community.category)}</span>
         </div>
 
         <p className="text-sm text-gray-700 line-clamp-3 leading-relaxed mb-3 whitespace-pre-line">

@@ -13,6 +13,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle, XCircle, Clock, Users, ExternalLink, RefreshCw, Shield, Lock, LogIn, Pencil, Save, Trash2, ListChecks, Search, Pin, PinOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
+import { DISPLAY_CATEGORIES } from "@/lib/category-mapper";
 
 interface PendingCommunity {
   id: string;
@@ -389,19 +390,7 @@ export default function AdminApprovals() {
     },
   });
 
-  const categories = [
-    "Study Groups",
-    "Coding & Tech",
-    "Trading & Finance",
-    "Entertainment & Memes",
-    "Sports & Fitness",
-    "Arts & Creativity",
-    "Hostel Life",
-    "Career & Internships",
-    "Gaming",
-    "Music & Movies",
-    "Other",
-  ];
+  const categories = DISPLAY_CATEGORIES;
 
   const platforms = ["WhatsApp", "Telegram", "Discord", "Instagram"];
   const visibilityOptions = [

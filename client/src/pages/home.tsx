@@ -2,6 +2,7 @@ import { Layout } from "@/components/layout";
 import { CommunityCard } from "@/components/community-card";
 import { Filters, FilterState } from "@/components/filters";
 import { Community, getPlatformIcon } from "@/lib/mock-data";
+import { mapCategoryToDisplay, CATEGORY_MAP } from "@/lib/category-mapper";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal, Zap, Filter, Hexagon, X, ExternalLink, Star } from "lucide-react";
@@ -168,9 +169,10 @@ export default function Home() {
 
     // Apply category filter
     if (filters.categories.length > 0) {
-      result = result.filter((community) => 
-        filters.categories.includes(community.category)
-      );
+      result = result.filter((community) => {
+        const displayCat = mapCategoryToDisplay(community.category);
+        return filters.categories.includes(displayCat);
+      });
     }
 
     // Sort: pinned first, then by bump time (most recent first), then the rest

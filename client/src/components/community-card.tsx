@@ -1,4 +1,5 @@
 import { Community, getPlatformColor, getPlatformIcon, CommunityVisibility } from "@/lib/mock-data";
+import { mapCategoryToDisplay } from "@/lib/category-mapper";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -120,6 +121,7 @@ export function CommunityCard({ community, onClick, disableHoverScale = false }:
             <Star className="h-3.5 w-3.5 text-[#FFC400] fill-[#FFC400]" />
             <span className="font-mono text-white">{community.rating} <span className="text-gray-600">({community.reviewCount})</span></span>
           </div>
+          <span className="text-gray-600 truncate font-medium">{mapCategoryToDisplay(community.category)}</span>
         </div>
 
         <p className="text-sm text-gray-400 line-clamp-2 leading-relaxed font-medium h-[40px] whitespace-pre-line">

@@ -1,5 +1,7 @@
 import { MessageCircle, Globe, Hash, Users, Shield, Zap, School, Code, DollarSign, Music, Coffee, Star } from "lucide-react";
 
+import { DISPLAY_CATEGORIES } from "./category-mapper";
+
 export type Platform = "WhatsApp" | "Telegram" | "Discord" | "Instagram" | "Other";
 
 export type CommunityVisibility = "public" | "boys-only" | "girls-only";
@@ -23,19 +25,7 @@ export interface Community {
   adminTagId?: string;
 }
 
-export const CATEGORIES = [
-  "Study Groups",
-  "Coding & Tech",
-  "Trading & Finance",
-  "Entertainment & Memes",
-  "Dance & Music",
-  "Foodies",
-  "Sports & Fitness",
-  "Events & Fests",
-  "Hostel Life",
-  "General Chat & Chill",
-  "Clubs & Societies"
-];
+export const CATEGORIES = DISPLAY_CATEGORIES;
 
 export const PLATFORMS: Platform[] = ["WhatsApp", "Telegram", "Discord", "Instagram", "Other"];
 
