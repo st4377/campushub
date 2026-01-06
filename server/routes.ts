@@ -427,7 +427,8 @@ export async function registerRoutes(
     "/api/auth/google/callback",
     passport.authenticate("google", { failureRedirect: "/login" }),
     (req, res) => {
-      // Save session explicitly before redirect
+      // Save session explicitly before redirect to ensure persistence in PostgreSQL
+      // This fixes the timing issue where /api/auth/me is called before session is saved
       req.session.save((err) => {
         if (err) {
           console.error("Session save error:", err);

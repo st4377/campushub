@@ -34,7 +34,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsLoading(false);
+    const checkAuth = async (retries = 1) => {
+      try {
+        const response = await fetch("/api/auth/me");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.user) {
+            login(data.user);
+          }
+        } else if (response.status === 401 && retries > 0) {
+          // Retry once after 500ms if 401 (could be session timing issue)
+          await new Promise(resolve => setTimeout(resolve, 500));
+          return checkAuth(retries - 1);
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   useEffect(() => {
