@@ -6,6 +6,7 @@ export const CATEGORY_MAP: Record<string, string> = {
   "Events & Fests": "Events & Hackathons",
   "Hostel Life": "Flats & Housing",
   "Clubs & Societies": "Campus Updates",
+  "Buy & Sell": "Buy & Sell",
 };
 
 export const DISPLAY_CATEGORIES = [
@@ -16,6 +17,7 @@ export const DISPLAY_CATEGORIES = [
   "Events & Hackathons",
   "Flats & Housing",
   "Campus Updates",
+  "Buy & Sell",
   "Others"
 ];
 
