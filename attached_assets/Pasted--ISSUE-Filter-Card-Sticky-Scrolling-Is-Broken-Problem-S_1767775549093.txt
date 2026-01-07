@@ -1,0 +1,120 @@
+🔧 ISSUE: Filter Card Sticky Scrolling Is Broken
+Problem Summary
+
+The desktop filter sidebar does not behave correctly while scrolling.
+It either scrolls incorrectly or does not stop at the correct position.
+
+Root Cause
+
+position: sticky is applied directly to the <aside> element, which is a flex child.
+When sticky is applied to a flex item without a height-bounded inner wrapper, the browser cannot correctly calculate the scroll boundary.
+
+In the original working version:
+
+<aside> was only a layout column
+
+A nested inner div handled the sticky behavior
+
+The sticky container had a max height and its own internal scroll
+
+This structure was removed in the current version, breaking the behavior.
+
+📁 FILE TO MODIFY
+
+File:
+client/src/pages/home.tsx
+
+Section:
+Desktop sidebar (Filters) inside the Main Content Grid
+
+❌ CURRENT BROKEN CODE (DO NOT KEEP)
+<aside className="hidden lg:block w-80 flex-shrink-0 sticky top-0 self-start">
+  <div className="flex items-center justify-between gap-2 mb-6 border-b border-black/20 pb-4">
+    <h2 className="font-heading text-lg font-bold uppercase tracking-wider text-black flex items-center gap-2">
+      <Hexagon className="h-4 w-4 text-black" /> Filters
+    </h2>
+    <Button 
+      variant="ghost" 
+      size="sm" 
+      onClick={() => { setSearchQuery(""); setActiveSearch(""); handleResetFilters(); }}
+      className="h-8 text-xs text-black/70 hover:text-black uppercase font-bold tracking-wider hover:bg-transparent"
+    >
+      Reset All
+    </Button>
+  </div>
+
+  <div className="p-6 rounded-3xl border border-[#333] bg-[#0A0A0A] shadow-lg">
+    <Filters 
+      filters={filters}
+      onFilterChange={handleFilterChange}
+      onReset={handleResetFilters}
+    />
+  </div>
+</aside>
+
+Why this is wrong
+
+sticky is on <aside> (flex item) ❌
+
+No height-bounded sticky container ❌
+
+No internal scrolling for filters ❌
+
+Sticky has no proper stopping boundary ❌
+
+✅ REQUIRED REPLACEMENT (FINAL, WORKING VERSION)
+<aside className="hidden lg:block w-80 flex-shrink-0">
+  <div className="sticky top-28 max-h-[calc(100vh-8rem)] flex flex-col self-start">
+
+    <div className="flex items-center justify-between gap-2 mb-6 border-b border-black/20 pb-4 flex-shrink-0">
+      <h2 className="font-heading text-lg font-bold uppercase tracking-wider text-black flex items-center gap-2">
+        <Hexagon className="h-4 w-4 text-black" /> Filters
+      </h2>
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        onClick={() => { setSearchQuery(""); setActiveSearch(""); handleResetFilters(); }}
+        className="h-8 text-xs text-black/70 hover:text-black uppercase font-bold tracking-wider hover:bg-transparent"
+      >
+        Reset All
+      </Button>
+    </div>
+
+    <div className="p-6 rounded-3xl border border-[#333] bg-[#0A0A0A] shadow-lg overflow-y-auto flex-1">
+      <Filters 
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onReset={handleResetFilters}
+      />
+    </div>
+
+  </div>
+</aside>
+
+✅ WHAT THIS CHANGE DOES
+
+Restores correct sticky behavior
+
+Filter card stays pinned while scrolling
+
+Filter card stops when main content ends
+
+Filter content scrolls internally if it overflows
+
+Matches the original working Campus Hub version
+
+Uses pure CSS (no JS scroll logic)
+
+🚫 DO NOT CHANGE ANYTHING ELSE
+
+❌ Do NOT change layout wrappers
+
+❌ Do NOT change hero section
+
+❌ Do NOT change animations
+
+❌ Do NOT change grid logic
+
+❌ Do NOT change mobile filter drawer
+
+❌ Do NOT add JavaScript scroll listeners

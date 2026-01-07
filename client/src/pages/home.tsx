@@ -329,26 +329,28 @@ export default function Home() {
         <div className="flex flex-col lg:flex-row gap-6 w-full">
           
           {/* Sidebar - Desktop only (1024px+) */}
-          <aside className="hidden lg:block w-80 flex-shrink-0 sticky top-0 self-start">
-            <div className="flex items-center justify-between gap-2 mb-6 border-b border-black/20 pb-4">
-              <h2 className="font-heading text-lg font-bold uppercase tracking-wider text-black flex items-center gap-2">
-                <Hexagon className="h-4 w-4 text-black" /> Filters
-              </h2>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => { setSearchQuery(""); setActiveSearch(""); handleResetFilters(); }}
-                className="h-8 text-xs text-black/70 hover:text-black uppercase font-bold tracking-wider hover:bg-transparent"
-              >
-                Reset All
-              </Button>
-            </div>
-            <div className="p-6 rounded-3xl border border-[#333] bg-[#0A0A0A] shadow-lg">
-              <Filters 
-                filters={filters}
-                onFilterChange={handleFilterChange}
-                onReset={handleResetFilters}
-              />
+          <aside className="hidden lg:block w-80 flex-shrink-0">
+            <div className="sticky top-28 max-h-[calc(100vh-8rem)] flex flex-col self-start">
+              <div className="flex items-center justify-between gap-2 mb-6 border-b border-black/20 pb-4 flex-shrink-0">
+                <h2 className="font-heading text-lg font-bold uppercase tracking-wider text-black flex items-center gap-2">
+                  <Hexagon className="h-4 w-4 text-black" /> Filters
+                </h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => { setSearchQuery(""); setActiveSearch(""); handleResetFilters(); }}
+                  className="h-8 text-xs text-black/70 hover:text-black uppercase font-bold tracking-wider hover:bg-transparent"
+                >
+                  Reset All
+                </Button>
+              </div>
+              <div className="p-6 rounded-3xl border border-[#333] bg-[#0A0A0A] shadow-lg overflow-y-auto flex-1">
+                <Filters 
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  onReset={handleResetFilters}
+                />
+              </div>
             </div>
           </aside>
 
