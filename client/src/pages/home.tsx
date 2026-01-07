@@ -210,7 +210,7 @@ export default function Home() {
     <Layout>
       {/* Hero Section */}
       <motion.div 
-        className="relative w-full overflow-hidden border-b border-black/20"
+        className="relative w-full border-b border-black/20"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}

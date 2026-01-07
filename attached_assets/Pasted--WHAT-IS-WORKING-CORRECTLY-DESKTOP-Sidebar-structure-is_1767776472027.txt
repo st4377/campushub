@@ -1,0 +1,93 @@
+✅ WHAT IS WORKING CORRECTLY (DESKTOP)
+
+Sidebar structure is correct
+
+<aside> is used only as a layout column
+
+position: sticky is applied to an inner wrapper div (not the <aside>)
+
+Sticky configuration is correct
+
+Uses position: sticky
+
+Uses top-28 to offset the header
+
+Uses max-h-[calc(100vh-8rem)] to limit sidebar height
+
+Internal scrolling is correct
+
+Filter content scrolls inside the sidebar using overflow-y-auto
+
+Filter header stays fixed inside the sidebar
+
+No JavaScript scroll logic is used
+
+✅ The desktop sidebar code itself should NOT be modified further.
+
+❌ DESKTOP ISSUE THAT STILL NEEDS TO BE FIXED
+Problem
+
+On desktop, the filter sidebar does not remain pinned while scrolling the page.
+Instead, it scrolls away with the content.
+
+Root Cause (Confirmed)
+
+position: sticky is being disabled by ancestor elements that use:
+
+overflow: hidden;
+
+
+According to CSS behavior, if any ancestor element of a sticky element has overflow: hidden, auto, or scroll, sticky positioning will not work.
+
+Sticky fails silently — no error is shown.
+
+🎯 REQUIRED FIX (DESKTOP ONLY)
+1️⃣ Update client/src/pages/home.tsx
+❌ Current (blocks sticky)
+<motion.div className="relative w-full overflow-hidden border-b border-black/20">
+
+✅ Required change
+<motion.div className="relative w-full border-b border-black/20">
+
+
+👉 Remove only overflow-hidden.
+Do NOT change animations, structure, or layout.
+
+2️⃣ Update layout wrapper (desktop page container)
+
+Check the layout component (e.g. components/layout.tsx) and remove or replace any overflow-hidden applied to desktop page wrappers such as:
+
+<div className="overflow-hidden">
+<main className="overflow-hidden">
+
+✅ Replace with
+
+Remove overflow-hidden, or
+
+Use overflow-visible
+
+This change must apply to desktop page containers only.
+
+🚫 WHAT MUST NOT BE CHANGED
+
+Do NOT move sticky to <aside>
+
+Do NOT add JavaScript scroll listeners
+
+Do NOT use position: fixed
+
+Do NOT change grid or layout structure
+
+Do NOT touch mobile or tablet behavior
+
+Do NOT remove animations
+
+✅ EXPECTED RESULT AFTER FIX
+
+On desktop, the filter sidebar stays pinned while scrolling
+
+Sidebar stops when main content ends
+
+Filter content scrolls internally if long
+
+Behavior matches the original working version
