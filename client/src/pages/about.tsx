@@ -199,7 +199,7 @@ export default function About() {
                  className="inline-flex items-center gap-2 text-black font-bold transition-transform underline underline-offset-4 button-hover"
                  whileHover={{ scale: 1.05 }}
                >
-                 Contact me for support
+                 Contact — Tanay Sachan
                </motion.a>
              </motion.div>
            </div>
