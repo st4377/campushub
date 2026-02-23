@@ -99,7 +99,7 @@ export default function FAQ() {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.6 }}
         >
-       <p className="text-black/60 mb-4">Still have questions?</p>
+      <p className="text-black/60 mb-4">Still have questions? Contact us —</p>
 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
   <motion.a 
     href="https://wa.me/919754424866?text=Hi%2C%20I%E2%80%99m%20reaching%20out%20for%20support%20related%20to%20CampusHub" 
@@ -108,7 +108,7 @@ export default function FAQ() {
     className="inline-flex items-center gap-2 text-black font-bold transition-transform underline underline-offset-4 button-hover"
     whileHover={{ scale: 1.05 }}
   >
-    Contact — Tanay Sachan
+    Tanay Sachan
   </motion.a>
 
   <span className="text-black/40 hidden sm:block">|</span>
@@ -120,7 +120,7 @@ export default function FAQ() {
     className="inline-flex items-center gap-2 text-black font-bold transition-transform underline underline-offset-4 button-hover"
     whileHover={{ scale: 1.05 }}
   >
-    Contact — Saumil Tiwari
+    Saumil Tiwari
   </motion.a>
 </div>
         </motion.div>
